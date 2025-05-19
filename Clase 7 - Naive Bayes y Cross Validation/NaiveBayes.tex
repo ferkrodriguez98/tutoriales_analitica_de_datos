@@ -77,7 +77,7 @@ donde:
 
 En el contexto de clasificación, queremos encontrar la clase $Y$ que maximiza $P(Y|X)$ dado un conjunto de características $X$. Debido a la suposición de independencia, podemos escribir:
 \[
-P(X|Y) = P(X_1|Y) \times P(X_2|Y) \times ... \times P(X_n|Y)
+P(X|Y) = P(X_1|Y) \times P(X_2|Y) \times \cdots \times P(X_n|Y)
 \]
 
 \section{Tipos de Naive Bayes}
@@ -240,15 +240,28 @@ Como $0.13 > 0.006$, el clasificador predice que el estudiante aprobará el exam
 \end{itemize}
 
 \section{Suavizado de Laplace}
-Un problema común en Naive Bayes es cuando una probabilidad condicional es cero, lo que hace que toda la multiplicación sea cero. Para evitar esto, se utiliza el suavizado de Laplace (o suavizado aditivo), que agrega un pequeño valor $\alpha$ (típicamente 1) a todos los conteos. Los conteos representan la frecuencia con la que aparece cada valor de una característica para una clase específica. Por ejemplo, si estamos clasificando correos como spam/no spam, los conteos serían cuántas veces aparece cada palabra en los correos spam y cuántas veces en los correos no spam.
+Un problema común en Naive Bayes es cuando una probabilidad condicional es cero, lo que hace que toda la multiplicación sea cero. Para evitar esto, se utiliza el suavizado de Laplace (o suavizado aditivo), que agrega un pequeño valor $\alpha$ (típicamente 1) a todos los conteos. Los conteos representan la frecuencia con la que aparece cada valor de una característica para una clase específica.
 
 \[
-P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha n}
+P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha \times n}
+\]
+
+Por ejemplo, si tenemos:
+\begin{itemize}
+    \item $\alpha = 1$ (suavizado de Laplace)
+    \item $count(x_i, y) = 0$ (la palabra nunca apareció en la clase)
+    \item $count(y) = 10$ (total de documentos en la clase)
+    \item $n = 1000$ (cantidad de características)
+\end{itemize}
+
+Entonces:
+\[
+P(x_i|y) = \frac{0 + 1}{10 + 1 \times 1000} = \frac{1}{1010} \approx 0.001
 \]
 
 \vspace{0.5em}
 
-donde $n$ es el número de características.
+Con esto, se evita que una probabilidad condicional sea cero, haciendo que toda la multiplicación sea cero.
 
 \section{Implementación en Python}
 
