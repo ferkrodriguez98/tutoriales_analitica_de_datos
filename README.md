@@ -26,7 +26,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 |   5    | 05/05   | Árboles de Decisión y Clasificacion (CART) |
 |   6    | 12/05   | Random Forest vs CART |
 |   7    | 19/05   | Naive Bayes y Cross Validation |
-|   8    | 26/05   | Validación de Modelos|
+|   8    | 26/05   | Validación de Modelos |
 |   9    | 02/06   | K-means |
 |  10    | 09/06   | Reducción de dimensionalidad y PCA |
 |   -    | 16/06   | Feriado |
