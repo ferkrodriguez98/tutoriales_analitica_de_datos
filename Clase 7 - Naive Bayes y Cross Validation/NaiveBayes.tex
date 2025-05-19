@@ -1,0 +1,282 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}  
+\usepackage[T1]{fontenc}     
+\usepackage{lmodern}         
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Naive Bayes}}\\[0.5em]
+  {\normalsize (Clasificador Bayesiano Ingenuo)}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+% Introducción a Naive Bayes
+\section{Introducción a Naive Bayes}
+El clasificador Naive Bayes es un algoritmo de aprendizaje automático basado en el teorema de Bayes, que asume la independencia condicional entre las características dado el valor de la variable objetivo. A pesar de ser una suposición ingenua (naive), el algoritmo puede ser muy efectivo en algunas situaciones.
+
+\vspace{1em}
+
+El teorema de Bayes establece que:
+\[
+P(Y|X) = \frac{P(X|Y)P(Y)}{P(X)}
+\]
+donde:
+\begin{itemize}
+    \item $P(Y|X)$ es la probabilidad posterior
+    \item $P(X|Y)$ es la verosimilitud
+    \item $P(Y)$ es la probabilidad a priori
+    \item $P(X)$ es la evidencia
+\end{itemize}
+
+\vspace{1em}
+
+En el contexto de clasificación, queremos encontrar la clase $Y$ que maximiza $P(Y|X)$ dado un conjunto de características $X$. Debido a la suposición de independencia, podemos escribir:
+\[
+P(X|Y) = P(X_1|Y) \times P(X_2|Y) \times ... \times P(X_n|Y)
+\]
+
+\section{Tipos de Naive Bayes}
+Antes de aplicar un modelo Naive Bayes, es importante conocer las variantes que existen y cuándo conviene usar cada una, según la documentación oficial de \texttt{scikit-learn}:
+
+\begin{itemize}
+    \item \textbf{BernoulliNB:} Utiliza variables binarias (presencia o ausencia de características). Es ideal cuando los datos son de tipo binario, por ejemplo, presencia/ausencia de palabras en texto.
+    \item \textbf{CategoricalNB:} Se utiliza para datos categóricos, donde las características son discretas y tienen más de dos posibles valores, común en datos no numéricos.
+    \item \textbf{MultinomialNB:} Ideal para datos discretos como conteos de palabras en texto, especialmente cuando las características tienen más de dos valores posibles y están basadas en frecuencias.
+    \item \textbf{ComplementNB:} Variante de MultinomialNB que mejora el rendimiento en conjuntos de datos desbalanceados, ajustando las probabilidades de las clases complementarias para compensar el sesgo.
+    \item \textbf{GaussianNB:} Asume que las características siguen una distribución normal (gaussiana) continua, siendo útil cuando las variables son continuas y tienen una forma aproximadamente normal.
+\end{itemize}
+
+\section{Ejemplo Práctico}
+Para entender el funcionamiento del clasificador bayesiano ingenuo, usemos un caso de ejemplo: queremos construir un clasificador que prediga si un estudiante va a aprobar un examen, dado:
+
+\begin{itemize}
+    \item \textbf{Tiempo de estudio:} Bajo, Moderado o Alto
+    \item \textbf{Método de estudio:} Lectura, Práctica, o Lectura y Práctica (L y P)
+    \item \textbf{Puntuación en exámenes anteriores:} Bajo, Promedio o Alto
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Tiempo de estudio & Método de estudio & Puntuación & Resultado \\
+        \midrule
+        Bajo & Lectura & Bajo & Desaprobó \\
+        Bajo & Práctica & Alta & Aprobó \\
+        Moderado & Lectura y Práctica & Promedio & Aprobó \\
+        Alto & Lectura y Práctica & Alta & Aprobó \\
+        Alto & Lectura & Alta & Desaprobó \\
+        Bajo & Lectura y Práctica & Baja & Desaprobó \\
+        Alto & Práctica & Alta & Aprobó \\
+        Moderado & Lectura & Alta & Aprobó \\
+        Moderado & Lectura y Práctica & Promedio & Aprobó \\
+        Moderado & Práctica & Bajo & Desaprobó \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Tablas de Frecuencia}
+A partir de los datos, construimos las tablas de frecuencia para cada atributo:
+
+\vspace{1em}
+
+\textbf{Tiempo de Estudio:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Tiempo de estudio & Aprobó & Desaprobó & Total \\
+        \midrule
+        Bajo & 1 & 2 & 3 \\
+        Moderado & 3 & 1 & 4 \\
+        Alto & 2 & 1 & 3 \\
+        \midrule
+        Total & 6 & 4 & 10 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\vspace{1em}
+
+\textbf{Método de Estudio:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Método de estudio & Aprobó & Desaprobó & Total \\
+        \midrule
+        Lectura & 1 & 2 & 3 \\
+        Práctica & 2 & 1 & 3 \\
+        L y P & 3 & 1 & 4 \\
+        \midrule
+        Total & 6 & 4 & 10 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\vspace{1em}
+
+\textbf{Puntuación en exámenes anteriores:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Puntuación & Aprobó & Desaprobó & Total \\
+        \midrule
+        Bajo & 0 & 3 & 3 \\
+        Promedio & 2 & 0 & 2 \\
+        Alto & 4 & 1 & 5 \\
+        \midrule
+        Total & 6 & 4 & 10 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Aplicación del Teorema de Bayes}
+El clasificador bayesiano ingenuo asume que los atributos son independientes entre sí, por lo que podemos multiplicar las probabilidades. Para un nuevo estudiante, calculamos:
+
+\begin{align*}
+P(\text{Aprobó}) &= \frac{6}{10} = 0.6 \\
+P(\text{Desaprobó}) &= \frac{4}{10} = 0.4
+\end{align*}
+
+Para clasificar un nuevo caso, multiplicamos las probabilidades condicionales por la probabilidad a priori. Por ejemplo, para un estudiante con:
+\begin{itemize}
+    \item Tiempo de estudio: Alto
+    \item Método: Lectura y Práctica
+    \item Puntuación previa: Alta
+\end{itemize}
+
+\begin{align*}
+P(\text{Aprobó}|X) &= P(\text{Aprobó}) \times P(\text{Alto}|\text{Aprobó}) \\
+&\quad \times P(\text{L y P}|\text{Aprobó}) \times P(\text{Alta}|\text{Aprobó}) \\
+&= 0.6 \times \frac{2}{6} \times \frac{3}{6} \times \frac{4}{6} \\
+&= 0.13
+\end{align*}
+
+\begin{align*}
+P(\text{Desaprobó}|X) &= P(\text{Desaprobó}) \times P(\text{Alto}|\text{Desaprobó}) \\
+&\quad \times P(\text{L y P}|\text{Desaprobó}) \times P(\text{Alta}|\text{Desaprobó}) \\
+&= 0.4 \times \frac{1}{4} \times \frac{1}{4} \times \frac{1}{4} \\
+&= 0.006
+\end{align*}
+
+Como $0.13 > 0.006$, el clasificador predice que el estudiante aprobará el examen.
+
+\section{Ventajas y Desventajas}
+\underline{Ventajas}
+\begin{itemize}
+    \item Simple y rápido de entrenar
+    \item Funciona bien con conjuntos de datos pequeños
+    \item Maneja bien datos faltantes
+    \item Fácil de interpretar
+\end{itemize}
+
+\underline{Desventajas}
+\begin{itemize}
+    \item La suposición de independencia raramente se cumple en la realidad
+    \item Sensible a características irrelevantes
+    \item No captura relaciones complejas entre características
+    \item Puede tener problemas con probabilidades cero (requiere suavizado)
+\end{itemize}
+
+\section{Aplicaciones Comunes}
+
+\begin{itemize}
+    \item \textbf{Clasificación de spam:} Identificación de mails no deseados basada en el contenido y características del mensaje.
+    
+    \item \textbf{Análisis de sentimientos:} Clasificación de opiniones y comentarios en redes sociales, reseñas de productos o noticias como positivos, negativos o neutrales.
+    
+    \item \textbf{Diagnóstico médico:} Ayuda en la identificación de enfermedades basándose en síntomas y resultados de pruebas médicas.
+    
+    \item \textbf{Detección de fraude:} Identificación de transacciones sospechosas o actividades fraudulentas en sistemas financieros.
+    
+    \item \textbf{Clasificación de malware:} Identificación de software malicioso basado en sus características y comportamiento.
+\end{itemize}
+
+\section{Suavizado de Laplace}
+Un problema común en Naive Bayes es cuando una probabilidad condicional es cero, lo que hace que toda la multiplicación sea cero. Para evitar esto, se utiliza el suavizado de Laplace (o suavizado aditivo), que agrega un pequeño valor $\alpha$ (típicamente 1) a todos los conteos. Los conteos representan la frecuencia con la que aparece cada valor de una característica para una clase específica. Por ejemplo, si estamos clasificando correos como spam/no spam, los conteos serían cuántas veces aparece cada palabra en los correos spam y cuántas veces en los correos no spam.
+
+\[
+P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha n}
+\]
+
+\vspace{0.5em}
+
+donde $n$ es el número de características.
+
+\section{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
+
+# Para datos continuos (distribucion normal)
+model = GaussianNB()
+
+# Para datos discretos (conteos)
+model = MultinomialNB()
+
+# Para datos binarios (presencia/ausencia)
+model = BernoulliNB()
+
+# Para datos categoricos
+model = CategoricalNB()
+
+# Para datos desbalanceados
+model = ComplementNB()
+
+# Entrenamiento
+model.fit(X_train, y_train)
+
+# Prediccion
+y_pred = model.predict(X_test)
+\end{lstlisting}
+
+\end{document}

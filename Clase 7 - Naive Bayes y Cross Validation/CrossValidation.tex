@@ -1,0 +1,226 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Cross Validation}}\\[0.5em]
+  {\normalsize (Validación Cruzada)}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Introducción}
+La validación cruzada es una técnica de evaluación de modelos que nos permite estimar qué tan bien un modelo de aprendizaje automático se generalizará a datos nuevos e independientes. Es especialmente útil cuando:
+\begin{itemize}
+    \item La cantidad de datos disponibles es limitada
+    \item Queremos evitar el sobreajuste (overfitting)
+    \item Necesitamos una estimación más robusta del rendimiento del modelo
+\end{itemize}
+
+\section{K-Fold Cross Validation}
+La técnica más común de validación cruzada es k-fold CV, donde:
+\begin{enumerate}
+    \item Los datos se dividen en k partes iguales (folds)
+    \item Se realizan k iteraciones donde:
+        \begin{itemize}
+            \item Se usa una parte como conjunto de validación
+            \item Se usan las k-1 partes restantes como conjunto de entrenamiento
+        \end{itemize}
+    \item Se promedian los resultados de las k iteraciones
+\end{enumerate}
+
+A continuación se muestra una representación visual de cómo funciona la validación cruzada con 5 folds. En cada iteración, un fold diferente (marcado en rojo) se utiliza como conjunto de validación, mientras que los demás folds (en gris) se utilizan para entrenar el modelo.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+    % Dibuja los 5 rectángulos
+    \foreach \i in {0,1,2,3,4} {
+        \fill[gray!20] (\i*2,0) rectangle (\i*2+1.5,1);
+    }
+    
+    % Colorea el primer fold en rojo
+    \fill[red!30] (0,0) rectangle (1.5,1);
+    
+    % Etiquetas arriba de los rectángulos
+    \node at (0.75,1.5) {Fold 1};
+    \node at (2.75,1.5) {Fold 2};
+    \node at (4.75,1.5) {Fold 3};
+    \node at (6.75,1.5) {Fold 4};
+    \node at (8.75,1.5) {Fold 5};
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+\begin{tikzpicture}[scale=0.8]
+    % Dibuja los 5 rectángulos
+    \foreach \i in {0,1,2,3,4} {
+        \fill[gray!20] (\i*2,0) rectangle (\i*2+1.5,1);
+    }
+    
+    % Colorea el segundo fold en rojo
+    \fill[red!30] (2,0) rectangle (3.5,1);
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+\begin{tikzpicture}[scale=0.8]
+    % Dibuja los 5 rectángulos
+    \foreach \i in {0,1,2,3,4} {
+        \fill[gray!20] (\i*2,0) rectangle (\i*2+1.5,1);
+    }
+    
+    % Colorea el tercer fold en rojo
+    \fill[red!30] (4,0) rectangle (5.5,1);
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+\begin{tikzpicture}[scale=0.8]
+    % Dibuja los 5 rectángulos
+    \foreach \i in {0,1,2,3,4} {
+        \fill[gray!20] (\i*2,0) rectangle (\i*2+1.5,1);
+    }
+    
+    % Colorea el cuarto fold en rojo
+    \fill[red!30] (6,0) rectangle (7.5,1);
+\end{tikzpicture}
+
+\vspace{0.5em}
+
+\begin{tikzpicture}[scale=0.8]
+    % Dibuja los 5 rectángulos
+    \foreach \i in {0,1,2,3,4} {
+        \fill[gray!20] (\i*2,0) rectangle (\i*2+1.5,1);
+    }
+    
+    % Colorea el quinto fold en rojo
+    \fill[red!30] (8,0) rectangle (9.5,1);
+\end{tikzpicture}
+\end{figure}
+
+\section{Ejemplo Práctico}
+Consideremos un conjunto de datos con 100 observaciones y k=5:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+        \toprule
+        Iteración & Error de Entrenamiento & Error de Validación \\
+        \midrule
+        1 & 0.15 & 0.18 \\
+        2 & 0.14 & 0.19 \\
+        3 & 0.16 & 0.17 \\
+        4 & 0.15 & 0.20 \\
+        5 & 0.14 & 0.18 \\
+        \midrule
+        Promedio & 0.148 & 0.184 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+El error promedio de validación (0.184) es una estimación más robusta del error de generalización que si hubiéramos usado una única división train-test.
+
+\begin{itemize}
+    \item El error de entrenamiento es consistentemente menor que el error de validación, lo que indica un leve overfitting del modelo.
+    \item La variación en los errores de validación (entre 0.17 y 0.20) sugiere que el modelo es relativamente estable.
+    \item La diferencia promedio entre el error de entrenamiento y validación (0.036) nos da una idea de cuánto podría estar el modelo sobreajustándose a los datos.
+\end{itemize}
+
+\section{Consideraciones Importantes}
+\subsection{Elección del número de folds (k)}
+La elección del número de folds (k) es crucial y presenta diferentes trade-offs:
+
+\begin{itemize}
+    \item \textbf{k=5:} 
+    \begin{itemize}
+        \item Mayor sesgo pero menor varianza
+        \item Más rápido computacionalmente
+        \item Útil cuando el conjunto de datos es grande
+    \end{itemize}
+    
+    \item \textbf{k=10:}
+    \begin{itemize}
+        \item Menor sesgo pero mayor varianza
+        \item Más preciso en la estimación del error
+        \item Recomendado para conjuntos de datos más pequeños
+    \end{itemize}
+\end{itemize}
+
+\subsection{Ordenamiento y mezcla de datos}
+\begin{itemize}
+    \item El orden de los datos puede afectar significativamente los resultados de la validación cruzada, hay que mezclar aleatoriamente los datos antes de realizar las divisiones
+    \item Para garantizar la reproducibilidad de los resultados, utilizar un valor fijo de \textit{random\_state}
+\end{itemize}
+
+\subsection{Preprocesamiento de datos}
+\begin{itemize}
+    \item Realizar preprocesamiento \textbf{dentro de cada fold} para evitar data leakage (que el conjunto de entrenamiento tenga información del conjunto de validación)
+    \item Incluir: escalado, normalización, codificación categórica, manejo de faltantes y selección de features
+\end{itemize}
+
+\section{Implementación en Python}
+\begin{lstlisting}[language=Python]
+from sklearn.model_selection import KFold, cross_val_score
+from sklearn.linear_model import LogisticRegression
+
+# Crear el modelo
+model = LogisticRegression()
+
+# Configurar 5-fold CV
+kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+
+# Calcular scores
+scores = cross_val_score(model, X, y, cv=kfold)
+
+# Imprimir resultados
+print(f"Scores por fold: {scores}")
+print(f"Score promedio: {scores.mean():.3f}")
+print(f"Desviacion estandar: {scores.std():.3f}")
+\end{lstlisting}
+
+\end{document} 
