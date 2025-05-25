@@ -11,6 +11,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 5 - CART](./Clase%205%20-%20CART): Árboles de decisión (CART), teoría y ejercicios prácticos.
 - [Clase 6 - Random Forest](./Clase%206%20-%20Random%20Forest): Random Forest, comparación con CART, análisis y visualizaciones.
 - [Clase 7 - Naive Bayes y Cross Validation](./Clase%207%20-%20Naive%20Bayes%20y%20Cross%20Validation): Clasificador Naive Bayes y validación cruzada (con k-folds).
+- [Clase 8 - Boosting](./Clase%208%20-%20Boosting/): Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost
 
 ## Tabla de clases y temas
 
