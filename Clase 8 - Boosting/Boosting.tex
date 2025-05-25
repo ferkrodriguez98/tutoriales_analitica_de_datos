@@ -1,0 +1,181 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Boosting}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Introducción al Boosting}
+Boosting es una técnica de ensamble que combina múltiples modelos "débiles" para crear un modelo "fuerte". A diferencia de Random Forest, que construye árboles independientes en paralelo, Boosting construye modelos secuencialmente, donde cada nuevo modelo intenta corregir los errores de los modelos anteriores.
+
+\vspace{1em}
+
+Los principios fundamentales del Boosting son:
+\begin{itemize}
+    \item Construcción secuencial de modelos
+    \item Ponderación de observaciones
+    \item Combinación ponderada de predicciones
+    \item Enfoque en errores previos
+\end{itemize}
+
+\section{Algoritmo AdaBoost}
+AdaBoost (Adaptive Boosting) fue desarrollado en 1995 por Yoav Freund y Robert Schapire. Fue el primer algoritmo de Boosting exitoso. Sus principales características son:
+
+\begin{itemize}
+    \item Inicialmente, todas las observaciones tienen el mismo peso
+    \item En cada iteración:
+    \begin{itemize}
+        \item Se entrena un modelo débil
+        \item Se identifican las observaciones mal clasificadas
+        \item Se aumenta el peso de las observaciones mal clasificadas
+        \item Se disminuye el peso de las observaciones bien clasificadas
+    \end{itemize}
+    \item La predicción final es un promedio ponderado de las predicciones de todos los modelos
+\end{itemize}
+
+\section{Gradient Boosting}
+Gradient Boosting es una generalización del Boosting que:
+\begin{itemize}
+    \item Utiliza el gradiente del error para guiar el aprendizaje porque permite identificar la dirección de máximo descenso en la función de pérdida
+    \item Puede aplicarse a cualquier función de pérdida diferenciable ya que utiliza el cálculo diferencial para minimizar el error, lo que lo hace versátil para diferentes tipos de problemas
+    \item Es más flexible y potente que AdaBoost debido a que no se limita a clasificación binaria y puede manejar diferentes funciones objetivo
+    \item Permite mayor control sobre el proceso de aprendizaje al poder ajustar parámetros como la tasa de aprendizaje y la profundidad de los árboles
+\end{itemize}
+
+\subsection{Parámetros Importantes}
+\begin{itemize}
+    \item \textbf{n\_estimators:} Número de árboles (iteraciones)
+    \item \textbf{learning\_rate:} Tasa de aprendizaje (shrinkage)
+    \item \textbf{max\_depth:} Profundidad máxima de los árboles
+    \item \textbf{subsample:} Fracción de datos para cada árbol
+    \item \textbf{min\_samples\_split:} Mínimo de muestras para dividir
+\end{itemize}
+
+\section{XGBoost}
+XGBoost (eXtreme Gradient Boosting) es una implementación optimizada de Gradient Boosting que ofrece:
+\begin{itemize}
+    \item Mayor velocidad de entrenamiento: Utiliza técnicas de paralelización y optimización de memoria que permiten procesar grandes volúmenes de datos más rápidamente que otras implementaciones de Gradient Boosting.
+    \item Mejor manejo de memoria: Implementa estructuras de datos especializadas y técnicas de compresión que reducen significativamente el uso de memoria durante el entrenamiento.
+    \item Regularización incorporada: Incluye regularización L1 (Lasso) y L2 (Ridge) directamente en el algoritmo, lo que ayuda a prevenir el overfitting y mejora la generalización del modelo.
+    \item Manejo de valores faltantes: Puede manejar automáticamente valores faltantes en los datos sin necesidad de preprocesamiento adicional, lo que simplifica el pipeline de machine learning.
+    \item Paralelización eficiente: Aprovecha múltiples núcleos de CPU y puede distribuir el trabajo entre diferentes máquinas, lo que permite escalar el entrenamiento a conjuntos de datos muy grandes.
+\end{itemize}
+
+\subsection{Características Principales}
+\begin{itemize}
+    \item \textbf{Regularización:} Implementa regularización L1 (Lasso) para selección de características y L2 (Ridge) para control de complejidad
+    \item \textbf{Early Stopping:} Monitorea el rendimiento en conjunto de validación y detiene el entrenamiento cuando no hay mejora en un número especificado de iteraciones
+    \item \textbf{Feature Importance:} Proporciona métricas detalladas sobre la contribución de cada variable al modelo final
+    \item \textbf{Manejo de Datos Dispersos:} Utiliza estructuras de datos especializadas para procesar eficientemente matrices sparse
+    \item \textbf{Paralelización:} Permite entrenamiento distribuido y procesamiento en múltiples núcleos
+    \item \textbf{Monitoreo de Progreso:} Ofrece herramientas para visualizar el progreso del entrenamiento y métricas de rendimiento
+\end{itemize}
+
+\section{Comparación con Random Forest}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{p{4cm}|p{4cm}|p{4cm}}
+        \toprule
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \midrule
+        Construcción & Paralela & Secuencial \\
+        Velocidad & Más rápido & Más lento \\
+        Overfitting & Menos propenso & Más propenso \\
+        Ajuste & Menos parámetros & Más parámetros \\
+        Interpretabilidad & Mayor & Menor \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+# AdaBoost
+from sklearn.ensemble import AdaBoostClassifier
+ada_model = AdaBoostClassifier(
+    n_estimators=100,
+    learning_rate=1.0
+)
+
+# Gradient Boosting
+from sklearn.ensemble import GradientBoostingClassifier
+gb_model = GradientBoostingClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3
+)
+
+# XGBoost
+import xgboost as xgb
+xgb_model = xgb.XGBClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3,
+    reg_lambda=1,  # L2
+    reg_alpha=0    # L1
+)
+
+# Entrenamiento
+model.fit(X_train, y_train)
+
+# Prediccion
+y_pred = model.predict(X_test)
+\end{lstlisting}
+
+\section{Buenas Prácticas}
+\begin{itemize}
+    \item \textbf{Preprocesamiento:} Escalar variables numéricas y codificar categóricas
+    \item \textbf{Validación Cruzada:} Usar para evaluar y ajustar hiperparámetros
+    \item \textbf{Early Stopping:} Implementar para evitar overfitting
+    \item \textbf{Learning Rate:} Comenzar con valores pequeños (0.01-0.1)
+    \item \textbf{Monitoreo:} Observar error de entrenamiento y validación
+\end{itemize}
+
+\end{document}

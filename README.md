@@ -10,6 +10,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 4 -Regresión Lineal y Logística](./Clase%204%20-Regresi%C3%B3n%20Lineal%20y%20Log%C3%ADstica): Regresión lineal y logística, fundamentos y práctica en notebooks.
 - [Clase 5 - CART](./Clase%205%20-%20CART): Árboles de decisión (CART), teoría y ejercicios prácticos.
 - [Clase 6 - Random Forest](./Clase%206%20-%20Random%20Forest): Random Forest, comparación con CART, análisis y visualizaciones.
+- [Clase 7 - Naive Bayes y Cross Validation](./Clase%207%20-%20Naive%20Bayes%20y%20Cross%20Validation): Clasificador Naive Bayes y validación cruzada (con k-folds).
 
 ## Tabla de clases y temas
 
@@ -26,7 +27,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 |   5    | 05/05   | Árboles de Decisión y Clasificacion (CART) |
 |   6    | 12/05   | Random Forest vs CART |
 |   7    | 19/05   | Naive Bayes y Cross Validation |
-|   8    | 26/05   | Validación de Modelos |
-|   9    | 02/06   | K-means |
+|   8    | 26/05   | Boosting |
+|   9    | 02/06   | Validación de Modelos y K-means |
 |  10    | 09/06   | Reducción de dimensionalidad y PCA |
 |   -    | 16/06   | Feriado |
