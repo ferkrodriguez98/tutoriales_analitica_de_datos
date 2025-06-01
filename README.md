@@ -12,6 +12,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 6 - Random Forest](./Clase%206%20-%20Random%20Forest): Random Forest, comparación con CART, análisis y visualizaciones.
 - [Clase 7 - Naive Bayes y Cross Validation](./Clase%207%20-%20Naive%20Bayes%20y%20Cross%20Validation): Clasificador Naive Bayes y validación cruzada (con k-folds).
 - [Clase 8 - Boosting](./Clase%208%20-%20Boosting/): Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost
+- [Clase 9 - Validación de Modelos](./Clase%209%20-%20Validación%20de%20Modelos/): Métricas de evaluación de modelos, matriz de confusión, curva ROC y PR.
 
 ## Tabla de clases y temas
 
@@ -29,6 +30,6 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 |   6    | 12/05   | Random Forest vs CART |
 |   7    | 19/05   | Naive Bayes y Cross Validation |
 |   8    | 26/05   | Boosting |
-|   9    | 02/06   | Validación de Modelos y K-means |
-|  10    | 09/06   | Reducción de dimensionalidad y PCA |
+|   9    | 02/06   | Validación de Modelos |
+|  10    | 09/06   | Aprendizaje no supervisado: K-means y PCA |
 |   -    | 16/06   | Feriado |
