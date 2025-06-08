@@ -1,0 +1,193 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{Aprendizaje No Supervisado}}
+\author{Analítica de Datos, Universidad de San Andrés}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Introducción al Aprendizaje No Supervisado}
+    \begin{itemize}
+        \item<1-> Rama del machine learning enfocada en encontrar patrones en datos no etiquetados
+        \item<2-> A diferencia del aprendizaje supervisado, no hay variable objetivo
+        \item<3-> Principales objetivos:
+        \begin{itemize}
+            \item Descubrir grupos naturales (clustering)
+            \item Reducir la dimensionalidad
+            \item Detectar anomalías
+            \item Encontrar reglas de asociación
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Clustering}
+    \begin{itemize}
+        \item<1-> Técnica que agrupa observaciones similares en clusters
+        \item<2-> Los puntos parecidos se agrupan por características similares
+        \item<3-> Aplicaciones:
+        \begin{itemize}
+            \item Agrupar clientes según comportamiento
+            \item Agrupar documentos según contenido
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{K-Means}
+    \textbf{¿Cómo funciona?}
+    \begin{itemize}
+        \item<1-> Se especifica el número K de clusters deseados
+        \item<2-> Inicialización de K centroides aleatorios
+        \item<3-> Proceso iterativo:
+        \begin{itemize}
+            \item Asignar cada punto al centroide más cercano
+            \item Recalcular centroides como promedio de puntos asignados
+        \end{itemize}
+        \item<4-> Continúa hasta la convergencia
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación de K-Means}
+    \begin{lstlisting}
+from sklearn.cluster import KMeans
+
+# Crear y entrenar el modelo
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+# Obtener centroides
+centroids = kmeans.cluster_centers_
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Reducción de Dimensionalidad}
+    \begin{itemize}
+        \item<1-> Útil cuando tenemos datasets con muchas variables
+        \item<2-> Ayuda a:
+        \begin{itemize}
+            \item Simplificar el análisis
+            \item Mejorar la visualización
+            \item Facilitar el entrenamiento de modelos
+        \end{itemize}
+        \item<3-> Mantiene la información más importante
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{PCA (Principal Component Analysis)}
+    \textbf{¿Qué hace PCA?}
+    \begin{itemize}
+        \item<1-> Combina variables de manera especial
+        \item<2-> Crea componentes principales que:
+        \begin{itemize}
+            \item Capturan la mayor variación posible
+            \item Son independientes entre sí
+        \end{itemize}
+        \item<3-> El primer componente captura la mayor variación
+        \item<4-> Estándar: conservar 95% de la varianza
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación de PCA}
+    \begin{lstlisting}
+from sklearn.decomposition import PCA
+
+# Crear y aplicar PCA
+pca = PCA(n_components=2)  # Reducimos a 2 dimensiones
+X_reduced = pca.fit_transform(X)
+
+# Ver cuanta varianza explica cada componente
+expl_variance = pca.explained_variance_ratio_
+print(f"var. explicada por cada componente: {expl_variance}")
+print(f"var. total explicada: {sum(expl_variance):.2f}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{¿Cuándo usar PCA?}
+    \begin{itemize}
+        \item<1-> \textbf{Visualización:} Para ver patrones en datos con muchas variables
+        \item<2-> \textbf{Ruido:} Limpiar datos eliminando variaciones no importantes
+        \item<3-> \textbf{Colinealidad:} Con variables muy correlacionadas
+        \item<4-> \textbf{Curse of Dimensionality:} Evitar problemas con muchas variables
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Evaluación de Modelos No Supervisados}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Clustering:}
+            \begin{itemize}
+                \item<1-> Silhouette Score
+                \item<2-> Calinski-Harabasz Index
+                \item<3-> Davies-Bouldin Index
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Reducción de Dimensionalidad:}
+            \begin{itemize}
+                \item<4-> Varianza explicada
+                \item<5-> Reconstrucción del error
+                \item<6-> Preservación de distancias
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Evaluación de Clustering}
+    \begin{lstlisting}
+from sklearn.metrics import silhouette_score, calinski_harabasz_score
+
+# Evaluar clustering
+silhouette_avg = silhouette_score(X, clusters)
+calinski_score = calinski_harabasz_score(X, clusters)
+    \end{lstlisting}
+\end{frame}
+
+\end{document} 

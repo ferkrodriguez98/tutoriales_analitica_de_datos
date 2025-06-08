@@ -1,0 +1,188 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Aprendizaje No Supervisado}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Intro. al Aprendizaje No Supervisado}
+El aprendizaje no supervisado es una rama del machine learning que se enfoca en encontrar patrones y estructuras en datos no etiquetados. A diferencia del aprendizaje supervisado, donde tenemos una variable objetivo, acá buscamos descubrir relaciones y estructuras inherentes en los datos.
+
+\vspace{1em}
+
+Los principales objetivos del aprendizaje no supervisado son:
+\begin{itemize}
+    \item Descubrir grupos naturales en los datos (clustering)
+    \item Reducir la dimensionalidad de los datos
+    \item Detectar anomalías
+    \item Encontrar reglas de asociación
+\end{itemize}
+
+\section{Clustering}
+El clustering es una técnica que agrupa observaciones similares en clusters o grupos. La idea es que los puntos parecidos se ponen en el mismo grupo porque tienen características similares. Lo podemos usar para agrupar clientes según comportamiento de compras, agrupar documentos según su contenido, etc.
+
+\subsection{K-Means}
+K-Means es uno de los algoritmos más populares y también de los más simples. Imaginá que tenés datos de jugadores de tenis con información como la cantidad de aces por partido y el porcentaje de primeros saques. K-Means va a intentar agruparlos en tres grupos, por ejemplo: jugadores con buen saque, jugadores con bajo rendimiento en el saque, y un grupo intermedio.
+
+\vspace{1em}
+
+\textbf{¿Cómo funciona K-Means?}
+\begin{itemize}
+    \item Se especifica el número K de clusters deseados
+    \item El algoritmo inicializa K centroides aleatorios
+    \item Iterativamente:
+    \begin{itemize}
+        \item Asigna cada punto al centroide más cercano
+        \item Recalcula los centroides como el promedio de los puntos asignados
+    \end{itemize}
+    \item El proceso continúa hasta la convergencia
+\end{itemize}
+
+\subsubsection{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from sklearn.cluster import KMeans
+
+# Crear y entrenar el modelo
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+# Obtener centroides
+centroids = kmeans.cluster_centers_
+\end{lstlisting}
+
+\section{Reducción de Dimensionalidad}
+Imaginemos que tenemos un dataset con muchas variables, por ejemplo 100 o 1000. Esto puede ser extremadamente complicado para analizar o visualizar, mucho más para después entrenar un modelo. No quisiera perder variables porque todas aportan cierta información, y me interesa poder conservar la mayor cantidad de información sin perder nada. Reducir la dimensionalidad de los datos nos ayuda a simplificar esto manteniendo la información más importante.
+
+\subsection{PCA (Principal Component Analysis)}
+PCA es la técnica más popular para reducir la dimensionalidad de los datos. Imaginemos que tenemos datos de personas: altura, peso, talle de ropa. Las tres variables están bastante relacionadas seguramente (la gente alta suele pesar más, y usar ropa más grande). PCA va a intentar fusionarlas en nuevas variables que sean menos, contengan la mayor cantidad de la información original y que sean independientes entre sí.
+
+\vspace{1em}
+
+\textbf{¿Qué hace PCA?} 
+\begin{itemize}
+    \item Toma todas las variables y las combina de una manera especial
+    \item Crea nuevas variables (llamadas componentes principales) que capturan la mayor variación posible
+    \item El primer componente captura la mayor variación, el segundo la segunda mayor, y así sucesivamente
+\end{itemize}
+
+\textbf{¿Con cuántos componentes principales nos quedamos?}
+
+\vspace{0.5em}
+
+El estándar es querer conservar el 95\% de la varianza. Vamos entonces a quedarnos con los componentes cuya suma de varianza explicada sea 0.95 o más.
+
+\subsubsection{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from sklearn.decomposition import PCA
+
+# Crear y aplicar PCA
+pca = PCA(n_components=2)  # Reducimos a 2 dimensiones
+X_reduced = pca.fit_transform(X)
+
+# Ver cuanta varianza explica cada componente
+expl_variance = pca.explained_variance_ratio_
+print(f"var. explicada por cada componente: {expl_variance}")
+print(f"var. total explicada: {sum(expl_variance):.2f}")
+\end{lstlisting}
+
+\subsection{¿Cuándo usar PCA?}
+\begin{itemize}
+    \item \textbf{Visualización:} Cuando queres ver patrones en datos con muchas variables
+    \item \textbf{Ruido:} Para limpiar datos eliminando variaciones no importantes
+    \item \textbf{Colinealidad:} Cuando tenes variables muy correlacionadas entre sí
+    \item \textbf{Curse of Dimensionality:} Para evitar problemas cuando tenes muchas variables
+\end{itemize}
+
+\subsection{Consideraciones importantes}
+\begin{itemize}
+    \item PCA funciona mejor con datos normalizados
+    \item La interpretación de los componentes puede ser complicada
+    \item No siempre es la mejor solución - depende del problema
+    \item Es importante verificar cuanta varianza se mantiene
+\end{itemize}
+
+\section{Evaluación de Modelos No Supervisados}
+\begin{itemize}
+    \item \textbf{Clustering:}
+    \begin{itemize}
+        \item Silhouette Score: Mide qué tan similar es un punto a su propio cluster vs. otros clusters
+        \item Calinski-Harabasz Index: Ratio entre varianza intra-cluster y entre-clusters
+        \item Davies-Bouldin Index: Mide la separación entre clusters
+    \end{itemize}
+    \item \textbf{Reducción de Dimensionalidad:}
+    \begin{itemize}
+        \item Varianza explicada
+        \item Reconstrucción del error
+        \item Preservación de distancias
+    \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+from sklearn.metrics import silhouette_score, calinski_harabasz_score
+
+# Evaluar clustering
+silhouette_avg = silhouette_score(X, clusters)
+calinski_score = calinski_harabasz_score(X, clusters)
+\end{lstlisting}
+
+\subsection{Recursos Extra}
+
+Video de Youtube que explica K-Means de una gran manera: \\
+\url{https://www.youtube.com/watch?v=4b5d3muPQmA}
+
+\vspace{1em}
+
+Video de Youtube que explica PCA de una gran manera: \\
+\url{https://www.youtube.com/watch?v=FgakZw6K1QQ}
+
+\end{document}

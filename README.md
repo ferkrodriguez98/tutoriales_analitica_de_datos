@@ -5,8 +5,8 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 ## Clases y contenido
 
 - [Clase 1 - Tableau](./Clase%2001%20-%20Tableau): Introducción a Tableau y visualización de datos. Tutorial práctico.
-- [Clase 2 - Tableau](./Clase%2002%20-%20Tableau): Profundización en Tableau, dashboards y análisis visual.
-- [Clase 3 - Data Analysis, Cleaning & Prep](./Clase%2003%20-%20Data%20Analysis%2C%20Cleaning%20%26%20Prep): Análisis exploratorio, limpieza y preparación de datos con Python y pandas.
+- [Clase 2 - Tableau](./Clase%2002%20-%20Tableau%20Pt.%202/): Profundización en Tableau, dashboards y análisis visual.
+- [Clase 3 - Data Analysis, Cleaning & Prep](./Clase%2003%20-%20Data%20Analysis%20&%20Cleaning/): Análisis exploratorio, limpieza y preparación de datos con Python y pandas.
 - [Clase 4 -Regresión Lineal y Logística](./Clase%2004%20-Regresi%C3%B3n%20Lineal%20y%20Log%C3%ADstica): Regresión lineal y logística, fundamentos y práctica en notebooks.
 - [Clase 5 - CART](./Clase%2005%20-%20CART): Árboles de decisión (CART), teoría y ejercicios prácticos.
 - [Clase 6 - Random Forest](./Clase%2006%20-%20Random%20Forest): Random Forest, comparación con CART, análisis y visualizaciones.
