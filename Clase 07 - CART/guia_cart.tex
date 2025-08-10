@@ -1,0 +1,260 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Guía de ejercicios de CART}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section*{Ejercicios}
+
+\begin{enumerate}
+  \item A continuación se pueden ver, por separado, algunas hojas extraídas de un modelo CART para clasificación ya entrenado.
+  
+    \begin{center}
+    \fbox{
+      \begin{minipage}{0.26\textwidth}
+        \centering
+        \texttt{samples = 35}\\
+        \texttt{value = [35,0,0]}\\
+        \texttt{class = Setosa}
+      \end{minipage}
+    }
+    \fbox{
+      \begin{minipage}{0.29\textwidth}
+        \centering
+        \texttt{samples = 105}\\
+        \texttt{value = [35,35,35]}\\
+        \texttt{class = Setosa}
+      \end{minipage}
+    }
+    \fbox{
+      \begin{minipage}{0.27\textwidth}
+        \centering
+        \texttt{samples = 40}\\
+        \texttt{value = [0,5,35]}\\
+        \texttt{class = Virginica}
+      \end{minipage}
+    }
+    \end{center}
+
+    \begin{enumerate}
+      \item Calcular el índice de Gini para cada una.
+      \item ¿Con qué probabilidad clasifica cada una de estas hojas?
+    \end{enumerate}
+
+  \item ¿Es necesario escalar los datos antes de entrenar un modelo CART? ¿Por qué?
+
+  \item Usar el siguiente dataset de entrenamiento para entrenar manualmente un árbol de clasificación teniendo en cuenta los siguientes hiperparámetros. Tomar los siguientes cortes para la variable continua: 2.5, 3.5
+    \begin{itemize}
+      \item Altura máxima del árbol: 3 (3 niveles)
+      \item Cantidad mínima de observaciones por nodo para dividir: 4
+    \end{itemize}
+    
+    \begin{center}
+    \begin{tabular}{cccc}
+    \toprule
+    horas\_estudio & participa\_clase & usa\_material\_extra & aprueba \\
+    \midrule
+    2 & No & No & No \\
+    5 & Si & Si & Si \\
+    1 & No & No & No \\
+    4 & Si & Si & Si \\
+    3 & No & No & No \\
+    6 & Si & Si & Si \\
+    2 & Si & No & No \\
+    3.5 & Si & No & Si \\
+    1.5 & No & No & No \\
+    4.5 & Si & Si & Si \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+
+  \item ¿Qué efecto tiene el parámetro alpha en la poda de un árbol de decisión?
+
+  \item ¿Cuál de estas 2 alternativas de poda (roja o azul) elegirían para el siguiente modelo teniendo en cuenta que alpha=0?
+    
+    \begin{center}
+    {\scriptsize
+    \begin{forest}
+    for tree={
+      draw,
+      rounded corners,
+      l sep=2em,
+      s sep=2em,
+      anchor=north,
+      align=center,
+      font=\scriptsize,
+      parent anchor=south,
+      child anchor=north,
+      node options={remember picture}
+    },
+    afterthought={
+        \draw[red, thick] ($(left1.north)+(0,10pt)$) -- ($(left2.north)+(0,10pt)$);
+        \draw[blue, thick] ($(right1.north)+(0,10pt)$) -- ($(right2.north)+(0,10pt)$);
+    }
+    [{Sex\_male $\leq$ 0.5\\gini = 0.432\\samples = 146\\value = [46, 100]\\class = Survived}
+      [{Age $\leq$ 3.0\\gini = 0.108\\samples = 70\\value = [4, 66]\\class = Survived}, name=ageL
+        [{gini = 0.0\\samples = 2\\value = [2, 0]\\class = Not Survived}, name=left1]
+        [{gini = 0.057\\samples = 68\\value = [2, 66]\\class = Survived}, name=left2]
+      ]
+      [{Age $\leq$ 17.5\\gini = 0.494\\samples = 76\\value = [42, 34]\\class = Not Survived}, name=ageR
+        [{gini = 0.0\\samples = 6\\value = [0, 6]\\class = Survived}, name=right1]
+        [{gini = 0.48\\samples = 70\\value = [42, 28]\\class = Not Survived}, name=right2]
+      ]
+    ]
+    \end{forest}
+    }
+    \end{center}
+
+  \item Para el siguiente conjunto de datos sobre contrataciones, construya un árbol de decisión de \textbf{profundidad máxima 2}. Debe mostrar los cálculos del índice de Gini para cada posible división en el nodo raíz y seleccionar la mejor. Luego, repetir el proceso para el nodo hijo que corresponda.
+    \begin{center}
+    \begin{tabular}{cccc}
+    \toprule
+    Salario (miles USD) & Ciudad & Experiencia (años) & Contratado \\
+    \midrule
+    50 & A & 5 & Si \\
+    60 & B & 3 & Si \\
+    70 & A & 10 & Si \\
+    80 & C & 2 & No \\
+    90 & B & 7 & No \\
+    100 & C & 15 & No \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+
+  \item ¿Qué significa que un árbol sea ``greedy''? ¿Qué implicancias tiene esto en la práctica?
+
+  \item ¿Por qué los árboles de decisión suelen sobreajustar? ¿Qué técnicas se pueden usar para evitarlo?
+  
+  \item (Regresión) Un árbol de regresión busca minimizar la varianza en sus hojas. Dado el siguiente dataset, determine el punto de corte óptimo para la variable `m2` para predecir el `precio`. Calcule la reducción de varianza para el mejor corte.
+    \begin{center}
+    \begin{tabular}{cc}
+    \toprule
+    m2 & Precio (miles USD) \\
+    \midrule
+    100 & 250 \\
+    120 & 300 \\
+    150 & 400 \\
+    160 & 420 \\
+    200 & 500 \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+
+  \item Volviendo al árbol del ejercicio 5, ¿cuál de las dos variables (Sex\_male o Age) parece ser más importante para predecir la supervivencia? Justifique su respuesta considerando la ganancia de información (Information Gain) o la reducción de impureza de Gini en el primer nivel del árbol.
+
+  \item Se entrenan dos árboles con el mismo dataset para un problema de clasificación. El \textbf{Árbol A} se entrena con el hiperparámetro \texttt{min\_samples\_leaf = 1}, mientras que el \textbf{Árbol B} se entrena con \texttt{min\_samples\_leaf = 10}. ¿Cuál de los dos árboles es más propenso a sobreajustar (overfitting) y por qué?
+
+  \item Explicar brevemente la diferencia entre el índice de Gini y la entropía como criterios de partición.
+
+  \item Un árbol de decisión para regresión utiliza el criterio de varianza en vez de Gini. ¿Por qué? ¿Cómo se calcula la varianza en un nodo?
+
+\end{enumerate}
+
+\newpage
+
+\section*{Respuestas}
+
+\begin{enumerate}
+  \item \textbf{a} Gini se calcula como \(1 - \sum p_i^2\).
+    \begin{itemize}
+      \item Nodo 1: \(1 - ( (35/35)^2 + (0/35)^2 ) = 1 - 1 = 0\). Nodo puro.
+      \item Nodo 2: \(1 - ( (35/105)^2 + (35/105)^2 + (35/105)^2 ) = 1 - 3 \times (1/3)^2 = 1 - 3/9 = 2/3 \approx 0.667\). Máxima impureza para 3 clases.
+      \item Nodo 3: \(1 - ( (0/40)^2 + (5/40)^2 + (35/40)^2 ) = 1 - ( (1/8)^2 + (7/8)^2 ) = 1 - (1/64 + 49/64) = 1 - 50/64 \approx 0.219\).
+    \end{itemize}
+    \textbf{b} La probabilidad es la proporción de cada clase en la hoja.
+    \begin{itemize}
+      \item Nodo 1: 100\% de probabilidad de ser Setosa.
+      \item Nodo 2: 33.3\% de probabilidad para cada una de las 3 clases.
+      \item Nodo 3: 87.5\% de probabilidad de ser Virginica y 12.5\% de ser la segunda clase.
+    \end{itemize}
+
+  \item No, no es necesario. Los árboles de decisión son inmunes al escalado de las variables. Las divisiones se basan en umbrales sobre una única variable a la vez, por lo que el orden de los valores es lo que importa, no su magnitud.
+
+  \item El Gini inicial (5 Si, 5 No) es 0.5. Hay un empate en la primera división (Gini ponderado de 0.167) entre \texttt{participa\_clase}, \texttt{usa\_material\_extra} y \texttt{horas\_estudio <= 2.5}.
+  
+  Si elegimos \texttt{usa\_material\_extra}:
+  \begin{itemize}
+      \item \textbf{Rama 1 (usa\_material\_extra = Si):} 4 muestras (todas Si). Nodo puro. Se detiene.
+      \item \textbf{Rama 2 (usa\_material\_extra = No):} 6 muestras (1 Si, 5 No). Se puede seguir dividiendo. El mejor split es por \texttt{participa\_clase}, que separa un grupo puro de 4 No y un grupo mixto de 2 muestras que no se puede seguir dividiendo por el hiperparámetro.
+  \end{itemize}
+  El árbol final tendría una rama pura para los que usan material extra, y la otra rama se dividiría por participación.
+
+  \item El parámetro \texttt{alpha} (Cost Complexity Pruning) controla la severidad de la poda. Un \texttt{alpha=0} no poda nada. A medida que \texttt{alpha} aumenta, se penaliza más la complejidad (número de hojas), forzando al algoritmo a podar ramas que no aportan una reducción de impureza significativa.
+
+  \item Se elige la alternativa con menor cantidad de nodos terminales (menor complejidad), ya que alpha=0 prioriza el error de entrenamiento. En este caso, al no haber penalización por complejidad (\texttt{alpha=0}), se preferiría no podar si eso implica mayor error. Ambas podas (roja y azul) eliminan nodos, por lo que si ambas opciones aumentan el error de clasificación en el set de entrenamiento, no se elegiría ninguna. Si se debe elegir una, se elige la que menos aumente el error.
+
+  \item Gini del nodo raíz (3 Si, 3 No) = 0.5.
+  El mejor primer corte es por \textbf{Salario \(\leq\) 75}, que da un Gini ponderado de 0, separando perfectamente los datos en un nodo con 3 Si y otro con 3 No. Como los nodos resultantes son puros, el árbol tiene profundidad 1 y no se puede seguir dividiendo.
+
+  \item ``Greedy'' (voraz) significa que en cada paso de la construcción del árbol se toma la decisión que parece mejor en ese momento (la que más reduce la impureza), sin considerar si esa decisión llevará a un árbol globalmente óptimo. Esto puede resultar en árboles subóptimos.
+
+  \item Porque pueden crecer indefinidamente hasta que cada hoja corresponda a una única observación del set de entrenamiento, memorizando el ruido de los datos. Se puede evitar con post-poda (pruning), pre-poda (limitar profundidad, mínimo de muestras por hoja/nodo) o usando ensambles como Random Forest.
+  
+  \item La varianza del nodo raíz es 8504. Se calculan los puntos de corte y la reducción de varianza para cada uno:
+    \begin{itemize}
+      \item Corte en 110: Varianza ponderada = 625. Reducción = 7879.
+      \item Corte en 135: Varianza ponderada = 288.8. \textbf{Reducción Máxima = 8215.2}.
+      \item Corte en 155: Varianza ponderada = 1422.2. Reducción = 7081.8.
+      \item Corte en 180: Varianza ponderada = 3504. Reducción = 5000.
+    \end{itemize}
+    El punto de corte óptimo es \textbf{m2 \(\leq\) 135}.
+
+  \item La variable \texttt{Sex\_male} es más importante en el primer nivel. La división por sexo reduce la impureza de 0.432 a un Gini ponderado de (70/146)*0.108 + (76/146)*0.494 \(\approx\) 0.308. Esta es la mayor ganancia de información posible en el primer nodo, lo que la convierte en la variable más predictiva al inicio del árbol.
+
+  \item El \textbf{Árbol A} es más propenso al sobreajuste. Un valor bajo de \texttt{min\_samples\_leaf=1} permite que el árbol cree hojas con muy pocas muestras (incluso una sola), haciendo que se adapte perfectamente a los datos de entrenamiento, incluyendo el ruido y las particularidades. El Árbol B, con \texttt{min\_samples\_leaf=10}, está más regularizado y es menos propenso a crear nodos para casos muy específicos.
+
+  \item Gini y Entropía son métricas de impureza. Gini tiende a ser más rápido de calcular. La entropía, al usar un logaritmo, penaliza más a los nodos que tienen una mezcla de clases, incluso si es leve. En la práctica, suelen dar resultados muy similares.
+
+  \item En regresión, el objetivo es que las predicciones en una hoja sean lo más cercanas posible al valor real, es decir, minimizar la dispersión. La varianza mide esa dispersión. Se calcula como el promedio de las diferencias al cuadrado entre cada valor en el nodo y la media de todos los valores del nodo.
+
+\end{enumerate}
+
+\end{document}

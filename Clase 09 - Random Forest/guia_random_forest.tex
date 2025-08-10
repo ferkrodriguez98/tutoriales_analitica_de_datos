@@ -1,0 +1,294 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Definir colores para los nodos segun diferencia de valores
+\definecolor{orangelight}{rgb}{1.0,0.8,0.6}
+\definecolor{orangemedium}{rgb}{1.0,0.6,0.3}
+\definecolor{orangedark}{rgb}{0.8,0.4,0.1}
+\definecolor{bluelight}{rgb}{0.7,0.8,1.0}
+\definecolor{bluemedium}{rgb}{0.4,0.6,1.0}
+\definecolor{bluedark}{rgb}{0.2,0.4,0.8}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Guía de Ejercicios\\Random Forest}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section*{Ejercicios}
+
+\begin{enumerate}
+    \item ¿Cómo deben ser los árboles que componen un modelo de random forest? ¿Por qué? ¿Cómo hacemos para conseguirlo?
+
+    \item Con este tipo de modelos ganamos poder predictivo pero perdemos interpretabilidad. ¿Qué podemos hacer en python para comprender la relevancia que tuvo cada variable al momento del entrenamiento?
+
+    \item Teniendo en cuenta el siguiente modelo de random forest clasificar a las siguientes observaciones indicando la probabilidad.
+    \begin{enumerate}
+        \item Sex = 0; Class = 1; Embarked = A
+        \item Sex = 1; Class = 2; Embarked = A
+    \end{enumerate}
+
+    \begin{center}
+    \begin{tikzpicture}[
+        scale=0.8, transform shape,
+        every node/.style={align=center},
+        treenode/.style={rectangle, draw, rounded corners, text width=8em, minimum height=3em, font=\scriptsize},
+        line/.style={draw, -{Stealth[]}},
+    ]
+        % Tree 1 from image
+        \node[treenode, fill=orangelight] (root) {Class <= 2.5\\gini = 0.469\\samples = 8\\value = [5, 3]\\class = No};
+
+        \node[treenode, fill=bluemedium, below left=0.5cm and -1.5cm of root] (sex) {Sex <= 0.5\\gini = 0.375\\samples = 4\\value = [1, 3]\\class = Si};
+        \node[treenode, fill=orangedark, below right=0.5cm and -1.5cm of root] (leaf1) {gini = 0.0\\samples = 4\\value = [4, 0]\\class = No};
+
+        \node[treenode, fill=white, below left=0.5cm and -1cm of sex] (embarked) {Embarked\_B <= 0.5\\gini = 0.5\\samples = 2\\value = [1, 1]\\class = No};
+        \node[treenode, fill=bluedark, below right=0.5cm and -1cm of sex] (leaf2) {gini = 0.0\\samples = 2\\value = [0, 2]\\class = Si};
+
+        \node[treenode, fill=orangedark, below left=0.5cm and -1cm of embarked] (leaf3) {gini = 0.0\\samples = 1\\value = [1, 0]\\class = No};
+        \node[treenode, fill=bluedark, below right=0.5cm and -1cm of embarked] (leaf4) {gini = 0.0\\samples = 1\\value = [0, 1]\\class = Si};
+
+        \path[line] (root) -- node[midway, left] {True} (sex);
+        \path[line] (root) -- node[midway, right] {False} (leaf1);
+
+        \path[line] (sex) -- node[midway, left] {True} (embarked);
+        \path[line] (sex) -- node[midway, right] {False} (leaf2);
+
+        \path[line] (embarked) -- node[midway, left] {True} (leaf3);
+        \path[line] (embarked) -- node[midway, right] {False} (leaf4);
+    \end{tikzpicture}
+    
+    \vspace{2em}
+
+    \begin{tikzpicture}[
+        scale=0.8, transform shape,
+        every node/.style={align=center},
+        treenode/.style={rectangle, draw, rounded corners, text width=8em, minimum height=3em, font=\scriptsize},
+        line/.style={draw, -{Stealth[]}},
+    ]
+        % Tree 2 from image
+        \node[treenode, fill=white] (root) {Embarked\_A <= 0.5\\gini = 0.5\\samples = 8\\value = [4, 4]\\class = No};
+
+        \node[treenode, fill=bluelight, below left=0.5cm and -1cm of root] (class) {Class <= 2.0\\gini = 0.444\\samples = 6\\value = [2, 4]\\class = Si};
+        \node[treenode, fill=orangedark, below right=0.5cm and -1cm of root] (leaf1) {gini = 0.0\\samples = 2\\value = [2, 0]\\class = No};
+
+        \node[treenode, fill=bluedark, below left=0.5cm and -1.5cm of class] (leaf2) {gini = 0.0\\samples = 1\\value = [0, 1]\\class = Si};
+        \node[treenode, fill=bluelight, below right=0.5cm and -1.5cm of class] (sex) {Sex <= 0.5\\gini = 0.48\\samples = 5\\value = [2, 3]\\class = Si};
+
+        \node[treenode, fill=orangedark, below left=0.5cm and -1cm of sex] (leaf3) {gini = 0.0\\samples = 1\\value = [1, 0]\\class = No};
+        \node[treenode, fill=bluemedium, below right=0.5cm and -1cm of sex] (leaf4) {gini = 0.375\\samples = 4\\value = [1, 3]\\class = Si};
+
+        \path[line] (root) -- node[midway, left] {True} (class);
+        \path[line] (root) -- node[midway, right] {False} (leaf1);
+
+        \path[line] (class) -- node[midway, left] {True} (leaf2);
+        \path[line] (class) -- node[midway, right] {False} (sex);
+
+        \path[line] (sex) -- node[midway, left] {True} (leaf3);
+        \path[line] (sex) -- node[midway, right] {False} (leaf4);
+    \end{tikzpicture}
+
+    \vspace{2em}
+
+    \begin{tikzpicture}[
+        scale=0.8, transform shape,
+        every node/.style={align=center},
+        treenode/.style={rectangle, draw, rounded corners, text width=8em, minimum height=3em, font=\scriptsize},
+        line/.style={draw, -{Stealth[]}},
+    ]
+      % Tree 3
+      \node[treenode, fill=orangemedium] (root) {Embarked\_A <= 0.5\\gini = 0.375\\samples = 8\\value = [6, 2]\\class = Si};
+      \node[treenode, fill=bluedark, below left=0.5cm and -1cm of root] (leaf1) {gini = 0.0\\samples = 2\\value = [0, 2]\\class = No};
+      \node[treenode, fill=orangedark, below right=0.5cm and -1cm of root] (leaf2) {gini = 0.0\\samples = 6\\value = [6, 0]\\class = Si};
+      
+      \path [line] (root) -- node[midway, left] {True} (leaf1);
+      \path [line] (root) -- node[midway, right] {False} (leaf2);
+    \end{tikzpicture}
+    \end{center}
+
+    \item Entrenar un modelo de random forest para predecir si un animal es doméstico con el siguiente dataset de entrenamiento y teniendo en cuenta los siguientes hiperparámetros:
+    \begin{itemize}
+        \item Cantidad de árboles = 3
+        \item Altura máxima de cada árbol = 2
+        \item Cantidad de variables a tener en cuenta en cada partición = \(\sqrt{p}\)
+    \end{itemize}
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{cccccc}
+            \toprule
+            \textbf{ID} & \textbf{tiene\_pelo} & \textbf{vuela} & \textbf{pone\_huevos} & \textbf{vive\_en\_casa} & \textbf{domestico} \\
+            \midrule
+            1 & sí & no & no & sí & sí \\
+            2 & no & sí & sí & no & no \\
+            3 & sí & no & sí & no & no \\
+            4 & no & no & sí & no & no \\
+            5 & sí & no & no & sí & sí \\
+            6 & no & sí & sí & sí & sí \\
+            7 & sí & no & no & no & no \\
+            8 & no & no & sí & sí & sí \\
+            9 & sí & no & sí & sí & sí \\
+            10 & no & sí & sí & no & no \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    Muestras bootstrap para cada árbol:
+    \begin{itemize}
+        \item Árbol 1: [6, 9, 4, 1, 5, 3, 3, 1, 8, 1]
+        \item Árbol 2: [4, 1, 8, 5, 1, 7, 7, 7, 1, 5]
+        \item Árbol 3: [3, 7, 1, 6, 6, 6, 1, 7, 3, 6]
+    \end{itemize}
+    La elección aleatoria de variables la pueden hacer en python.
+
+\end{enumerate}
+
+\newpage
+\section*{Soluciones}
+
+\begin{enumerate}
+    \item Los árboles deben ser diversos y débiles individualmente. Se logra mediante bootstrap sampling (muestras con reemplazo), selección aleatoria de variables ($\sqrt{p}$ en cada split) y sin poda para permitir overfitting individual. Al promediar múltiples predictores diversos, se reduce la varianza total manteniendo bajo el sesgo.
+
+    \item En Python usamos \texttt{rf.feature\_importances\_} (basado en reducción de impureza) o \texttt{permutation\_importance} (más robusta, mide degradación del modelo al permutar cada variable):
+    
+    \begin{lstlisting}[language=Python]
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.inspection import permutation_importance
+
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+
+# Metodo 1: Importancia por impureza
+importancias = rf.feature_importances_
+
+# Metodo 2: Permutation importance
+perm_imp = permutation_importance(rf, X_test, y_test, n_repeats=10)
+    \end{lstlisting}
+
+    \item Variables codificadas: Sex (0=mujer, 1=hombre), Embarked\_A (1 si A, 0 si no), Embarked\_B (1 si B, 0 si no).
+    
+    \textbf{Observación 1 (Sex=0, Class=1, Embarked=A):}
+    \begin{itemize}
+        \item Árbol 1: Class$\leq$2.5 → Sex$\leq$0.5 → Embarked\_B$\leq$0.5 → No
+        \item Árbol 2: Embarked\_A$\leq$0.5 (No) → No  
+        \item Árbol 3: Embarked\_A$\leq$0.5 (No) → No
+    \end{itemize}
+    Predicción: No (probabilidad 1.0)
+    
+    \textbf{Observación 2 (Sex=1, Class=2, Embarked=A):}
+    \begin{itemize}
+        \item Árbol 1: Class$\leq$2.5 → Sex$\leq$0.5 (No) → Si
+        \item Árbol 2: Embarked\_A$\leq$0.5 (No) → No
+        \item Árbol 3: Embarked\_A$\leq$0.5 (No) → No
+    \end{itemize}
+    Predicción: No (prob. 0.67), Si (prob. 0.33)
+
+    \item Dataset convertido a binario (sí=1, no=0). Con $\sqrt{4}=2$ variables por split y altura máxima 2, se construyen 3 árboles usando los bootstraps dados. La construcción manual requiere selección aleatoria de 2 variables en cada nodo. La idea es que hagamos nosotros el modelo de Random Forest sin usar el RandomForestClassifier de sklearn.
+    
+    \begin{lstlisting}[language=Python]
+import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+# Crear dataset
+data = {
+    'pelo': [1,0,1,0,1,0,1,0,1,0],
+    'vuela': [0,1,0,0,0,1,0,0,0,1], 
+    'huevos': [0,1,1,1,0,1,0,1,1,1],
+    'casa': [1,0,0,0,1,1,0,1,1,0],
+    'domestico': [1,0,0,0,1,1,0,1,1,0]
+}
+
+df = pd.DataFrame(data)
+X = df[['pelo', 'vuela', 'huevos', 'casa']]
+y = df['domestico']
+
+# Bootstraps dados
+bootstrap1 = [5,8,3,0,4,2,2,0,7,0]  # IDs - 1 (0-indexed)
+bootstrap2 = [3,0,7,4,0,6,6,6,0,4]
+bootstrap3 = [2,6,0,5,5,5,0,6,2,5]
+
+# Entrenar arboles individuales
+trees = []
+for i, bootstrap in enumerate([bootstrap1, bootstrap2, bootstrap3]):
+    X_boot = X.iloc[bootstrap]
+    y_boot = y.iloc[bootstrap]
+    
+    tree = DecisionTreeClassifier(
+        max_depth=2,
+        max_features=2,  # sqrt(4) = 2
+        random_state=i
+    )
+    tree.fit(X_boot, y_boot)
+    trees.append(tree)
+
+# Hacer predicciones con el Random Forest
+def predict_random_forest(X_new, trees):
+    predicciones = []
+    for tree in trees:
+        pred = tree.predict(X_new)[0]  # Solo una observacion
+        predicciones.append(pred)
+    
+    # Votar por mayoria simple
+    votos_si = sum(predicciones)
+    votos_no = len(predicciones) - votos_si
+    
+    if votos_si > votos_no:
+        return 1  # domestico
+    else:
+        return 0  # no domestico
+
+# Ejemplo de prediccion
+nueva_obs = [[1, 0, 0, 1]]  # pelo=si, vuela=no, huevos=no, casa=si
+prediccion = predict_random_forest(nueva_obs, trees)
+print(f"Prediccion: {'domestico' if prediccion == 1 else 'no domestico'}")
+    \end{lstlisting}
+
+\end{enumerate}
+
+\end{document}

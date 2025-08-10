@@ -1,0 +1,277 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{Boosting}}
+\author{Analítica de Datos, Universidad de San Andrés}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{¿Qué es Boosting?}
+    Boosting es una técnica de ensamble que combina múltiples modelos `débiles' para crear un modelo `fuerte'. A diferencia de Random Forest, que construye árboles independientes en paralelo, Boosting construye modelos secuencialmente.
+\end{frame}
+
+\begin{frame}{Principios Fundamentales del Boosting}
+    \textbf{Características Clave:}
+    \begin{itemize}
+        \item<2-> Construcción secuencial de modelos
+        \item<3-> Ponderación de observaciones
+        \item<4-> Combinación ponderada de predicciones
+        \item<5-> Enfoque en errores previos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AdaBoost (1995)}
+    Desarrollado por Yoav Freund y Robert Schapire. Primer algoritmo de Boosting exitoso.
+    
+    \textbf{Características:}
+    \begin{itemize}
+        \item<2-> Todas las observaciones inician con el mismo peso
+        \item<3-> En cada iteración:
+        \begin{itemize}
+            \item<4-> Se entrena un modelo débil
+            \item<5-> Se identifican errores
+            \item<6-> Se aumenta el peso de errores
+            \item<7-> Se disminuye el peso de aciertos
+        \end{itemize}
+        \item<8-> Predicción final por promedio ponderado
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Gradient Boosting - Características}
+    \textbf{Características y Ventajas:}
+    \begin{itemize}
+        \item<2-> Utiliza el gradiente del error para identificar la dirección de máximo descenso
+        \item<3-> Aplicable a cualquier función de pérdida diferenciable
+        \item<4-> Más flexible que AdaBoost al no limitarse a clasificación binaria
+        \item<5-> Mayor control sobre el proceso de aprendizaje
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Gradient Boosting - Parámetros}
+    \textbf{Parámetros Clave:}
+    \begin{itemize}
+        \item<2-> n\_estimators: Número de árboles
+        \item<3-> learning\_rate: Tasa de aprendizaje
+        \item<4-> max\_depth: Profundidad máxima
+        \item<5-> subsample: Fracción de datos por árbol
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{XGBoost - Optimizaciones}
+    \textbf{Optimizaciones:}
+    \begin{itemize}
+        \item<2-> Paralelización y optimización de memoria: Procesamiento más rápido usando múltiples núcleos
+        \item<3-> Estructuras de datos especializadas: Formatos optimizados para mejor rendimiento
+        \item<4-> Regularización L1 y L2 incorporada: Previene overfitting automáticamente
+        \item<5-> Manejo automático de valores faltantes: Procesa datos incompletos sin preprocesamiento
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{XGBoost - Características Avanzadas}
+    \textbf{Características Avanzadas:}
+    \begin{itemize}
+        \item<2-> Early stopping inteligente: Monitorea el rendimiento y detiene el entrenamiento cuando no hay mejora
+        \item<3-> Feature Importance: Proporciona métricas precisas sobre la contribución de cada variable
+        \item<4-> Procesamiento optimizado de datos dispersos: Utiliza estructuras especializadas para matrices sparse
+        \item<5-> Entrenamiento distribuido: Permite escalar el entrenamiento a múltiples núcleos de procesamiento
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparación: Construcción}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \hline
+        Construcción & Paralela & Secuencial \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item Random Forest: Árboles independientes construidos simultáneamente
+        \item Boosting: Modelos construidos secuencialmente, cada uno corrigiendo errores del anterior
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparación: Velocidad}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \hline
+        Velocidad & Más rápido & Más lento \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item Random Forest: Paralelización natural, más rápido pero menos preciso
+        \item Boosting: Secuencial, más lento pero potencialmente más preciso
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparación: Overfitting}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \hline
+        Overfitting & Menos propenso & Más propenso \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item Random Forest: Menor riesgo de overfitting por promediado
+        \item Boosting: Mayor riesgo de overfitting por ajuste secuencial
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparación: Ajuste}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \hline
+        Ajuste & Menos parámetros & Más parámetros \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item Random Forest: Parámetros principales: n\_trees, max\_depth
+        \item Boosting: Más parámetros: learning\_rate, n\_estimators, subsample, etc.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparación: Interpretabilidad}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{Random Forest} & \textbf{Boosting} \\
+        \hline
+        Interpretabilidad & Mayor & Menor \\
+        \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item Random Forest: Importancia de variables más directa
+        \item Boosting: Importancia de variables más compleja de interpretar
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación AdaBoost}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from sklearn.ensemble import AdaBoostClassifier
+
+ada_model = AdaBoostClassifier(
+    n_estimators=100,
+    learning_rate=1.0
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación Gradient Boosting}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from sklearn.ensemble import GradientBoostingClassifier
+
+gb_model = GradientBoostingClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación XGBoost}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+import xgboost as xgb
+
+xgb_model = xgb.XGBClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3,
+    reg_lambda=1,  # L2
+    reg_alpha=0    # L1
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Entrenamiento y Predicción: como siempre}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Entrenamiento del modelo
+model.fit(X_train, y_train)
+
+# Prediccion
+y_pred = model.predict(X_test)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Buenas Prácticas}
+    \begin{itemize}
+        \item<1-> \textbf{Preprocesamiento:}
+        \begin{itemize}
+            \item Escalar variables numéricas
+            \item Codificar variables categóricas
+        \end{itemize}
+        \item<2-> \textbf{Validación:}
+        \begin{itemize}
+            \item Validación cruzada
+            \item Ajuste de hiperparámetros
+        \end{itemize}
+        \item<3-> \textbf{Optimización:}
+        \begin{itemize}
+            \item Early stopping
+            \item Learning rate bajo (0.01-0.1)
+            \item Monitoreo de errores
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\end{document} 

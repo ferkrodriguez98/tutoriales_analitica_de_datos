@@ -1,0 +1,458 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Guía de Ejercicios\\Validación de Modelos}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Ejercicios Conceptuales}
+
+\subsection{Verdadero o Falso}
+
+\begin{enumerate}
+    \item La accuracy es siempre la mejor métrica para evaluar un modelo de clasificación.
+    \item Un modelo con AUC = 0.3 es peor que uno aleatorio.
+    \item La precisión mide la proporción de verdaderos positivos entre todas las predicciones positivas.
+    \item El recall y la especificidad suman siempre 1.
+    \item En un problema médico es más importante maximizar el recall que la precisión.
+    \item La curva ROC grafica precisión versus recall.
+    \item Un F1-Score alto garantiza que tanto precisión como recall son altos.
+    \item La matriz de confusión solo se puede usar para problemas binarios.
+    \item AUC = 0.5 indica un clasificador perfecto.
+    \item La curva PR es más informativa que ROC cuando las clases están desbalanceadas.
+    \item Una tasa de falsos positivos alta es siempre peor que una baja.
+    \item La especificidad es más importante que el recall en sistemas de justicia.
+    \item El False Discovery Rate y la precisión suman 1.
+    \item En problemas multiclase no existen falsos positivos.
+    \item Un modelo puede tener alta accuracy pero baja utilidad práctica.
+\end{enumerate}
+
+\subsection{Opción Múltiple}
+
+\begin{enumerate}
+    \item ¿Cuál es la diferencia principal entre precisión y recall?
+    \begin{enumerate}
+        \item No hay diferencia, son sinónimos
+        \item Precisión se enfoca en predicciones positivas, recall en casos positivos reales
+        \item Recall es para problemas binarios, precisión para multiclase
+        \item Precisión es más importante que recall
+    \end{enumerate}
+    
+    \item En un modelo de detección de cáncer, ¿qué métrica priorizarías?
+    \begin{enumerate}
+        \item Accuracy
+        \item Precisión
+        \item Recall
+        \item F1-Score
+    \end{enumerate}
+    
+    \item ¿Qué representa un punto en la curva ROC?
+    \begin{enumerate}
+        \item Un modelo diferente
+        \item Un umbral de clasificación diferente
+        \item Una métrica diferente
+        \item Un dataset diferente
+    \end{enumerate}
+    
+    \item Si tengo un dataset con 95\% de clase negativa y 5\% de clase positiva, ¿qué métrica puede ser engañosa?
+    \begin{enumerate}
+        \item Accuracy
+        \item Recall
+        \item Precisión
+        \item AUC
+    \end{enumerate}
+    
+    \item ¿Cuándo usarías la curva PR en lugar de ROC?
+    \begin{enumerate}
+        \item Siempre
+        \item Nunca
+        \item Cuando las clases están balanceadas
+        \item Cuando las clases están desbalanceadas
+    \end{enumerate}
+    
+    \item ¿Qué significa AUC = 0.8?
+    \begin{enumerate}
+        \item 80\% de accuracy
+        \item 80\% de probabilidad de ranquear correctamente un par positivo-negativo
+        \item 80\% de precisión
+        \item 80\% de recall
+    \end{enumerate}
+\end{enumerate}
+
+\section{Ejercicios Prácticos}
+
+\subsection{Ejercicio 1 - Matriz de Confusión y Métricas Básicas}
+
+Un modelo de clasificación binaria para detectar fraude en transacciones tiene los siguientes resultados en un conjunto de prueba de 1000 transacciones:
+
+\begin{center}
+\begin{tikzpicture}
+\draw (0,0) rectangle (4,4);
+\draw (0,2) -- (4,2);
+\draw (2,0) -- (2,4);
+
+\node[above] at (2,4) {\textbf{Real}};
+\node[left] at (0,2) {\textbf{Predicho}};
+
+\fill[green!30] (0,2) rectangle (2,4);
+\fill[red!30] (2,0) rectangle (4,2);
+\fill[blue!30] (0,0) rectangle (2,2);
+\fill[yellow!30] (2,2) rectangle (4,4);
+
+\node at (1,3) {45};
+\node at (3,3) {15};
+\node at (1,1) {5};
+\node at (3,1) {935};
+
+\node at (-0.5,3) {Fraude};
+\node at (-0.5,1) {No Fraude};
+\node at (1,4.5) {Fraude};
+\node at (3,4.5) {No Fraude};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{enumerate}
+    \item[a.] Calcular todas las métricas básicas: accuracy, precisión, recall, especificidad, F1-Score.
+    \item[b.] ¿Qué puede concluir sobre el rendimiento del modelo?
+    \item[c.] ¿Es la accuracy una buena métrica para este problema? Justificar.
+    \item[d.] ¿Qué métrica sería más importante para este caso de uso y por qué?
+\end{enumerate}
+
+\subsection{Ejercicio 2 - Comparación de Modelos}
+
+Tenés dos modelos para clasificar emails como spam o no spam. Los resultados son:
+
+\textbf{Modelo A:}
+\begin{itemize}
+    \item VP = 180, VN = 820, FP = 30, FN = 20
+\end{itemize}
+
+\textbf{Modelo B:}
+\begin{itemize}
+    \item VP = 160, VN = 830, FP = 20, FN = 40
+\end{itemize}
+
+\begin{enumerate}
+    \item[a.] Calcular precisión, recall y F1-Score para ambos modelos.
+    \item[b.] ¿Cuál modelo elegirías y por qué?
+    \item[c.] ¿Cambiaría tu elección si el costo de un falso negativo fuera 10 veces mayor que el de un falso positivo?
+\end{enumerate}
+
+\subsection{Ejercicio 3 - Matriz de Confusión Multiclase}
+
+Un modelo clasifica el clima en tres categorías: Soleado (S), Nublado (N), Lluvioso (L). La matriz de confusión es:
+
+\begin{center}
+\begin{tikzpicture}
+\node[above] at (3,7) {\textbf{Real}};
+\node[left] at (-1,3) {\textbf{Predicho}};
+
+\draw (0,0) rectangle (6,6);
+\draw (0,2) -- (6,2);
+\draw (0,4) -- (6,4);
+\draw (2,0) -- (2,6);
+\draw (4,0) -- (4,6);
+
+\fill[green!30] (0,4) rectangle (2,6);
+\fill[green!30] (2,2) rectangle (4,4);
+\fill[green!30] (4,0) rectangle (6,2);
+
+\node at (1,5) {85};
+\node at (3,5) {10};
+\node at (5,5) {5};
+\node at (1,3) {8};
+\node at (3,3) {82};
+\node at (5,3) {10};
+\node at (1,1) {7};
+\node at (3,1) {12};
+\node at (5,1) {81};
+
+\node at (-0.5,5) {S};
+\node at (-0.5,3) {N};
+\node at (-0.5,1) {L};
+
+\node at (1,6.5) {S};
+\node at (3,6.5) {N};
+\node at (5,6.5) {L};
+\end{tikzpicture}
+\end{center}
+
+\begin{enumerate}
+    \item[a.] Calcular la accuracy total del modelo.
+    \item[b.] Calcular la precisión, recall y F1-Score para cada clase.
+    \item[c.] ¿Qué clase es la más difícil de predecir para el modelo?
+    \item[d.] Calcular las métricas macro y micro average.
+\end{enumerate}
+
+\subsection{Ejercicio 4 - Curva ROC}
+
+Un modelo de clasificación binaria produce las siguientes probabilidades para 8 casos de prueba:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Caso} & \textbf{Clase Real} & \textbf{Probabilidad Positiva} \\
+        \hline
+        1 & Positivo & 0.9 \\
+        \hline
+        2 & Negativo & 0.8 \\
+        \hline
+        3 & Positivo & 0.7 \\
+        \hline
+        4 & Positivo & 0.6 \\
+        \hline
+        5 & Negativo & 0.4 \\
+        \hline
+        6 & Negativo & 0.3 \\
+        \hline
+        7 & Positivo & 0.2 \\
+        \hline
+        8 & Negativo & 0.1 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item[a.] Para umbrales 0.5, 0.7 y 0.9, calcular TPR y FPR.
+    \item[b.] ¿Qué umbral recomendarías si querés minimizar falsos positivos?
+    \item[c.] ¿Qué umbral recomendarías si querés minimizar falsos negativos?
+    \item[d.] Estimar el valor aproximado del AUC.
+\end{enumerate}
+
+\subsection{Ejercicio 5 - Problema Médico}
+
+Un hospital desarrolla un modelo para detectar neumonía en radiografías. El dataset tiene las siguientes características:
+\begin{itemize}
+    \item 10,000 radiografías en total
+    \item 500 casos positivos (neumonía)
+    \item 9,500 casos negativos (sin neumonía)
+\end{itemize}
+
+El modelo A tiene una accuracy del 96\% pero detecta solo el 40\% de los casos de neumonía.
+El modelo B tiene una accuracy del 92\% pero detecta el 85\% de los casos de neumonía.
+
+\begin{enumerate}
+    \item[a.] Calcular las matrices de confusión aproximadas para ambos modelos.
+    \item[b.] ¿Cuál modelo elegirías para uso clínico? Justificar.
+    \item[c.] ¿Qué estrategias podrías usar para mejorar el modelo seleccionado?
+\end{enumerate}
+
+\subsection{Ejercicio 6 - Implementación en Python}
+
+Implementar en Python un análisis completo de validación de modelos que incluya:
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (classification_report, confusion_matrix, 
+                            roc_curve, auc, precision_recall_curve)
+
+# Generar dataset desbalanceado
+X, y = make_classification(n_samples=1000, n_features=20, 
+                          n_classes=2, weights=[0.9, 0.1], 
+                          random_state=42)
+
+# Completar el codigo para:
+# 1. Dividir en train/test
+# 2. Entrenar dos modelos diferentes
+# 3. Calcular y comparar metricas
+# 4. Graficar curvas ROC y PR
+# 5. Crear matrices de confusion
+# 6. Analizar cual modelo es mejor para este caso
+\end{lstlisting}
+
+\subsection{Ejercicio 7 - Caso de Negocio}
+
+Una empresa de e-commerce quiere implementar un sistema de detección de reseñas falsas. Tenés los siguientes datos de rendimiento de tres modelos:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Modelo} & \textbf{Accuracy} & \textbf{Precisión} & \textbf{Recall} & \textbf{AUC} \\
+        \hline
+        Naive Bayes & 0.78 & 0.65 & 0.72 & 0.76 \\
+        \hline
+        Random Forest & 0.82 & 0.71 & 0.68 & 0.81 \\
+        \hline
+        SVM & 0.80 & 0.73 & 0.64 & 0.79 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item[a.] ¿Qué modelo recomendarías si el objetivo principal es no bloquear reseñas legítimas?
+    \item[b.] ¿Qué modelo recomendarías si el objetivo principal es mantener la calidad alta de reseñas?
+    \item[c.] ¿Qué información adicional necesitarías para tomar una mejor decisión?
+    \item[d.] Proponer una estrategia que combine múltiples modelos.
+\end{enumerate}
+
+\newpage
+
+\section{Soluciones}
+
+\subsection{Soluciones - Verdadero o Falso}
+
+\begin{enumerate}
+    \item \textbf{Falso.} Accuracy puede ser engañosa con clases desbalanceadas.
+    \item \textbf{Verdadero.} AUC < 0.5 es peor que aleatorio (0.5).
+    \item \textbf{Verdadero.} Precisión = VP / (VP + FP).
+    \item \textbf{Falso.} Recall + Especificidad no suman 1. Especificidad + FPR suman 1.
+    \item \textbf{Verdadero.} Es más importante no perder casos positivos (enfermos).
+    \item \textbf{Falso.} ROC grafica TPR vs FPR. PR grafica Precisión vs Recall.
+    \item \textbf{Verdadero.} F1 es la media armónica de precisión y recall.
+    \item \textbf{Falso.} También se usa para problemas multiclase.
+    \item \textbf{Falso.} AUC = 0.5 indica clasificador aleatorio, no perfecto.
+    \item \textbf{Verdadero.} PR es más sensible a clases minoritarias.
+    \item \textbf{Falso.} Depende del contexto y costos del problema.
+    \item \textbf{Verdadero.} Se prefiere no condenar inocentes.
+    \item \textbf{Verdadero.} FDR = 1 - Precisión.
+    \item \textbf{Falso.} Hay múltiples tipos de errores, pero el concepto se extiende.
+    \item \textbf{Verdadero.} Especialmente con clases desbalanceadas.
+\end{enumerate}
+
+\subsection{Soluciones - Opción Múltiple}
+
+\begin{enumerate}
+    \item \textbf{b)} Precisión se enfoca en predicciones positivas correctas, recall en casos positivos reales detectados.
+    \item \textbf{c)} Recall - es crucial no perder casos de cáncer.
+    \item \textbf{b)} Un umbral de clasificación diferente.
+    \item \textbf{a)} Accuracy - un modelo que predice todo negativo tendría 95\% accuracy.
+    \item \textbf{d)} Cuando las clases están desbalanceadas.
+    \item \textbf{b)} 80\% de probabilidad de ranquear correctamente un par positivo-negativo.
+\end{enumerate}
+
+\subsection{Soluciones - Ejercicio 1}
+
+\textbf{a)} Métricas calculadas:
+\begin{align*}
+\text{Accuracy} &= \frac{45 + 935}{1000} = 0.98 \\
+\text{Precisión} &= \frac{45}{45 + 15} = 0.75 \\
+\text{Recall} &= \frac{45}{45 + 5} = 0.90 \\
+\text{Especificidad} &= \frac{935}{935 + 15} = 0.984 \\
+\text{F1} &= 2 \times \frac{0.75 \times 0.90}{0.75 + 0.90} = 0.818
+\end{align*}
+
+\textbf{b)} El modelo tiene alta accuracy y recall, pero precisión moderada.
+
+\textbf{c)} No, accuracy puede ser engañosa porque hay pocas transacciones fraudulentas.
+
+\textbf{d)} Recall es más importante para no perder casos de fraude.
+
+\subsection{Soluciones - Ejercicio 2}
+
+\textbf{Modelo A:}
+\begin{align*}
+\text{Precisión} &= \frac{180}{210} = 0.857 \\
+\text{Recall} &= \frac{180}{200} = 0.90 \\
+\text{F1} &= 0.878
+\end{align*}
+
+\textbf{Modelo B:}
+\begin{align*}
+\text{Precisión} &= \frac{160}{180} = 0.889 \\
+\text{Recall} &= \frac{160}{200} = 0.80 \\
+\text{F1} &= 0.842
+\end{align*}
+
+Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más, definitivamente elegir Modelo A.
+
+\subsection{Soluciones - Ejercicio 3}
+
+\textbf{a.} Accuracy = (85 + 82 + 81) / 300 = 0.827
+
+\textbf{b.} Calculando por clase:
+\begin{itemize}
+    \item Soleado: Precisión = 0.85, Recall = 0.85, F1 = 0.85
+    \item Nublado: Precisión = 0.82, Recall = 0.782, F1 = 0.80
+    \item Lluvioso: Precisión = 0.844, Recall = 0.81, F1 = 0.827
+\end{itemize}
+
+\textbf{c.} Nublado es la más difícil (menor F1).
+
+\subsection{Soluciones - Ejercicio 4}
+
+\textbf{a.} Para cada umbral:
+\begin{itemize}
+    \item Umbral 0.5: TPR = 0.75, FPR = 0.25
+    \item Umbral 0.7: TPR = 0.75, FPR = 0.25
+    \item Umbral 0.9: TPR = 0.25, FPR = 0.25
+\end{itemize}
+
+\textbf{b.} Para minimizar FP: umbral 0.9
+\textbf{c.} Para minimizar FN: umbral bajo (0.1)
+\textbf{d.} AUC aproximado: 0.75
+
+\subsection{Soluciones - Ejercicio 5}
+
+\textbf{a.} Modelo A: VP=200, FN=300, FP=100, VN=9400 \\
+Modelo B: VP=425, FN=75, FP=725, VN=8775
+
+\textbf{b.} Modelo B porque detecta más casos de neumonía, crucial en medicina.
+
+\textbf{c.} Estrategias: datos más balanceados, ensemble, ajuste de umbral.
+
+\subsection{Soluciones - Ejercicio 6}
+
+Código completo incluiría división train/test, entrenamiento de modelos, cálculo de métricas, visualización de curvas ROC/PR y análisis comparativo considerando el desbalance de clases.
+
+\subsection{Soluciones - Ejercicio 7}
+
+\textbf{a.} Naive Bayes (mayor recall para no bloquear reseñas legítimas).
+\textbf{b.} SVM (mayor precisión para mantener calidad).
+\textbf{c.} Costos de errores, volumen de reseñas, recursos disponibles.
+\textbf{d.} Ensemble que combine los tres modelos con pesos según objetivos de negocio.
+
+\end{document}

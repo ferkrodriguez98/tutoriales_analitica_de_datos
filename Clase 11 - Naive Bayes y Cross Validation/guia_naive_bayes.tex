@@ -1,0 +1,332 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Guía de Ejercicios - Naive Bayes}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Ejercicios Conceptuales}
+
+\subsection{Verdadero o Falso}
+
+\begin{enumerate}
+    \item Es necesario escalar los datos antes de entrenar un modelo de Naive Bayes.
+    \item Naive Bayes asume independencia condicional entre las características.
+    \item Multinomial Naive Bayes es apropiado para clasificación de texto.
+    \item Gaussian Naive Bayes puede manejar características continuas.
+    \item Laplace smoothing se usa para evitar probabilidades cero.
+    \item Naive Bayes siempre tiene mejor rendimiento que otros algoritmos de clasificación.
+    \item La suposición de independencia nunca se cumple en datos reales.
+    \item Bernoulli Naive Bayes es útil para características binarias.
+    \item Naive Bayes es un algoritmo de aprendizaje discriminativo.
+    \item Naive Bayes puede usarse tanto para clasificación como para regresión.
+\end{enumerate}
+
+\subsection{Opción Múltiple}
+
+\begin{enumerate}
+    \item ¿Por qué se llama ``Naive'' (ingenuo) al algoritmo Naive Bayes?
+    \begin{enumerate}
+        \item Porque es un algoritmo simple
+        \item Porque asume independencia entre características
+        \item Porque solo funciona con datos pequeños
+        \item Porque no es muy preciso
+    \end{enumerate}
+    
+    \item ¿Cuál es la ventaja principal de Naive Bayes sobre otros algoritmos?
+    \begin{enumerate}
+        \item Mayor precisión
+        \item Manejo automático de missing values
+        \item Velocidad de entrenamiento y predicción
+        \item No requiere normalización
+    \end{enumerate}
+    
+    \item ¿Qué tipo de Naive Bayes usarías para clasificación de emails spam?
+    \begin{enumerate}
+        \item Gaussian
+        \item Multinomial
+        \item Bernoulli
+        \item Cualquiera de los anteriores
+    \end{enumerate}
+    
+    \item ¿Cuándo aplicarías Laplace smoothing?
+    \begin{enumerate}
+        \item Siempre
+        \item Solo con datos grandes
+        \item Solo con Gaussian Naive Bayes
+        \item Cuando hay probabilidades cero
+    \end{enumerate}
+    
+    \item ¿Qué sucede si la suposición de independencia se viola severamente?
+    \begin{enumerate}
+        \item Puede reducir el rendimiento
+        \item El algoritmo no funciona
+        \item No hay impacto
+        \item Mejora el rendimiento
+    \end{enumerate}
+\end{enumerate}
+
+\section{Ejercicios Prácticos}
+
+\subsection{Ejercicio 1 - Cálculo Manual de Probabilidades}
+
+El siguiente conjunto de datos brinda información de las condiciones climáticas de 10 días diferentes junto a una etiqueta que nos indica si Juan sale a correr ese día o no. Va a ser nuestro set de entrenamiento para un modelo de clasificación.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Obs} & \textbf{Lluvia} & \textbf{Temperatura} & \textbf{Viento} & \textbf{¿Entrena?} \\
+        \hline
+        1 & SI & Frío & Fuerte & NO \\
+        \hline
+        2 & NO & Templado & Débil & SI \\
+        \hline
+        3 & SI & Cálido & Fuerte & SI \\
+        \hline
+        4 & SI & Templado & Fuerte & NO \\
+        \hline
+        5 & NO & Templado & Débil & SI \\
+        \hline
+        6 & NO & Cálido & Fuerte & NO \\
+        \hline
+        7 & NO & Frío & Fuerte & SI \\
+        \hline
+        8 & SI & Frío & Débil & NO \\
+        \hline
+        9 & NO & Cálido & Débil & NO \\
+        \hline
+        10 & SI & Templado & Fuerte & SI \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item[a.] Entrenar un modelo de Naive Bayes
+    \item[b.] Considerando la siguiente muestra de test, calcular las probabilidades de entrenar y no entrenar para cada observación, elegir una métrica de bondad de ajuste del modelo y reportar su valor:
+\end{enumerate}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Obs} & \textbf{Lluvia} & \textbf{Temperatura} & \textbf{Viento} & \textbf{¿Entrena?} \\
+        \hline
+        11 & NO & Templado & Débil & SI \\
+        \hline
+        12 & SI & Frío & Fuerte & NO \\
+        \hline
+        13 & SI & Cálido & Débil & SI \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Ejercicio 2 - Clasificación de Spam}
+
+Considerar el siguiente dataset para clasificar emails como ``Spam'' o ``No Spam'' basándose en la presencia de ciertas palabras:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Email} & \textbf{Gratis} & \textbf{Dinero} & \textbf{Oferta} & \textbf{Clase} \\
+        \hline
+        1 & 1 & 0 & 1 & Spam \\
+        \hline
+        2 & 0 & 1 & 0 & Spam \\
+        \hline
+        3 & 1 & 1 & 1 & Spam \\
+        \hline
+        4 & 0 & 0 & 0 & No Spam \\
+        \hline
+        5 & 0 & 0 & 1 & No Spam \\
+        \hline
+        6 & 1 & 0 & 0 & Spam \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item[a.] Calcular las probabilidades a priori de cada clase
+    \item[b.] Calcular las probabilidades condicionales para cada característica
+    \item[c.] Clasificar un nuevo email con características: Gratis=1, Dinero=0, Oferta=0
+    \item[d.] ¿Qué sucede si aplicamos Laplace smoothing con $\alpha=1$? Recalcular la clasificación del inciso c.
+\end{enumerate}
+
+\subsection{Ejercicio 3 - Bag of Words y NLP}
+
+Cuando usamos la técnica Bag of Words para preprocesar los datos previo al entrenamiento de un modelo de NLP (Natural Language Processing o Procesamiento de Lenguaje Natural), ¿Qué características tiene el dataset luego de ese preprocesamiento? Supongamos que queremos clasificar artículos periodísticos en cuatro categorías diferentes (Economía, Deportes, Cultura y Ciencia), ¿Cómo funciona un modelo de Naive Bayes en este caso?
+
+\subsection{Ejercicio 4 - Implementación en Python}
+
+Implementar en Python un modelo de Naive Bayes para el dataset del Ejercicio 1 usando scikit-learn. El código debe incluir:
+
+\begin{enumerate}
+    \item[a.] Preprocesamiento de datos categóricos
+    \item[b.] División en entrenamiento y prueba
+    \item[c.] Entrenamiento del modelo
+    \item[d.] Evaluación con métricas apropiadas
+    \item[e.] Matriz de confusión
+\end{enumerate}
+
+\begin{lstlisting}[language=Python]
+# Codigo base para completar
+import pandas as pd
+from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Completar la implementacion...
+\end{lstlisting}
+
+\subsection{Ejercicio 5 - Problema Médico}
+
+Un médico quiere usar Naive Bayes para diagnosticar una enfermedad basándose en síntomas. Los datos históricos muestran:
+
+\begin{itemize}
+    \item P(Enfermedad) = 0.01 (1\% de la población tiene la enfermedad)
+    \item P(Síntoma|Enfermedad) = 0.9 (90\% de los enfermos presenta el síntoma)
+    \item P(Síntoma|Sano) = 0.05 (5\% de los sanos presenta el síntoma)
+\end{itemize}
+
+\begin{enumerate}
+    \item[a.] Si un paciente presenta el síntoma, ¿cuál es la probabilidad de que tenga la enfermedad?
+    \item[b.] ¿Por qué este resultado puede ser contraintuitivo?
+    \item[c.] ¿Qué implicaciones tiene esto para el uso de Naive Bayes en medicina?
+\end{enumerate}
+
+\subsection{Ejercicio 6 - Clasificación de Texto Avanzada}
+
+Para un problema de clasificación de texto, tienes un corpus con las siguientes características:
+
+\begin{itemize}
+    \item 10,000 documentos de entrenamiento
+    \item 50,000 palabras únicas en el vocabulario
+    \item 3 clases diferentes
+    \item Algunos documentos muy cortos (2-3 palabras) y otros muy largos (1000+ palabras)
+\end{itemize}
+
+\begin{enumerate}
+    \item[a.] ¿Qué variante de Naive Bayes usarías y por qué?
+    \item[b.] ¿Cómo manejarías el problema de palabras que aparecen en test pero no en entrenamiento?
+    \item[c.] ¿Aplicarías algún preprocesamiento adicional? ¿Cuál?
+    \item[d.] ¿Cómo evaluarías el modelo considerando que las clases podrían estar desbalanceadas?
+\end{enumerate}
+
+\newpage
+
+\section{Soluciones}
+
+\subsection{Soluciones - Verdadero o Falso}
+
+\begin{enumerate}
+    \item \textbf{Falso.} Naive Bayes no requiere escalado de datos porque trabaja con probabilidades, no con distancias.
+    \item \textbf{Verdadero.} Esta es la suposición fundamental del algoritmo.
+    \item \textbf{Verdadero.} Es ideal para datos de conteo de palabras.
+    \item \textbf{Verdadero.} Asume distribución gaussiana para características continuas.
+    \item \textbf{Verdadero.} Evita el problema de probabilidades cero en datos de entrenamiento.
+    \item \textbf{Falso.} El rendimiento depende del problema y los datos específicos.
+    \item \textbf{Falso.} Aunque rara vez se cumple perfectamente, el algoritmo puede funcionar bien incluso con dependencias moderadas.
+    \item \textbf{Verdadero.} Especialmente útil para características de presencia/ausencia.
+    \item \textbf{Falso.} Es un algoritmo generativo, no discriminativo.
+    \item \textbf{Falso.} Principalmente se usa para clasificación.
+\end{enumerate}
+
+\subsection{Soluciones - Opción Múltiple}
+
+\begin{enumerate}
+    \item \textbf{b)} Porque asume independencia entre características, lo cual rara vez es cierto en la realidad.
+    \item \textbf{c)} Velocidad de entrenamiento y predicción - es muy eficiente computacionalmente.
+    \item \textbf{b)} Multinomial - apropiado para conteos de palabras en documentos.
+    \item \textbf{d)} Cuando hay probabilidades cero que pueden causar problemas en el cálculo.
+    \item \textbf{a)} Puede reducir el rendimiento, pero el algoritmo sigue siendo robusto.
+\end{enumerate}
+
+\subsection{Soluciones - Ejercicios 1}
+
+\begin{itemize}
+    \item Contar observaciones por clase para calcular probabilidades a priori
+    \item Para cada característica, calcular P(característica|clase) dividiendo conteos
+    \item Para predecir: aplicar teorema de Bayes multiplicando probabilidades
+    \item Accuracy final: 2 de 3 predicciones correctas
+\end{itemize}
+
+\subsection{Soluciones - Ejercicio 2}
+
+\begin{itemize}
+    \item P(Spam) = 4/6, P(No Spam) = 2/6
+    \item Calcular probabilidades condicionales para cada palabra
+    \item Cuidado con probabilidades cero en No Spam
+    \item Con Laplace smoothing: agregar 1 al numerador y k al denominador
+    \item El smoothing evita multiplicar por cero
+\end{itemize}
+
+\subsection{Soluciones - Ejercicio 3}
+
+Bag of Words convierte texto en matriz numérica dispersa. Multinomial Naive Bayes es ideal para conteos de palabras en clasificación de documentos.
+
+\subsection{Soluciones - Ejercicio 4}
+
+\begin{itemize}
+    \item Usar LabelEncoder para variables categóricas
+    \item Aplicar train\_test\_split para división de datos
+    \item Entrenar con CategoricalNB o MultinomialNB según el tipo de datos
+    \item Evaluar con accuracy, precision, recall y matriz de confusión
+\end{itemize}
+
+\subsection{Soluciones - Ejercicio 5}
+
+Aplicar teorema de Bayes: P(Enfermedad|Síntoma) $\approx$ 0.154 (15.4\%). La baja prevalencia (1\%) hace que sea menos probable tener la enfermedad incluso con síntoma positivo.
+
+\subsection{Soluciones - Ejercicio 6}
+
+Usar Multinomial Naive Bayes para texto. Aplicar Laplace smoothing para palabras nuevas. Preprocesar con tokenización, remoción de stopwords y stemming. Evaluar con F1-score macro para clases desbalanceadas.
+
+\end{document}

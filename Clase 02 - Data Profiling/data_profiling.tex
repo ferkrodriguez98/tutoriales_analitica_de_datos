@@ -1,0 +1,254 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Data Profiling}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Introducción al Data Profiling}
+El Data Profiling es una técnica fundamental en el análisis de datos que nos permite entender la estructura, calidad y características de nuestros datasets antes de comenzar cualquier análisis o modelado. Es el primer paso en cualquier proyecto de ciencia de datos y nos ayuda a identificar problemas potenciales en los datos.
+
+\section{Tipos de Variables}
+Una variable es cualquier característica o atributo que puede ser medido o observado. Una variable puede ser edad, género, ingreso, país de nacimiento, color de ojos, tipo de vehículo, etc.
+
+\subsection{Clasificación de Variables}
+\begin{itemize}
+    \item \textbf{Variables Numéricas:}
+    \begin{itemize}
+        \item \textbf{Discretas:} Toman valores enteros específicos como tener cuatro hijos o un stock de 420 productos.
+        \item \textbf{Continuas:} Pueden tomar cualquier valor en un rango como la altura, peso, temperatura (osea, pueden tener una coma)
+    \end{itemize}
+    \item \textbf{Variables Categóricas:}
+    \begin{itemize}
+        \item \textbf{Nominales:} Sin orden inherente como puede ser país de nacimiento o color de ojos.
+        \item \textbf{Ordinales:} Con orden natural como bajo, medio, alto o primera o segunda división.
+    \end{itemize}
+    \item \textbf{Variables de Fecha y Hora:} Representan momentos específicos en el tiempo.
+    \item \textbf{Variables Compuestas:} Combinan múltiples tipos de información.
+\end{itemize}
+
+\section{Medidas de Tendencia Central}
+Estas medidas nos indican dónde se concentran los valores de una variable:
+
+\begin{itemize}
+    \item \textbf{Media:} Promedio de todos los valores.
+    \item \textbf{Mediana:} Valor que divide la distribución en dos partes iguales.
+    \item \textbf{Moda:} Valor que aparece con mayor frecuencia. Solo para variables categóricas.
+\end{itemize}
+
+\section{Medidas de Dispersión}
+Estas medidas nos indican qué tan dispersos están los valores:
+
+\begin{itemize}
+    \item \textbf{Varianza:} Promedio de las desviaciones al cuadrado respecto a la media.
+    \item \textbf{Desviación Estándar:} Raíz cuadrada de la varianza.
+    \item \textbf{Rango Intercuartil (IQR):} Diferencia entre el tercer y primer cuartil.
+    \item \textbf{Cuartiles:} Valores que dividen los datos en cuatro partes iguales (de cantidad de datos).
+\end{itemize}
+
+\section{Forma de la Distribución}
+\begin{itemize}
+    \item \textbf{Skewness (Asimetría):} Mide la simetría de la distribución
+    \item \textbf{Curtosis:} Mide qué tan puntiaguda o plana es la distribución
+\end{itemize}
+
+\subsection{Skewness (Asimetría)}
+La asimetría nos indica si la distribución está sesgada hacia la izquierda o derecha:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    width=12cm,
+    height=6cm,
+    xlabel={x},
+    ylabel={f(x)},
+    legend style={at={(0.5,1.1)}, anchor=south},
+    domain=-3:3,
+    samples=100,
+    ymin=0,
+    ymax=0.4
+]
+\addplot[blue, thick] {exp(-x^2/2)/sqrt(2*pi)};
+\addlegendentry{Simétrica (Skewness = 0)}
+
+\addplot[red, thick, domain=0:4] {0.2*exp(-x/0.8)};
+\addlegendentry{Sesgada a la derecha (Skewness > 0)}
+
+\addplot[green, thick, domain=-4:0] {0.2*exp(x/0.8)};
+\addlegendentry{Sesgada a la izquierda (Skewness < 0)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Interpretación del Skewness}
+Cuando el skewness es igual a cero, tenemos una distribución simétrica como la altura o peso en una población general. Un skewness positivo indica que la distribución está sesgada hacia la derecha, típico en variables como ingresos o precios de viviendas donde hay pocos valores muy altos. Un skewness negativo indica sesgo hacia la izquierda, como en la edad de jubilación o calificaciones altas donde hay pocos valores muy bajos.
+
+\subsubsection{Implicaciones Prácticas}
+En distribuciones sesgadas, la media se ve fuertemente afectada por valores extremos, por lo que la mediana suele ser una mejor medida de tendencia central. Para normalizar datos sesgados, podemos usar transformaciones como logaritmo, raíz cuadrada o la transformación de Box-Cox. Es importante notar que algunos algoritmos como la regresión lineal asumen normalidad, por lo que datos muy sesgados pueden afectar su rendimiento. Además, los datos sesgados suelen tener más outliers en una dirección específica.
+
+\subsubsection{Reglas de Interpretación}
+Como regla general, un skewness entre -0.5 y 0.5 indica una distribución aproximadamente simétrica. Valores entre -1 y -0.5 o entre 0.5 y 1 indican una distribución moderadamente sesgada. Finalmente, valores menores a -1 o mayores a 1 indican una distribución altamente sesgada que requiere atención especial.
+
+\subsection{Curtosis}
+La curtosis nos indica qué tan puntiaguda o plana es la distribución comparada con una normal:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    width=12cm,
+    height=6cm,
+    xlabel={x},
+    ylabel={f(x)},
+    legend style={at={(0.5,1.1)}, anchor=south},
+    domain=-3:3,
+    samples=100
+]
+\addplot[blue, thick] {exp(-x^2/2)/sqrt(2*pi)};
+\addlegendentry{Mesocúrtica (Curtosis = 0)}
+
+\addplot[red, thick] {exp(-x^2/0.5)/sqrt(2*pi*0.5)};
+\addlegendentry{Leptocúrtica (Curtosis > 0)}
+
+\addplot[green, thick] {exp(-x^2/3)/sqrt(2*pi*3)};
+\addlegendentry{Platicúrtica (Curtosis < 0)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Interpretación de la Curtosis}
+Una curtosis de cero indica una distribución mesocúrtica, que corresponde a la distribución normal estándar. Una curtosis positiva indica una distribución leptocúrtica, que es más puntiaguda en el centro y tiene colas más pesadas. Una curtosis negativa indica una distribución platicúrtica, que es más plana en el centro y tiene colas más ligeras.
+
+\subsubsection{Implicaciones Prácticas}
+Las distribuciones leptocúrticas tienen mayor concentración de datos cerca de la media, pero también más outliers extremos, lo que indica mayor riesgo de eventos extremos. Las distribuciones platicúrticas tienen datos más dispersos y menos concentración en el centro. Es importante notar que algunos algoritmos asumen normalidad y pueden fallar cuando la curtosis es muy extrema.
+
+\subsubsection{Ejemplos Reales}
+Los retornos financieros y precios de commodities suelen ser leptocúrticos, mientras que las temperaturas diarias y velocidades de viento tienden a ser platicúrticas. Variables como altura, peso o errores de medición bien controlados suelen ser mesocúrticas.
+
+\subsubsection{Reglas de Interpretación}
+Como regla general, una curtosis entre -0.5 y 0.5 indica una distribución aproximadamente normal. Valores entre -1 y -0.5 o entre 0.5 y 1 indican una distribución moderadamente diferente a la normal. Finalmente, valores menores a -1 o mayores a 1 indican una distribución muy diferente a la normal que requiere atención especial.
+
+\section{Aspectos Críticos a Considerar}
+
+\subsection{Datos Faltantes}
+Los datos faltantes son valores ausentes en el dataset. Es fundamental entender:
+\begin{itemize}
+    \item \textbf{MCAR (Missing Completely At Random):} Los datos faltantes no están relacionados con ninguna variable observable
+    \item \textbf{MAR (Missing At Random):} Los datos faltantes están relacionados con variables observables
+    \item \textbf{MNAR (Missing Not At Random):} Los datos faltantes están relacionados con el valor faltante mismo
+\end{itemize}
+
+\subsection{Cardinalidad y Etiquetas Raras}
+\begin{itemize}
+    \item \textbf{Cardinalidad:} Número de valores únicos en una variable categórica
+    \item \textbf{Etiquetas Raras:} Categorías con muy pocas observaciones
+\end{itemize}
+
+\subsection{Valores Extremos}
+Los outliers pueden afectar significativamente el análisis y deben ser identificados y tratados apropiadamente.
+
+\subsection{Magnitudes y Escalas}
+Diferentes variables pueden tener escalas muy distintas, lo que puede afectar el rendimiento de ciertos algoritmos.
+
+\section{Supuestos de Linealidad}
+Para análisis que asumen relaciones lineales, debemos verificar:
+
+\begin{itemize}
+    \item \textbf{Relación Lineal:} La relación entre variables debe ser aproximadamente lineal
+    \item \textbf{Normalidad:} Los residuos deben seguir una distribución normal
+    \item \textbf{Ausencia de Colinealidad:} Las variables independientes no deben estar altamente correlacionadas
+    \item \textbf{Homocedasticidad:} La varianza de los residuos debe ser constante
+\end{itemize}
+
+\section{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+# Cargar datos
+df = pd.read_csv('datos.csv')
+
+# Informacion basica
+print(df.info())
+print(df.describe())
+
+# Verificar datos faltantes
+print(df.isnull().sum())
+
+# Analisis de variables numericas
+numeric_cols = df.select_dtypes(include=[np.number]).columns
+for col in numeric_cols:
+    print(f"\nAnalisis de {col}:")
+    print(f"Media: {df[col].mean():.2f}")
+    print(f"Mediana: {df[col].median():.2f}")
+    print(f"Desvio: {df[col].std():.2f}")
+    print(f"Skewness: {stats.skew(df[col].dropna()):.2f}")
+    print(f"Curtosis: {stats.kurtosis(df[col].dropna()):.2f}")
+
+# Analisis de variables categoricas
+categorical_cols = df.select_dtypes(include=['object']).columns
+for col in categorical_cols:
+    print(f"\nCardinalidad de {col}: {df[col].nunique()}")
+    print(df[col].value_counts())
+\end{lstlisting}
+
+\section{Overfitting}
+El overfitting ocurre cuando un modelo se ajusta demasiado a los datos de entrenamiento y pierde capacidad de generalización. En el contexto del data profiling, es importante:
+\begin{itemize}
+    \item No hacer suposiciones basadas en patrones específicos del dataset
+    \item Validar hallazgos con datos externos cuando sea posible
+    \item Ser cauteloso con interpretaciones basadas en muestras pequeñas
+\end{itemize}
+
+\end{document} 
