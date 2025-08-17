@@ -1,0 +1,548 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{fontawesome}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{positioning,shapes.multipart,calc,arrows,shapes.geometric}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{Data Profiling}}
+\author{Analítica de Datos}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../../TEMPLATES_TEX/misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{¿Qué es Data Profiling?}
+    \begin{center}
+        \textbf{Técnica fundamental en el análisis de datos}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faSearch}}}] Entender la estructura de los datos
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faCheck}}}] Evaluar la calidad del dataset
+        \item<4->[{\makebox[1em][c]{\textcolor{black}{\faExclamationTriangle}}}] Identificar problemas potenciales
+        \item<5->[{\makebox[1em][c]{\textcolor{black}{\faPlay}}}] Primer paso en cualquier proyecto de analítica o ciencia de datos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Tipos de Variables}
+
+    \onslide<1->{
+    \textbf{Variables Numéricas:}
+    \begin{itemize}
+        \item \textbf{Discretas:} Valores enteros específicos
+        \item \textbf{Continuas:} Cualquier valor en un rango
+    \end{itemize}
+    }
+    
+    \vspace{0.3cm}
+    
+    \onslide<2->{
+    \textbf{Variables Categóricas:}
+    \begin{itemize}
+        \item \textbf{Nominales:} Sin orden inherente
+        \item \textbf{Ordinales:} Con orden natural
+    \end{itemize}
+    }
+    
+    \vspace{0.3cm}
+    
+    \onslide<3->{
+    \textbf{Otros Tipos:}
+    \begin{itemize}
+        \item \textbf{Fecha y Hora:} Momentos específicos
+        \item \textbf{Compuestas:} Múltiples tipos de información
+        \begin{itemize}
+            \item Ej: Direccion completa (calle, numero, ciudad, pais)
+        \end{itemize}
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Medidas de Tendencia Central}
+    \begin{center}
+        \textbf{¿Dónde se concentran los valores?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{tabular}{ccc}
+        \begin{minipage}{3cm}
+            \centering
+            {\Large \faCalculator}\\[0.2cm]
+            \textbf{Media}\\[0.1cm]
+            {\scriptsize Promedio de todos los valores}
+        \end{minipage} &
+        \begin{minipage}{3cm}
+            \centering
+            {\Large \faSort}\\[0.2cm]
+            \textbf{Mediana}\\[0.1cm]
+            {\scriptsize Valor central de la distribución}
+        \end{minipage} &
+        \begin{minipage}{3cm}
+            \centering
+            {\Large \faBarChart}\\[0.2cm]
+            \textbf{Moda}\\[0.1cm]
+            {\scriptsize Valor más frecuente}
+        \end{minipage}
+    \end{tabular}
+\end{frame}
+
+\begin{frame}{Medidas de Dispersión}
+    \begin{center}
+        \textbf{¿Qué tan dispersos están los valores?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1-> \textbf{Varianza:} Promedio de desviaciones al cuadrado
+        \item<2-> \textbf{Desviación Estándar:} Raíz cuadrada de la varianza
+        \item<3-> \textbf{Rango Intercuartil (IQR):} Q3 - Q1
+        \item<4-> \textbf{Cuartiles:} División en cuatro partes iguales
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Forma de la Distribución}
+    \begin{center}
+        \textbf{Características de la Distribución}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Skewness (Asimetría):}
+            \begin{itemize}
+                \item Mide la simetría de la distribución
+                \item Indica si está sesgada hacia la izquierda o derecha
+                \item Afecta la elección entre media y mediana
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Curtosis:}
+            \begin{itemize}
+                \item Mide qué tan puntiaguda o plana es
+                \item Compara con la distribución normal
+                \item Indica presencia de outliers extremos
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Skewness - Tipos de Distribución}
+    
+    \begin{center}
+        \hspace{-1cm}
+        \begin{tikzpicture}
+        \begin{axis}[
+            width=10cm,
+            height=5cm,
+            xlabel={x},
+            ylabel={f(x)},
+            legend style={at={(0.5,1.1)}, anchor=south},
+            domain=-3:3,
+            samples=400,
+            ymin=0,
+            ymax=0.5
+        ]
+        
+        % Distribución Normal (simétrica)
+        \addplot[blue, thick] {exp(-(x-0)^2/2)/sqrt(2*pi)};
+        \addlegendentry{Simétrica (skewness = 0)}
+        
+        % Skewness positivo
+        \addplot[red, thick, domain=-3:3] {
+            0.8 * (x+3) * exp(-(x+3)/1.2)
+        };
+        \addlegendentry{Skewness Positivo}
+        
+        % Skewness negativo
+        \addplot[green!60!black, thick, domain=-3:3] {
+            0.8 * (3-x) * exp(-(3-x)/1.2)
+        };
+        \addlegendentry{Skewness Negativo}
+        
+        \end{axis}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Skewness - Interpretación}
+    \begin{center}
+        \textbf{¿Qué significa cada tipo de asimetría?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faBalanceScale}}}] \textbf{Skewness = 0:} Distribución simétrica (altura, peso en población general)
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faArrowRight}}}] \textbf{Skewness $>$ 0:} Cola larga a la derecha (ingresos, precios de viviendas)
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faArrowLeft}}}] \textbf{Skewness $<$ 0:} Cola larga a la izquierda (edad de jubilación, calificaciones altas)
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Skewness - Implicaciones Prácticas}
+    \begin{center}
+        \textbf{¿Qué hacer con distribuciones sesgadas?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faSort}}}] \textbf{Usar mediana en lugar de media} - Menos afectada por valores extremos
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faCogs}}}] \textbf{Aplicar transformaciones} - Logaritmo, raíz cuadrada, Box-Cox
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faExclamationTriangle}}}] \textbf{Revisar algoritmos} - Algunos asumen normalidad
+        \item<4->[{\makebox[1em][c]{\textcolor{black}{\faSearch}}}] \textbf{Identificar outliers} - Más comunes en una dirección específica
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Skewness - Reglas de Interpretación}
+    \begin{center}
+        \textbf{¿Cuándo considerar una distribución sesgada?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{center}
+        \begin{tabular}{|p{0.25\textwidth}|p{0.30\textwidth}|p{0.30\textwidth}|}
+        \hline
+        \textbf{Rango} & \textbf{Interpretación} & \textbf{Acción} \\
+        \hline
+        \textbf{-0.5 a 0.5} & Aproximadamente simétrica & Usar media normalmente \\
+        \hline
+        \textbf{-1 a -0.5} & Moderadamente sesgada & Considerar mediana \\
+        \textbf{0.5 a 1} & hacia la izquierda/derecha & \\
+        \hline
+        \textbf{$<$ -1 o $>$ 1} & Altamente sesgada & Usar mediana, transformar \\
+        \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Curtosis - Forma de la Distribución}
+    \begin{center}
+        \hspace{-1cm}
+        \begin{tikzpicture}
+        \begin{axis}[
+            width=10cm,
+            height=5cm,
+            xlabel={x},
+            ylabel={f(x)},
+            legend style={at={(0.5,1.1)}, anchor=south},
+            domain=-3:3,
+            samples=100
+        ]
+        \addplot[blue, thick] {exp(-x^2/2)/sqrt(2*pi)};
+        \addlegendentry{Mesocúrtica (Curtosis = 0)}
+        
+        \addplot[red, thick] {exp(-x^2/0.5)/sqrt(2*pi*0.5)};
+        \addlegendentry{Leptocúrtica (Curtosis > 0)}
+        
+        \addplot[green, thick] {exp(-x^2/3)/sqrt(2*pi*3)};
+        \addlegendentry{Platicúrtica (Curtosis < 0)}
+        \end{axis}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Curtosis - Interpretación}
+    \begin{center}
+        \textbf{¿Qué significa cada tipo de curtosis?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faBell}}}] \textbf{Curtosis = 0:} Distribución normal estándar (altura, peso bien controlados)
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faExclamationTriangle}}}] \textbf{Curtosis $>$ 0:} Más puntiaguda, colas pesadas (retornos financieros, precios de commodities)
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faMinus}}}] \textbf{Curtosis $<$ 0:} Más plana, colas ligeras (temperaturas diarias, velocidades de viento)
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Curtosis - Implicaciones Prácticas}
+    \begin{center}
+        \textbf{¿Qué hacer con diferentes tipos de curtosis?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faExclamationTriangle}}}] \textbf{Leptocúrtica:} Mayor riesgo de eventos extremos, más outliers
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faArrowsH}}}] \textbf{Platicúrtica:} Datos más dispersos, menos concentración central
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faCogs}}}] \textbf{Revisar algoritmos} - Algunos fallan con curtosis extrema
+        \item<4->[{\makebox[1em][c]{\textcolor{black}{\faShield}}}] \textbf{Evaluar robustez} - Métodos robustos vs sensibles a outliers
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Curtosis - Reglas de Interpretación}
+    \begin{center}
+        \textbf{¿Cuándo considerar una distribución diferente a la normal?}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{center}
+        \begin{tabular}{|p{0.25\textwidth}|p{0.25\textwidth}|p{0.25\textwidth}|}
+        \hline
+        \textbf{Rango} & \textbf{Interpretación} & \textbf{Acción} \\
+        \hline
+        \textbf{-0.5 a 0.5} & Aproximadamente normal & Usar métodos estándar \\
+        \hline
+        \textbf{-1 a -0.5} & Moderadamente diferente & Revisar robustez \\
+        \textbf{0.5 a 1} & a la normal & de métodos \\
+        \hline
+        \textbf{$<$ -1 o $>$ 1} & Muy diferente a normal & Usar métodos robustos \\
+        \hline
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Datos Faltantes - Tipos}
+    \begin{center}
+        \textbf{Clasificación de Datos Faltantes}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faRandom}}}] \textbf{MCAR (Missing Completely At Random):} Faltantes aleatorios
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faLink}}}] \textbf{MAR (Missing At Random):} Faltantes relacionados con variables observables
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faExclamation}}}] \textbf{MNAR (Missing Not At Random):} Faltantes relacionados con el valor faltante
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{MCAR - Missing Completely At Random}
+    \begin{center}
+        \textbf{Datos faltantes completamente aleatorios}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+    \hline
+    1 & 29 & Abogado/a & 1.500.000 \\
+    \hline
+    2 & 53 & \textcolor{red}{\textbf{Null}} & 430.000 \\
+    \hline
+    3 & 21 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    4 & 34 & Analista de marketing & 1.000.000 \\
+    \hline
+    5 & \textcolor{red}{\textbf{Null}} & A. financiero/a & 600.000 \\
+    \hline
+    \end{tabular}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \onslide<2->{
+    \begin{center}
+        \textbf{Acá tal vez los participantes se olvidaron de responder preguntas}
+    \end{center}
+    }
+\end{frame}
+
+\begin{frame}{MAR - Missing At Random}
+    \begin{center}
+        \textbf{Datos faltantes relacionados con variables observables}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+    \hline
+    1 & 29 & Abogado & 1.500.000 \\
+    \hline
+    2 & 37 & Profesora & 430.000 \\
+    \hline
+    3 & 53 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    4 & 34 & Analista de marketing & 1.000.000 \\
+    \hline
+    5 & 23 & A. financiera & 600.000 \\
+    \hline
+    6 & 48 & Recepcionista & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    \end{tabular}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \onslide<2->{
+        \begin{center}
+            \textbf{Acá tal vez los entrevistados mayores de 40 años no quieren decir su salario}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}{MNAR - Missing Not At Random}
+    \begin{center}
+        \textbf{Datos faltantes relacionados con el valor faltante}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+    \hline
+    1 & 45 & Abogado & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    2 & 52 & Profesora & 430.000 \\
+    \hline
+    3 & 21 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    4 & 34 & Analista de marketing & \textcolor{red}{\textbf{Null}} \\
+    \hline
+    5 & 23 & A. financiera & 600.000 \\
+    \hline
+    6 & 48 & Recepcionista & 770.000 \\
+    \hline
+    \end{tabular}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \onslide<2->{
+        \begin{center}
+            \textbf{Acá tal vez las personas con salarios más altos evitan contestar}
+        \end{center}
+    }
+\end{frame}
+
+\begin{frame}{Otros Aspectos Críticos}
+    \begin{center}
+        \textbf{Elementos importantes a considerar}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Cardinalidad:}
+            \begin{itemize}
+                \item Número de valores únicos en variables categóricas
+                \item Puede indicar problemas de calidad
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Etiquetas Raras:}
+            \begin{itemize}
+                \item Categorías con muy pocas observaciones
+                \item Pueden causar problemas en el modelado
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Valores Extremos:}
+            \begin{itemize}
+                \item Outliers que afectan el análisis
+                \item Deben ser identificados y tratados
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Magnitudes y Escalas:}
+            \begin{itemize}
+                \item Variables con escalas muy distintas
+                \item Pueden afectar el rendimiento de algoritmos
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Supuestos de Linealidad}
+    \begin{center}
+        \textbf{Para análisis que asumen relaciones lineales}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item<1->[{\makebox[1em][c]{\textcolor{black}{\faLineChart}}}] \textbf{Relación Lineal:} La relación entre variables debe ser aproximadamente lineal
+        \item<2->[{\makebox[1em][c]{\textcolor{black}{\faBell}}}] \textbf{Normalidad:} Los residuos deben seguir una distribución normal
+        \item<3->[{\makebox[1em][c]{\textcolor{black}{\faChain}}}] \textbf{Ausencia de Colinealidad:} Variables independientes no altamente correlacionadas
+        \item<4->[{\makebox[1em][c]{\textcolor{black}{\faArrowsH}}}] \textbf{Homocedasticidad:} Varianza constante de los residuos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}

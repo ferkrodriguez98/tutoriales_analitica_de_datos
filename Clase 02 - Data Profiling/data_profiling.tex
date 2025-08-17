@@ -75,7 +75,8 @@ Una variable es cualquier característica o atributo que puede ser medido o obse
     \item \textbf{Variables Compuestas:} Combinan múltiples tipos de información.
 \end{itemize}
 
-\section{Medidas de Tendencia Central}
+\section{Medidas Estadísticas}
+\subsection{Medidas de Tendencia Central}
 Estas medidas nos indican dónde se concentran los valores de una variable:
 
 \begin{itemize}
@@ -84,7 +85,7 @@ Estas medidas nos indican dónde se concentran los valores de una variable:
     \item \textbf{Moda:} Valor que aparece con mayor frecuencia. Solo para variables categóricas.
 \end{itemize}
 
-\section{Medidas de Dispersión}
+\subsection{Medidas de Dispersión}
 Estas medidas nos indican qué tan dispersos están los valores:
 
 \begin{itemize}
@@ -112,18 +113,29 @@ La asimetría nos indica si la distribución está sesgada hacia la izquierda o 
     ylabel={f(x)},
     legend style={at={(0.5,1.1)}, anchor=south},
     domain=-3:3,
-    samples=100,
+    samples=400,
     ymin=0,
-    ymax=0.4
+    ymax=0.5
 ]
-\addplot[blue, thick] {exp(-x^2/2)/sqrt(2*pi)};
-\addlegendentry{Simétrica (Skewness = 0)}
 
-\addplot[red, thick, domain=0:4] {0.2*exp(-x/0.8)};
-\addlegendentry{Sesgada a la derecha (Skewness > 0)}
+% --- Distribución Normal (simétrica) ---
+\addplot[blue, thick] {exp(-(x-0)^2/2)/sqrt(2*pi)};
+\addlegendentry{Simétrica (skewness = 0)}
 
-\addplot[green, thick, domain=-4:0] {0.2*exp(x/0.8)};
-\addlegendentry{Sesgada a la izquierda (Skewness < 0)}
+% --- Skewness positivo (cola larga a la derecha) ---
+% Distribución sesgada hacia la derecha usando función exponencial modificada
+\addplot[red, thick, domain=-3:3] {
+    0.8 * (x+3) * exp(-(x+3)/1.2)
+};
+\addlegendentry{Skewness Positivo (cola a la derecha)}
+
+% --- Skewness negativo (cola larga a la izquierda) ---
+% Distribución sesgada hacia la izquierda (función reflejada)
+\addplot[green!60!black, thick, domain=-3:3] {
+    0.8 * (3-x) * exp(-(3-x)/1.2)
+};
+\addlegendentry{Skewness Negativo (cola a la izquierda)}
+
 \end{axis}
 \end{tikzpicture}
 \end{center}
@@ -133,6 +145,9 @@ Cuando el skewness es igual a cero, tenemos una distribución simétrica como la
 
 \subsubsection{Implicaciones Prácticas}
 En distribuciones sesgadas, la media se ve fuertemente afectada por valores extremos, por lo que la mediana suele ser una mejor medida de tendencia central. Para normalizar datos sesgados, podemos usar transformaciones como logaritmo, raíz cuadrada o la transformación de Box-Cox. Es importante notar que algunos algoritmos como la regresión lineal asumen normalidad, por lo que datos muy sesgados pueden afectar su rendimiento. Además, los datos sesgados suelen tener más outliers en una dirección específica.
+
+\subsubsection{Ejemplos Reales}
+Los ingresos y precios de casas suelen tener skewness positivo, ya que hay pocas personas con ingresos muy altos o casas muy costosas. Las edades de muerte por enfermedades cardiovasculares tienden a tener skewness negativo, con pocos valores muy bajos. Variables como altura, peso o temperatura en climas templados suelen ser aproximadamente simétricas.
 
 \subsubsection{Reglas de Interpretación}
 Como regla general, un skewness entre -0.5 y 0.5 indica una distribución aproximadamente simétrica. Valores entre -1 y -0.5 o entre 0.5 y 1 indican una distribución moderadamente sesgada. Finalmente, valores menores a -1 o mayores a 1 indican una distribución altamente sesgada que requiere atención especial.
@@ -178,12 +193,94 @@ Como regla general, una curtosis entre -0.5 y 0.5 indica una distribución aprox
 \section{Aspectos Críticos a Considerar}
 
 \subsection{Datos Faltantes}
-Los datos faltantes son valores ausentes en el dataset. Es fundamental entender:
-\begin{itemize}
-    \item \textbf{MCAR (Missing Completely At Random):} Los datos faltantes no están relacionados con ninguna variable observable
-    \item \textbf{MAR (Missing At Random):} Los datos faltantes están relacionados con variables observables
-    \item \textbf{MNAR (Missing Not At Random):} Los datos faltantes están relacionados con el valor faltante mismo
-\end{itemize}
+Los datos faltantes son valores ausentes en el dataset. Es fundamental entender los diferentes tipos para aplicar el tratamiento adecuado. Nunca podemos tener la seguridad de por qué es que faltan los datos pero podemos tener hipótesis y testearlas.
+
+\subsubsection{MCAR (Missing Completely At Random)}
+Los datos faltantes no están relacionados con ninguna variable observable. El patrón de faltantes es completamente aleatorio.
+
+\vspace{0.5cm}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+\hline
+1 & 29 & Abogado/a & 1.500.000 \\
+\hline
+2 & 53 & \textcolor{red}{\textbf{Null}} & 430.000 \\
+\hline
+3 & 21 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+\hline
+4 & 34 & Analista de marketing & 1.000.000 \\
+\hline
+5 & \textcolor{red}{\textbf{Null}} & A. financiero/a & 600.000 \\
+\hline
+5 & 31 & Asesor/a del congreso & 700.000 \\
+\hline
+6 & 48 & Recepcionista & \textcolor{red}{\textbf{Null}} \\
+\hline
+\end{tabular}
+\end{center}
+\vspace{0.5cm}
+
+En este ejemplo, los datos faltantes aparecen de forma aleatoria sin relación con ninguna variable observable. Los participantes se olvidaron de responder preguntas al azar.
+
+\subsubsection{MAR (Missing At Random)}
+Los datos faltantes están relacionados con variables observables, pero no con el valor faltante mismo.
+
+\vspace{0.5cm}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+\hline
+1 & 29 & Abogado & 1.500.000 \\
+\hline
+2 & 37 & Profesora & 430.000 \\
+\hline
+3 & 53 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+\hline
+4 & 34 & Analista de marketing & 1.000.000 \\
+\hline
+5 & 23 & A. financiera & 600.000 \\
+\hline
+5 & 31 & Asesora del congreso & 700.000 \\
+\hline
+6 & 48 & Recepcionista & \textcolor{red}{\textbf{Null}} \\
+\hline
+\end{tabular}
+\end{center}
+\vspace{0.5cm}
+
+Hay un patrón, la falta depende de los datos observados (la edad). Los entrevistados mayores de 40 años no se sienten cómodos de divulgar su salario.
+
+\subsubsection{MNAR (Missing Not At Random)}
+Los datos faltantes están relacionados con el valor faltante mismo.
+
+\vspace{0.5cm}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Id} & \textbf{Edad} & \textbf{Rubro} & \textbf{Salario} \\
+\hline
+1 & 45 & Abogado & \textcolor{red}{\textbf{Null}} \\
+\hline
+2 & 52 & Profesora & 430.000 \\
+\hline
+3 & 21 & Analista de datos & \textcolor{red}{\textbf{Null}} \\
+\hline
+4 & 34 & Analista de marketing & \textcolor{red}{\textbf{Null}} \\
+\hline
+5 & 23 & A. financiera & 600.000 \\
+\hline
+5 & 31 & Asesora del congreso & 700.000 \\
+\hline
+6 & 48 & Recepcionista & 770.000 \\
+\hline
+\end{tabular}
+\end{center}
+\vspace{0.5cm}
+
+La falta depende del dato que no tengo. Las personas con salarios más altos tienden a evitar contestar la pregunta.
 
 \subsection{Cardinalidad y Etiquetas Raras}
 \begin{itemize}
@@ -205,50 +302,6 @@ Para análisis que asumen relaciones lineales, debemos verificar:
     \item \textbf{Normalidad:} Los residuos deben seguir una distribución normal
     \item \textbf{Ausencia de Colinealidad:} Las variables independientes no deben estar altamente correlacionadas
     \item \textbf{Homocedasticidad:} La varianza de los residuos debe ser constante
-\end{itemize}
-
-\section{Implementación en Python}
-
-\begin{lstlisting}[language=Python]
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-
-# Cargar datos
-df = pd.read_csv('datos.csv')
-
-# Informacion basica
-print(df.info())
-print(df.describe())
-
-# Verificar datos faltantes
-print(df.isnull().sum())
-
-# Analisis de variables numericas
-numeric_cols = df.select_dtypes(include=[np.number]).columns
-for col in numeric_cols:
-    print(f"\nAnalisis de {col}:")
-    print(f"Media: {df[col].mean():.2f}")
-    print(f"Mediana: {df[col].median():.2f}")
-    print(f"Desvio: {df[col].std():.2f}")
-    print(f"Skewness: {stats.skew(df[col].dropna()):.2f}")
-    print(f"Curtosis: {stats.kurtosis(df[col].dropna()):.2f}")
-
-# Analisis de variables categoricas
-categorical_cols = df.select_dtypes(include=['object']).columns
-for col in categorical_cols:
-    print(f"\nCardinalidad de {col}: {df[col].nunique()}")
-    print(df[col].value_counts())
-\end{lstlisting}
-
-\section{Overfitting}
-El overfitting ocurre cuando un modelo se ajusta demasiado a los datos de entrenamiento y pierde capacidad de generalización. En el contexto del data profiling, es importante:
-\begin{itemize}
-    \item No hacer suposiciones basadas en patrones específicos del dataset
-    \item Validar hallazgos con datos externos cuando sea posible
-    \item Ser cauteloso con interpretaciones basadas en muestras pequeñas
 \end{itemize}
 
 \end{document} 
