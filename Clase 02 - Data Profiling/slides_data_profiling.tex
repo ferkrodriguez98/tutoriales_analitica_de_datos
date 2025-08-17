@@ -262,20 +262,11 @@
     
     \vspace{0.5cm}
     
-    \begin{center}
-        \begin{tabular}{|p{0.25\textwidth}|p{0.30\textwidth}|p{0.30\textwidth}|}
-        \hline
-        \textbf{Rango} & \textbf{Interpretación} & \textbf{Acción} \\
-        \hline
-        \textbf{-0.5 a 0.5} & Aproximadamente simétrica & Usar media normalmente \\
-        \hline
-        \textbf{-1 a -0.5} & Moderadamente sesgada & Considerar mediana \\
-        \textbf{0.5 a 1} & hacia la izquierda/derecha & \\
-        \hline
-        \textbf{$<$ -1 o $>$ 1} & Altamente sesgada & Usar mediana, transformar \\
-        \hline
-        \end{tabular}
-    \end{center}
+    \begin{itemize}
+        \item<1-> \textbf{-0.5 a 0.5:} Aproximadamente simétrica. Podemos usar la media o la mediana porque son parecidas.
+        \item<2-> \textbf{-1 a -0.5 o 0.5 a 1:} Moderadamente sesgada hacia la izquierda/derecha. Acá ya podemos considerar la mediana.
+        \item<3-> \textbf{$<$ -1 o $>$ 1:} Altamente sesgada. Debemos usar la mediana.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Curtosis - Forma de la Distribución}
@@ -342,20 +333,11 @@
     
     \vspace{0.5cm}
     
-    \begin{center}
-        \begin{tabular}{|p{0.25\textwidth}|p{0.25\textwidth}|p{0.25\textwidth}|}
-        \hline
-        \textbf{Rango} & \textbf{Interpretación} & \textbf{Acción} \\
-        \hline
-        \textbf{-0.5 a 0.5} & Aproximadamente normal & Usar métodos estándar \\
-        \hline
-        \textbf{-1 a -0.5} & Moderadamente diferente & Revisar robustez \\
-        \textbf{0.5 a 1} & a la normal & de métodos \\
-        \hline
-        \textbf{$<$ -1 o $>$ 1} & Muy diferente a normal & Usar métodos robustos \\
-        \hline
-        \end{tabular}
-    \end{center}
+    \begin{itemize}
+        \item<1-> \textbf{-0.5 a 0.5:} Aproximadamente normal. Podemos usar los métodos estándar.
+        \item<2-> \textbf{-1 a -0.5 o 0.5 a 1:} Moderadamente diferente a la normal. Podríamos revisar la robustez de los métodos.
+        \item<3-> \textbf{$<$ -1 o $>$ 1:} Muy diferente a la normal. Usar métodos robustos que funcionen bien para estos casos.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Datos Faltantes - Tipos}
