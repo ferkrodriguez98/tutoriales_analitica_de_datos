@@ -9,8 +9,8 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 3 - Data Analysis & Cleaning](./Clase%2003%20-%20Data%20Analysis%20&%20Cleaning/): Análisis exploratorio, limpieza y preparación de datos con Python y pandas. Imputación de valores faltantes, nulos y demás.
 - [Clase 4 - Tableau](): Introducción a Tableau, dashboards y análisis visual.
 - [Clase 5 - Presentación de Trabajos con Tableau](): Presentación de los TPs de los alumnos hechos con la herramienta Tableau.
-- [Clase 6 - KNN y Validación de Modelos](): Método de regresión y clasificación por vecinos cercanos. Métricas de evaluación de modelos, matriz de confusión, curva ROC y PR.
-- [Clase 7 - CART](): Árboles de decisión (CART), teoría y ejercicios prácticos.
+- [Clase 6 - KNN](): Método de regresión y clasificación por vecinos cercanos.
+- [Clase 7 - CART y Validación de Modelos](): Árboles de decisión (CART), teoría y ejercicios prácticos. Métricas de evaluación de modelos, matriz de confusión, curva ROC y PR.
 - [Clase 8 - Resolución del Parcial](): Resolución del parcial por parte de los tutores.
 - [Clase 9 - Random Forest](): Random Forest, comparación con CART, análisis y visualizaciones.
 - [Clase 10 - Boosting](): Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost.

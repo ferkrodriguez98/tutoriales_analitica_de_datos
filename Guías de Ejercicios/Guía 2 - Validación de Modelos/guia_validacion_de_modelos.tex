@@ -71,6 +71,11 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \item El False Discovery Rate y la precisión suman 1.
     \item En problemas multiclase no existen falsos positivos.
     \item Un modelo puede tener alta accuracy pero baja utilidad práctica.
+    \item El MSE penaliza más los errores grandes que el MAE.
+    \item Un R² negativo indica que el modelo es peor que predecir la media.
+    \item El RMSE tiene las mismas unidades que la variable objetivo.
+    \item El MAPE puede causar problemas cuando hay valores cero en los datos reales.
+    \item Un modelo con R² = 0.8 explica el 80\% de la varianza de la variable objetivo.
 \end{enumerate}
 
 \subsection{Opción Múltiple}
@@ -123,11 +128,35 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
         \item 80\% de precisión
         \item 80\% de recall
     \end{enumerate}
+    
+    \item ¿Cuál métrica es más sensible a valores atípicos?
+    \begin{enumerate}
+        \item MSE
+        \item MAE
+        \item RMSE
+        \item R²
+    \end{enumerate}
+    
+    \item ¿Qué significa un R² = 0.3?
+    \begin{enumerate}
+        \item El modelo explica el 30\% de la varianza
+        \item El modelo tiene 30\% de accuracy
+        \item El modelo es 30\% mejor que la media
+        \item El modelo es 30\% peor que aleatorio
+    \end{enumerate}
+    
+    \item ¿Cuál es la principal ventaja del MAPE?
+    \begin{enumerate}
+        \item Es más preciso que otras métricas
+        \item Es fácil de interpretar como porcentaje
+        \item No tiene problemas con valores cero
+        \item Siempre es mejor que el MAE
+    \end{enumerate}
 \end{enumerate}
 
 \section{Ejercicios Prácticos}
 
-\subsection{Ejercicio 1 - Matriz de Confusión y Métricas Básicas}
+\subsection{Matriz de Confusión y Métricas Básicas}
 
 Un modelo de clasificación binaria para detectar fraude en transacciones tiene los siguientes resultados en un conjunto de prueba de 1000 transacciones:
 
@@ -149,12 +178,6 @@ Un modelo de clasificación binaria para detectar fraude en transacciones tiene 
 \node at (3,3) {15};
 \node at (1,1) {5};
 \node at (3,1) {935};
-
-\node at (-0.5,3) {Fraude};
-\node at (-0.5,1) {No Fraude};
-\node at (1,4.5) {Fraude};
-\node at (3,4.5) {No Fraude};
-
 \end{tikzpicture}
 \end{center}
 
@@ -165,18 +188,55 @@ Un modelo de clasificación binaria para detectar fraude en transacciones tiene 
     \item[d.] ¿Qué métrica sería más importante para este caso de uso y por qué?
 \end{enumerate}
 
-\subsection{Ejercicio 2 - Comparación de Modelos}
+\subsection{Predicción de Precios}
 
-Tenés dos modelos para clasificar emails como spam o no spam. Los resultados son:
+Un modelo para predecir el precio de casas (en miles de dólares) tiene los siguientes resultados en un conjunto de prueba:
 
-\textbf{Modelo A:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Casa} & \textbf{Precio Real} & \textbf{Precio Predicho} \\
+        \hline
+        1 & 300 & 280 \\
+        2 & 450 & 470 \\
+        3 & 200 & 190 \\
+        4 & 600 & 620 \\
+        5 & 350 & 330 \\
+        6 & 500 & 480 \\
+        7 & 250 & 260 \\
+        8 & 400 & 420 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item[a.] Calcular MSE, RMSE, MAE y R² para este modelo.
+    \item[b.] ¿Qué métrica usarías para reportar el rendimiento a un cliente no técnico?
+    \item[c.] Si una casa cuesta 0 dólares (regalo), ¿qué problema tendrías con el MAPE?
+    \item[d.] ¿Qué estrategia usarías para manejar este problema?
+\end{enumerate}
+
+\subsection{Comparación de Modelos de Predicción}
+
+Tenés dos modelos para predecir ventas mensuales (en miles de unidades):
+
+\textbf{Modelo A:} MSE = 25, MAE = 3.5, R² = 0.85 \\
+\textbf{Modelo B:} MSE = 30, MAE = 3.2, R² = 0.82
+
+\begin{enumerate}
+    \item[a.] ¿Cuál modelo elegirías si los errores grandes son muy costosos?
+    \item[b.] ¿Cuál modelo elegirías si todos los errores tienen el mismo costo?
+    \item[c.] ¿Qué información adicional necesitarías para tomar una decisión más informada?
+    \item[d.] Si el R² del Modelo A fuera 0.95, ¿cambiaría tu respuesta en (a)?
+\end{enumerate}
+
+\subsection{Comparación de Modelos}
+
+Tenés dos modelos para clasificar emails como spam o no spam. Los resultados son: 
 \begin{itemize}
-    \item VP = 180, VN = 820, FP = 30, FN = 20
-\end{itemize}
-
-\textbf{Modelo B:}
-\begin{itemize}
-    \item VP = 160, VN = 830, FP = 20, FN = 40
+    \item \textbf{Modelo A:} VP = 180, VN = 820, FP = 30, FN = 20
+    \item \textbf{Modelo B:} VP = 160, VN = 830, FP = 20, FN = 40
 \end{itemize}
 
 \begin{enumerate}
@@ -185,7 +245,7 @@ Tenés dos modelos para clasificar emails como spam o no spam. Los resultados so
     \item[c.] ¿Cambiaría tu elección si el costo de un falso negativo fuera 10 veces mayor que el de un falso positivo?
 \end{enumerate}
 
-\subsection{Ejercicio 3 - Matriz de Confusión Multiclase}
+\subsection{Matriz de Confusión Multiclase}
 
 Un modelo clasifica el clima en tres categorías: Soleado (S), Nublado (N), Lluvioso (L). La matriz de confusión es:
 
@@ -231,7 +291,7 @@ Un modelo clasifica el clima en tres categorías: Soleado (S), Nublado (N), Lluv
     \item[d.] Calcular las métricas macro y micro average.
 \end{enumerate}
 
-\subsection{Ejercicio 4 - Curva ROC}
+\subsection{Curva ROC}
 
 Un modelo de clasificación binaria produce las siguientes probabilidades para 8 casos de prueba:
 
@@ -267,7 +327,7 @@ Un modelo de clasificación binaria produce las siguientes probabilidades para 8
     \item[d.] Estimar el valor aproximado del AUC.
 \end{enumerate}
 
-\subsection{Ejercicio 5 - Problema Médico}
+\subsection{Problema Médico}
 
 Un hospital desarrolla un modelo para detectar neumonía en radiografías. El dataset tiene las siguientes características:
 \begin{itemize}
@@ -285,7 +345,7 @@ El modelo B tiene una accuracy del 92\% pero detecta el 85\% de los casos de neu
     \item[c.] ¿Qué estrategias podrías usar para mejorar el modelo seleccionado?
 \end{enumerate}
 
-\subsection{Ejercicio 6 - Implementación en Python}
+\subsection{Implementación en Python}
 
 Implementar en Python un análisis completo de validación de modelos que incluya:
 
@@ -313,7 +373,7 @@ X, y = make_classification(n_samples=1000, n_features=20,
 # 6. Analizar cual modelo es mejor para este caso
 \end{lstlisting}
 
-\subsection{Ejercicio 7 - Caso de Negocio}
+\subsection{Caso de Negocio}
 
 Una empresa de e-commerce quiere implementar un sistema de detección de reseñas falsas. Tenés los siguientes datos de rendimiento de tres modelos:
 
@@ -343,7 +403,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 \section{Soluciones}
 
-\subsection{Soluciones - Verdadero o Falso}
+\subsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item \textbf{Falso.} Accuracy puede ser engañosa con clases desbalanceadas.
@@ -361,9 +421,14 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
     \item \textbf{Verdadero.} FDR = 1 - Precisión.
     \item \textbf{Falso.} Hay múltiples tipos de errores, pero el concepto se extiende.
     \item \textbf{Verdadero.} Especialmente con clases desbalanceadas.
+    \item \textbf{Verdadero.} MSE eleva al cuadrado los errores, penalizando más los grandes.
+    \item \textbf{Verdadero.} R² negativo indica que el modelo es peor que predecir la media.
+    \item \textbf{Verdadero.} RMSE = $\sqrt{MSE}$, mantiene las unidades originales.
+    \item \textbf{Verdadero.} MAPE tiene división por cero cuando $y_i = 0$.
+    \item \textbf{Verdadero.} R² mide la proporción de varianza explicada.
 \end{enumerate}
 
-\subsection{Soluciones - Opción Múltiple}
+\subsection{Opción Múltiple}
 
 \begin{enumerate}
     \item \textbf{b)} Precisión se enfoca en predicciones positivas correctas, recall en casos positivos reales detectados.
@@ -372,9 +437,12 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
     \item \textbf{a)} Accuracy - un modelo que predice todo negativo tendría 95\% accuracy.
     \item \textbf{d)} Cuando las clases están desbalanceadas.
     \item \textbf{b)} 80\% de probabilidad de ranquear correctamente un par positivo-negativo.
+    \item \textbf{a)} MSE - eleva al cuadrado los errores, amplificando el impacto de valores atípicos.
+    \item \textbf{a)} El modelo explica el 30\% de la varianza de la variable objetivo.
+    \item \textbf{b)} Es fácil de interpretar como porcentaje, aunque tiene problemas con ceros.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 1}
+\subsection{Matriz de Confusión y Métricas Básicas}
 
 \textbf{a)} Métricas calculadas:
 \begin{align*}
@@ -391,7 +459,36 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 \textbf{d)} Recall es más importante para no perder casos de fraude.
 
-\subsection{Soluciones - Ejercicio 2}
+\subsection{Predicción de Precios}
+
+\textbf{a)} Cálculos:
+\begin{align*}
+\text{MSE} &= \frac{1}{8}[(300-280)^2 + (450-470)^2 + (200-190)^2 + (600-620)^2 + (350-330)^2\\ &+ (500-480)^2 + (250-260)^2 + (400-420)^2] \\
+&= \frac{1}{8}[400 + 400 + 100 + 400 + 400 + 400 + 100 + 400] = 325 \\
+\text{RMSE} &= \sqrt{325} = 18.03 \\
+\text{MAE} &= \frac{1}{8}[20 + 20 + 10 + 20 + 20 + 20 + 10 + 20] = 17.5 \\
+\text{R²} &= 1 - \frac{325}{varianza\_real} = 1 - \frac{325}{6500} = 0.95 \\
+\text{Donde: } \bar{y} &= \frac{300+450+200+600+350+500+250+400}{8} = 381.25 \\
+\text{varianza\_real} &= (300-381.25)^2 + (450-381.25)^2 + ... + (400-381.25)^2 = 6500
+\end{align*}
+
+\textbf{b)} RMSE o MAE - son fáciles de interpretar en las mismas unidades.
+
+\textbf{c)} División por cero en el denominador del MAPE.
+
+\textbf{d)} Reemplazar ceros por valor muy pequeño, filtrar ceros, o usar sMAPE.
+
+\subsection{Comparación de Modelos de Predicción}
+
+\textbf{a)} Modelo A - tiene menor MSE (25 vs 30), penaliza menos los errores grandes.
+
+\textbf{b)} Modelo B - tiene menor MAE (3.2 vs 3.5), trata todos los errores por igual.
+
+\textbf{c)} Costos específicos de errores, distribución de los datos, interpretabilidad.
+
+\textbf{d)} Sí, R² = 0.95 indicaría que el Modelo A explica mucha más varianza, compensando el mayor MAE.
+
+\subsection{Comparación de Modelos}
 
 \textbf{Modelo A:}
 \begin{align*}
@@ -409,7 +506,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más, definitivamente elegir Modelo A.
 
-\subsection{Soluciones - Ejercicio 3}
+\subsection{Matriz de Confusión Multiclase}
 
 \textbf{a.} Accuracy = (85 + 82 + 81) / 300 = 0.827
 
@@ -422,7 +519,7 @@ Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más,
 
 \textbf{c.} Nublado es la más difícil (menor F1).
 
-\subsection{Soluciones - Ejercicio 4}
+\subsection{Curva ROC}
 
 \textbf{a.} Para cada umbral:
 \begin{itemize}
@@ -431,28 +528,96 @@ Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más,
     \item Umbral 0.9: TPR = 0.25, FPR = 0.25
 \end{itemize}
 
-\textbf{b.} Para minimizar FP: umbral 0.9
-\textbf{c.} Para minimizar FN: umbral bajo (0.1)
+\textbf{b.} Para minimizar FP: umbral 0.9 \\
+\textbf{c.} Para minimizar FN: umbral bajo (0.1) \\
 \textbf{d.} AUC aproximado: 0.75
 
-\subsection{Soluciones - Ejercicio 5}
+\subsection{Problema Médico}
 
-\textbf{a.} Modelo A: VP=200, FN=300, FP=100, VN=9400 \\
-Modelo B: VP=425, FN=75, FP=725, VN=8775
-
-\textbf{b.} Modelo B porque detecta más casos de neumonía, crucial en medicina.
-
+\textbf{a.} Modelo A: VP=200, FN=300, FP=100, VN=9400. Modelo B: VP=425, FN=75, FP=725, VN=8775 \\
+\textbf{b.} Modelo B porque detecta más casos de neumonía, crucial en medicina. \\
 \textbf{c.} Estrategias: datos más balanceados, ensemble, ajuste de umbral.
 
-\subsection{Soluciones - Ejercicio 6}
+\subsection{Implementación en Python}
 
-Código completo incluiría división train/test, entrenamiento de modelos, cálculo de métricas, visualización de curvas ROC/PR y análisis comparativo considerando el desbalance de clases.
+\begin{lstlisting}[language=Python]
+import numpy as np
+import pandas as pd
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc, precision_recall_curve
+import matplotlib.pyplot as plt
 
-\subsection{Soluciones - Ejercicio 7}
+# Generar un dataset desbalanceado
+X, y = make_classification(n_samples=5000, n_features=20, n_informative=2, n_redundant=10,
+                           n_clusters_per_class=1, weights=[0.9, 0.1], flip_y=0, random_state=42)
 
-\textbf{a.} Naive Bayes (mayor recall para no bloquear reseñas legítimas).
-\textbf{b.} SVM (mayor precisión para mantener calidad).
-\textbf{c.} Costos de errores, volumen de reseñas, recursos disponibles.
-\textbf{d.} Ensemble que combine los tres modelos con pesos según objetivos de negocio.
+# Division train/test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y, random_state=42)
+
+# Entrenamiento de modelos
+lr = LogisticRegression()
+rf = RandomForestClassifier()
+
+lr.fit(X_train, y_train)
+rf.fit(X_train, y_train)
+
+# Predicciones
+y_pred_lr = lr.predict(X_test)
+y_pred_rf = rf.predict(X_test)
+y_proba_lr = lr.predict_proba(X_test)[:,1]
+y_proba_rf = rf.predict_proba(X_test)[:,1]
+
+# Calculo de metricas
+print("Logistic Regression")
+print(confusion_matrix(y_test, y_pred_lr))
+print(classification_report(y_test, y_pred_lr, digits=3))
+
+print("Random Forest")
+print(confusion_matrix(y_test, y_pred_rf))
+print(classification_report(y_test, y_pred_rf, digits=3))
+
+# Curva ROC
+fpr_lr, tpr_lr, _ = roc_curve(y_test, y_proba_lr)
+fpr_rf, tpr_rf, _ = roc_curve(y_test, y_proba_rf)
+auc_lr = auc(fpr_lr, tpr_lr)
+auc_rf = auc(fpr_rf, tpr_rf)
+
+plt.figure()
+plt.plot(fpr_lr, tpr_lr, label="Logistic Reg (AUC = %.2f)" % auc_lr)
+plt.plot(fpr_rf, tpr_rf, label="Random Forest (AUC = %.2f)" % auc_rf)
+plt.plot([0,1],[0,1],'k--')
+plt.xlabel("FPR")
+plt.ylabel("TPR")
+plt.title("Curva ROC")
+plt.legend()
+plt.show()
+
+# Curva Precision-Recall
+prec_lr, rec_lr, _ = precision_recall_curve(y_test, y_proba_lr)
+prec_rf, rec_rf, _ = precision_recall_curve(y_test, y_proba_rf)
+
+plt.figure()
+plt.plot(rec_lr, prec_lr, label="Logistic Reg")
+plt.plot(rec_rf, prec_rf, label="Random Forest")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.title("Curva Precision-Recall")
+plt.legend()
+plt.show()
+
+# Analisis comparativo
+# En este caso, mirar F1, recall y precision para la clase minoritaria (1)
+# Tambien comparar AUC y la curva PR, que es mas informativa en datasets desbalanceados
+\end{lstlisting}
+
+\subsection{Caso de Negocio}
+
+\textbf{a.} Naive Bayes (mayor recall para no bloquear reseñas legítimas). \\
+\textbf{b.} SVM (mayor precisión para mantener calidad). \\
+\textbf{c.} Costos de errores, volumen de reseñas, recursos disponibles. \\
+\textbf{d.} Ensemble que combine todo con pesos según objetivos del negocio.
 
 \end{document}

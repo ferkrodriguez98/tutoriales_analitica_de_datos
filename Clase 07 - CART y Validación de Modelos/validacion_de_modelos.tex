@@ -54,7 +54,113 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
 \section{Introducción a la Validación de Modelos}
 La validación de modelos es un paso crucial en el desarrollo de modelos de machine learning. No solo necesitamos que nuestros modelos funcionen bien en los datos de entrenamiento, sino que también deben generalizar adecuadamente a nuevos datos. Para esto, es fundamental entender y utilizar las métricas apropiadas según el contexto del problema.
 
-\section{Matriz de Confusión}
+En machine learning, distinguimos principalmente entre dos tipos de problemas:
+\begin{itemize}
+    \item \textbf{Regresión}: Cuando queremos predecir un valor numérico continuo (ej: precio de una casa, temperatura, salario)
+    \item \textbf{Clasificación}: Cuando queremos predecir una categoría o clase (ej: spam/no spam, enfermedad/sano, compra/no compra)
+\end{itemize}
+
+Cada tipo de problema requiere métricas de validación específicas y diferentes enfoques para evaluar el rendimiento del modelo.
+
+\section{Validación para Regresión}
+
+En problemas de regresión, nuestro objetivo es predecir un valor numérico continuo. Las métricas de validación para regresión se enfocan en medir qué tan cerca están nuestras predicciones de los valores reales.
+
+\subsection{Error Cuadrático Medio (MSE)}
+
+El Error Cuadrático Medio (Mean Squared Error) es una de las métricas más utilizadas en regresión. Penaliza más los errores grandes debido a la función cuadrática:
+
+\[
+\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} {(y_i - \hat{y}_i)}^2
+\]
+
+donde:
+\begin{itemize}
+    \item $y_i$ es el valor real
+    \item $\hat{y}_i$ es el valor predicho
+    \item $n$ es el número de observaciones
+\end{itemize}
+
+\subsection{Raíz del Error Cuadrático Medio (RMSE)}
+
+El RMSE es simplemente la raíz cuadrada del MSE, lo que nos da una métrica en las mismas unidades que la variable objetivo:
+
+\[
+\text{RMSE} = \sqrt{\text{MSE}} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} {(y_i - \hat{y}_i)}^2}
+\]
+
+\subsection{Error Absoluto Medio (MAE)}
+
+El Error Absoluto Medio (Mean Absolute Error) es menos sensible a valores atípicos que el MSE, ya que no eleva al cuadrado los errores:
+
+\[
+\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+\]
+
+\subsection{Coeficiente de Determinación (R²)}
+
+El R² mide qué proporción de la varianza en la variable dependiente es explicada por el modelo. Su valor va de 0 a 1:
+
+\[
+R^2 = 1 - \frac{\sum_{i=1}^{n} {(y_i - \hat{y}_i)}^2}{\sum_{i=1}^{n} {(y_i - \bar{y})}^2}
+\]
+
+donde $\bar{y}$ es la media de los valores reales.
+
+\begin{itemize}
+    \item $R^2 = 1$: El modelo explica perfectamente la varianza
+    \item $R^2 = 0$: El modelo no es mejor que predecir la media
+    \item $R^2 < 0$: El modelo es peor que predecir la media
+\end{itemize}
+
+\subsection{Error Porcentual Absoluto Medio (MAPE)}
+
+El MAPE expresa el error como porcentaje del valor real, lo que facilita la interpretación:
+
+\[
+\text{MAPE} = \frac{100\%}{n} \sum_{i=1}^{n} \left|\frac{y_i - \hat{y}_i}{y_i}\right|
+\]
+
+\textbf{Problema con valores cero:} Cuando $y_i = 0$, la fórmula tiene una división por cero que causa error. Soluciones comunes:
+\begin{itemize}
+    \item Reemplazar ceros por un valor muy pequeño (ej: 0.0000001)
+    \item Usar un porcentaje del valor promedio (ej: 1\% de la media)
+    \item Filtrar los valores cero antes del cálculo
+    \item Usar MAPE simétrico (sMAPE): $\text{sMAPE} = \frac{100\%}{n} \sum_{i=1}^{n} \frac{2|y_i - \hat{y}_i|}{|y_i| + |\hat{y}_i|}$
+\end{itemize}
+
+\subsection{Ejemplo Práctico de Regresión}
+
+Consideremos un modelo que predice el precio de casas. Tenemos los siguientes datos:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Casa} & \textbf{Precio Real} & \textbf{Precio Predicho} \\
+\hline
+1 & 30 & 28 \\
+2 & 45 & 47 \\
+3 & 20 & 19 \\
+4 & 60 & 62 \\
+5 & 35 & 33 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{align*}
+\text{MSE} &= \frac{1}{5}[(30-28)^2 + (45-47)^2 + (20-19)^2 + (60-62)^2 + (35-33)^2] \\
+&= \frac{1}{5}[4 + 4 + 1 + 4 + 4] \\
+&= 18 \\
+\text{RMSE} &= \sqrt{18} = 4.24 \\
+\text{MAE} &= \frac{1}{5}[20 + 20 + 10 + 20 + 20] = 18000 \\
+\text{MAPE} &= \frac{100\%}{5}[\frac{20}{30} + \frac{20}{45} + \frac{10}{20} + \frac{20}{60} + \frac{20}{35}] \\
+&= 4.95\%
+\end{align*}
+
+\section{Validación para Clasificación}
+
+En problemas de clasificación, nuestro objetivo es predecir una categoría o clase. Las métricas de validación para clasificación se enfocan en medir la precisión de las predicciones categóricas.
+
 \subsection{Matriz de Confusión Binaria}
 La matriz de confusión más común es cuando tenemos un problema binario de clasificación. En este caso, tenemos dos clases: positiva y negativa. La matriz puede mostrarse de cualquiera de las siguientes formas, siempre indicando cuales son los reales y cuales son los predichos.
 
@@ -100,7 +206,7 @@ La matriz de confusión más común es cuando tenemos un problema binario de cla
 \end{tikzpicture}
 \end{center}
 
-Notar que la ubicación del falso positivo y el falso negativo cambia según donde pongamos el real y el predicho. Hay una cierta convención en la que se considera que el real está en las filas y el predicho en las columnas, pero van a ver que prácticamente nunca se usa y queda siempre a discreción del analista o de la biblioteca que estemos usando.
+Notar que la ubicación del falso positivo y el falso negativo cambia según donde pongamos el real y el predicho. Hay una cierta convención en la que se considera que el real está en las filas y el predicho en las columnas pero van a ver que prácticamente nunca se usa y queda siempre a discreción del analista o de la biblioteca que estemos usando.
 
 \subsection{Matriz de Confusión Multiclase}
 La matriz de confusión multiclase es una extensión de la matriz de confusión binaria. En este caso, tenemos más de dos clases. Notar que en estos casos no tenemos falsos positivos o falsos negativos, sino que tenemos \textbf{múltiples} tipos de errores. A continuación se muestra una matriz de confusión multiclase para un problema de clasificación de lluvia, nublado y soleado.
@@ -139,7 +245,7 @@ La matriz de confusión multiclase es una extensión de la matriz de confusión 
 \node at (5,6.5) {S};
 \end{tikzpicture}
 \end{center}
-\section{Métricas Básicas}
+\subsection{Métricas Básicas}
 
 \subsection{Accuracy (Exactitud)}
 La exactitud es simplemente la proporción de predicciones correctas sobre el total. En cualquier caso de matriz, sea binaria o multiclase sumamos la diagonal y dividimos por el total. Esta métrica es útil cuando las clases están balanceadas, los costos de falsos positivos y falsos negativos son similares, y el problema no tiene una necesidad crítica.
@@ -252,7 +358,7 @@ El valor predictivo negativo mide la proporción de verdaderos negativos entre t
 
 \vspace{0.3em}
 
-\section{Métricas Avanzadas}
+\subsection{Métricas Avanzadas}
 \subsection{ROC y AUC}
 La curva ROC (Receiver Operating Characteristic) muestra la relación entre la tasa de verdaderos positivos (recall) y la tasa de falsos positivos a \textbf{diferentes umbrales de clasificación}. El AUC (Area Under the Curve) es el área bajo esta curva:
 \begin{itemize}
@@ -263,7 +369,7 @@ La curva ROC (Receiver Operating Characteristic) muestra la relación entre la t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{curva-roc.png}
+    \includegraphics[width=0.8\textwidth]{img/curva-roc.png}
 \end{figure}
 
 La curva ROC es una herramienta muy útil para evaluar el rendimiento de clasificadores binarios. En el gráfico podemos observar que:
@@ -411,7 +517,7 @@ Para un umbral \( U \), tengo que calcular la FPR y la TPR para cada valor de um
 
 La curva PR es prácticamente igual a la curva ROC, solo que en el eje X tenemos la precisión y en el eje Y tenemos el recall. Todo se calcula igual que con la curva ROC, solo que en vez de usar la FPR y la TPR, usamos la precisión y el recall. Tendremos que agarrar un umbral \( U \) y calcular la precisión y el recall para ese umbral, y así con todos.
 
-\section{Casos de Uso y Recomendaciones}
+\subsection{Casos de Uso y Recomendaciones}
 
 \subsection{Salud}
 En el ámbito de la salud, las consecuencias de un falso negativo (no detectar una enfermedad) son mucho más graves que las de un falso positivo. Por lo tanto:
@@ -429,7 +535,7 @@ En el sistema judicial, debemos considerar que es mejor dejar libre a un culpabl
     \item Evaluar la transparencia y explicabilidad del modelo
 \end{itemize}
 
-\section{Ejemplo Práctico}
+\subsection{Ejemplo Práctico de Clasificación}
 Consideremos un modelo de detección de enfermedades cardíacas con los siguientes resultados:
 
 \begin{center}
@@ -470,16 +576,27 @@ Calculemos todas las métricas:
 
 En este caso, aunque la accuracy es alta (0.85), el recall de 0.80 significa que estamos perdiendo el 20\% de los casos positivos, lo cual no está bueno en un problema médico. La tasa de falsos positivos (FPR) es del 10\%, lo que significa que estamos clasificando incorrectamente como enfermos al 10\% de las personas sanas.
 
-\section{Implementación en Python}
+\subsection{Implementación en Python}
 
 \begin{lstlisting}[language=Python]
+# Para regresion
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import r2_score
+
+# Metricas de regresion
+mse = mean_squared_error(y_true, y_pred)
+rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_true, y_pred)
+r2 = r2_score(y_true, y_pred)
+
+# Para clasificacion
 from sklearn.metrics import accuracy_score, precision_score
 from sklearn.metrics import recall_score, f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import precision_recall_curve
 
-# Metricas basicas
+# Metricas basicas de clasificacion
 accuracy = accuracy_score(y_true, y_pred)
 precision = precision_score(y_true, y_pred)
 recall = recall_score(y_true, y_pred)

@@ -1,0 +1,603 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{geometry}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{K-Nearest Neighbors (KNN)}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Introducción a K-Nearest Neighbors}
+
+K-Nearest Neighbors (KNN) es uno de los algoritmos de machine learning más simples e intuitivos. Se basa en el principio de que ``las cosas similares tienden a estar cerca''. En lugar de aprender un modelo explícito durante el entrenamiento, KNN almacena todos los datos de entrenamiento y hace predicciones basándose en la proximidad de nuevos puntos a los datos existentes.
+
+\vspace{1em}
+
+El algoritmo funciona de la siguiente manera:
+
+\begin{enumerate}
+    \item Cuando llega un nuevo punto a clasificar o predecir
+    \item Calcula la distancia a todos los puntos de entrenamiento
+    \item Selecciona los k puntos más cercanos (vecinos)
+    \item Para clasificación: vota por la clase mayoritaria entre los vecinos
+    \item Para regresión: promedia los valores objetivo de los vecinos
+\end{enumerate}
+
+\vspace{1em}
+
+Las características principales de KNN son:
+\begin{itemize}
+    \item Es un algoritmo ``lazy'' (vago): no entrena un modelo explícito
+    \item Es no paramétrico: no hace suposiciones sobre la distribución de los datos
+    \item Es sensible a la escala de las variables
+    \item Su rendimiento depende crucialmente del valor de k y la métrica de distancia
+\end{itemize}
+
+\section{Visualización del Concepto}
+
+Para entender cómo funciona KNN, consideremos un ejemplo visual con datos en 2D:
+
+\begin{center}
+\begin{tikzpicture}[scale=1.2]
+\shorthandoff{>}
+    % Grid
+    \draw[very thin,gray!30] (0,0) grid (7,6);
+    
+    % Axes
+    \draw[->] (0,0) -- (6.5,0);
+    \draw[->] (0,0) -- (0,5.5);
+    \node[right] at (6.5,0) {x1};
+    \node[above] at (0,5.5) {x2};
+    
+    % Class A points (blue circles)
+    \fill[blue!70] (1,1) circle (0.15);
+    \fill[blue!70] (1.5,2) circle (0.15);
+    \fill[blue!70] (2,1.5) circle (0.15);
+    \fill[blue!70] (0.8,2.2) circle (0.15);
+    \fill[blue!70] (1.8,0.8) circle (0.15);
+    
+    % Class B points (orange/red circles)
+    \fill[orange!80] (4,3.5) circle (0.15);
+    \fill[orange!80] (4.5,4) circle (0.15);
+    \fill[orange!80] (5,3.2) circle (0.15);
+    \fill[orange!80] (4.2,2.8) circle (0.15);
+    \fill[orange!80] (5.2,3.8) circle (0.15);
+    
+    % New point to classify
+    \fill[black] (3,2.5) circle (0.2);
+    \draw[black, thick] (3,2.5) circle (0.2);
+    
+    % Labels
+    \node[blue, above] at (1,1.3) {Clase A};
+    \node[orange, above] at (4.5,4.3) {Clase B};
+    \node[black, above] at (3,2.8) {Nuevo Punto};
+    \node[purple, below] at (4.2,1.5) {k=3 vecinos};
+    
+    % Distance lines to 3 nearest neighbors
+    \draw[dotted, thick] (3,2.5) -- (2,1.5);
+    \draw[dotted, thick] (3,2.5) -- (4.2,2.8);
+    \draw[dotted, thick] (3,2.5) -- (4,3.5);
+\end{tikzpicture}
+\shorthandon{>}
+\end{center}
+
+En este caso tenemos una separación muy clara de clases, pero siempre va a pasar de que estén bastante mas mezclados. Con k=3, los tres vecinos más cercanos al punto negro son: dos puntos naranjas (Clase B) y un punto azul (Clase A). Por tanto, la predicción sería Clase B (2 votos vs 1 voto).
+
+\section{KNN para Clasificación}
+
+En problemas de clasificación, KNN asigna una clase al nuevo punto basándose en las clases de sus k vecinos más cercanos.
+
+\subsection{Algoritmo de Clasificación}
+
+\begin{enumerate}
+    \item Dado un nuevo punto $x_{nuevo}$ a clasificar calcular la distancia de $x_{nuevo}$ a todos los puntos de entrenamiento
+    \item Seleccionar los k puntos con menor distancia
+    \item Contar los votos de cada clase entre estos k vecinos y asignar la clase con mayor número de votos
+\end{enumerate}
+
+\subsection{Ejemplo Numérico}
+
+Consideremos un dataset simple con dos variables y dos clases: puntos azules (Aprobado) y puntos naranjas (Rechazado).
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+\shorthandoff{>}
+    % Grid
+    \draw[very thin,gray!30] (0,0) grid (6,5);
+    
+    % Axes
+    \draw[->] (0,0) -- (6,0);
+    \draw[->] (0,0) -- (0,5);
+    \node[right] at (6,0) {Edad};
+    \node[above] at (0,5) {Ingresos (x1000)};
+    
+    % Training points - Approved (blue)
+    \fill[blue!70] (1.2,1.8) circle (0.12);
+    \fill[blue!70] (2,2.5) circle (0.12);
+    \fill[blue!70] (1.5,3.2) circle (0.12);
+    \fill[blue!70] (0.8,2.2) circle (0.12);
+    \fill[blue!70] (3.5,2.3) circle (0.12);
+    \fill[blue!70] (4.2,1.5) circle (0.12);
+    
+    % Training points - Rejected (orange)
+    \fill[orange!80] (4.5,0.8) circle (0.12);
+    \fill[orange!80] (5.2,1.2) circle (0.12);
+    \fill[orange!80] (4.8,0.5) circle (0.12);
+    \fill[orange!80] (5.5,0.9) circle (0.12);
+    \fill[orange!80] (2.8,1.8) circle (0.12);
+    \fill[orange!80] (2.2,1.1) circle (0.12);
+    
+    % New point
+    \fill[black] (3,2) circle (0.15);
+    \draw[black, thick] (3,2) circle (0.15);
+    
+    % Distance lines to k=3 nearest neighbors (black)
+    \draw[dotted, thick, black] (3,2) -- (2.8,1.8);
+    \draw[dotted, thick, black] (3,2) -- (3.5,2.3);
+    \draw[dotted, thick, black] (3,2) -- (2.2,1.1);
+    
+    % Distance lines to k=5 nearest neighbors (violet)
+    \draw[dotted, thick, violet] (3,2) -- (2,2.5);
+    \draw[dotted, thick, violet] (3,2) -- (4.2,1.5);
+    
+    % Distance lines to k=7 nearest neighbors (green)
+    \draw[dotted, thick, green] (3,2) -- (1.2,1.8);
+    \draw[dotted, thick, green] (3,2) -- (4.5,0.8);
+    
+    % Labels
+    \node[black, below] at (3,1.7) {¿?};
+    
+    % Axis labels
+    \node[below] at (1.5,0) {25};
+    \node[below] at (3,0) {30};
+    \node[below] at (4.5,0) {35};
+    \node[left] at (0,1.5) {15};
+    \node[left] at (0,3) {25};
+    \node[left] at (0,4.5) {35};
+\end{tikzpicture}
+\shorthandon{>}
+\end{center}
+
+El efecto del parámetro k en la predicción:
+
+\begin{itemize}
+    \item \textbf{k=3 (lineas negras):} 1 aprobado, 2 rechazado $\rightarrow$ Predicción: Rechazado.
+    \item \textbf{k=5 (líneas violetas + negras):} 3 aprobados, 2 rechazados $\rightarrow$ Predicción: Aprobado.
+    \item \textbf{k=7 (líneas verdes + violetas + negras):} 4 aprobados, 3 rechazados $\rightarrow$ Predicción: Aprobado.
+\end{itemize}
+
+A medida que el k aumenta la predicción puede ir cambiando. En general se vuelve más conservadora porque considera más puntos lejanos. Pregunta: ¿Qué pasa si K=N? Esto está contestado justo abajo pero piensenlo un segundo.
+
+\subsection{Efecto del Parámetro k}
+
+El valor de k tiene un impacto significativo en las predicciones:
+
+\begin{itemize}
+    \item \textbf{k = 1:} Alta varianza, propenso a overfitting, sensible al ruido
+    \item \textbf{k pequeño (3-5):} Fronteras de decisión complejas, captura patrones locales
+    \item \textbf{k grande:} Fronteras de decisión más suaves, reduce overfitting pero puede causar underfitting
+    \item \textbf{k = n (total de datos):} Siempre predice la clase mayoritaria
+\end{itemize}
+
+\subsection{Selección del Parámetro k}
+
+La elección del parámetro k es crucial para el rendimiento del algoritmo. Esto puede afectar directamente la precisión de las predicciones y la capacidad del modelo para generalizar.
+
+\begin{itemize}
+    \item \textbf{Regla empírica:} $k = \sqrt{n}$ donde n es el número de observaciones.
+    \item \textbf{Cross-validation:} Probar diferentes valores y elegir el que minimice el error.
+    \item \textbf{Grid search:} Búsqueda exhaustiva en un rango de valores.
+\end{itemize}
+
+Algunas consideraciones importantes que tenemos que siempre tener en cuenta son:
+
+\begin{itemize}
+    \item k impar evita empates en clasificación binaria.
+    \item k muy pequeño provoca overfitting.
+    \item k muy grande provoca underfitting.
+    \item considerar el balance de clases. Si una clase es muy mayoritaria sobre la otra cuanto más grande sea el k más probable es que el modelo prediga la clase mayoritaria.
+\end{itemize}
+
+\section{KNN para Regresión}
+
+En problemas de regresión, KNN predice un valor numérico promediando los valores objetivo de los k vecinos más cercanos.
+
+\subsection{Algoritmo de Regresión}
+
+\begin{enumerate}
+    \item Dado un nuevo punto $x_{nuevo}$ para predecir calcular la distancia de $x_{nuevo}$ a todos los puntos de entrenamiento
+    \item Seleccionar los k puntos con menor distancia
+    \item Calcular el promedio de los valores objetivo de estos k vecinos y retornar este promedio como predicción
+\end{enumerate}
+
+\subsection{Ejemplo Visual de Regresión}
+
+En este caso tenemos un solo dato, que es el valor de $X$ y la idea es poder predecir $Y$, como por ejemplo con solo la edad predecir ingresos. Si tuvieramos dos variables, como $X$ e $Y$ entonces predeciriamos un $Z$, como si teniendo edad e ingresos pudieramos predecir un score de crédito. Siempre a partir de la o las variables que tenemos predecimos una dimensión más.
+
+\begin{center}
+\begin{tikzpicture}[scale=1]
+\shorthandoff{>}
+    % Grid
+    \draw[very thin,gray!30] (0,0) grid (6,5);
+    
+    % Axes
+    \draw[->] (0,0) -- (6,0);
+    \draw[->] (0,0) -- (0,5);
+    \node[right] at (6,0) {x};
+    \node[above] at (0,5) {y};
+    
+    % Training points (scattered)
+    \fill[blue!70] (0.8,1.2) circle (0.1);
+    \fill[blue!70] (1.5,2.1) circle (0.1);
+    \fill[blue!70] (2.2,1.8) circle (0.1);
+    \fill[blue!70] (2.8,3.1) circle (0.1);
+    \fill[blue!70] (3.2,2.4) circle (0.1);
+    \fill[blue!70] (3.8,3.8) circle (0.1);
+    \fill[blue!70] (4.2,2.9) circle (0.1);
+    \fill[blue!70] (4.8,4.1) circle (0.1);
+    \fill[blue!70] (5.2,3.5) circle (0.1);
+    \fill[blue!70] (1.8,0.9) circle (0.1);
+    \fill[blue!70] (2.5,4.2) circle (0.1);
+    \fill[blue!70] (4.5,1.7) circle (0.1);
+    
+    % New point to predict
+    \fill[red] (3,0) circle (0.1);
+    \draw[red, dashed] (3,0) -- (3,5);
+    
+    % k=3 nearest neighbors highlighted
+    \draw[thick, green] (2.8,3.1) circle (0.15);
+    \draw[thick, green] (3.2,2.4) circle (0.15);
+    \draw[thick, green] (2.2,1.8) circle (0.15);
+    
+    % Prediction line
+    \draw[red, thick] (2.8,2.4) -- (3.2,2.4);
+    \fill[red] (3,2.4) circle (0.1);
+    
+    % Labels
+    \node[red, above] at (3,2.6) {Predicción};
+    \node[blue, above] at (4.5,1) {k=3 vecinos};
+    \node[red, below] at (3,-0.5) {x nuevo};
+    
+    % Show calculation
+    \node[right] at (6.2,2.4) {y = (3.1 + 2.4 + 1.8)/3 = 2.4};
+    
+    % X-axis ticks
+    \node[below] at (1,0) {1};
+    \node[below] at (2,0) {2};
+    \node[below] at (3,0) {3};
+    \node[below] at (4,0) {4};
+    \node[below] at (5,0) {5};
+    
+    % Y-axis ticks
+    \node[left] at (0,1) {1};
+    \node[left] at (0,2) {2};
+    \node[left] at (0,3) {3};
+    \node[left] at (0,4) {4};
+\end{tikzpicture}
+\shorthandon{>}
+\end{center}
+
+\subsection{Pesos por Distancia}
+
+Hay veces en donde sería lógico darle más importancia a los vecinos más cercanos. Lo que podemos hacer ahí es en lugar de un promedio simple, usar pesos inversamente proporcionales a la distancia:
+
+\[\hat{y} = \frac{\sum_{i=1}^{k} w_i \cdot y_i}{\sum_{i=1}^{k} w_i}\]
+
+donde \(w_i = \frac{1}{d_i}\) y \(d_i\) es la distancia al vecino i-ésimo.
+
+\section{Métricas de Distancia}
+
+La elección de la métrica de distancia es crucial para el rendimiento de KNN. Esto se debe a que:
+
+\begin{itemize}
+    \item \textbf{Determina qué puntos considera "similares"}: Si usás la métrica incorrecta, vas a buscar vecinos que en realidad no son parecidos a tu punto.
+    \item \textbf{Afecta la predicción final}: Diferentes métricas pueden darte predicciones completamente distintas para el mismo punto.
+    \item \textbf{Es sensible a la escala de las variables}: Una variable con números grandes puede dominar el cálculo si no elegís bien la métrica.
+    \item \textbf{Debe coincidir con el tipo de datos}: No podés usar la misma métrica para edades que para colores de auto.
+\end{itemize}
+
+Pensalo así: si querés encontrar personas similares a vos, no vas a medir la distancia de la misma forma si comparás altura + peso (números) que si comparás color de pelo + tipo de música (categorías). 
+
+\subsection{Distancia Euclidiana}
+
+La más común para variables continuas. ¿Cuándo la podemos usar? Cuando tenemos variables con números (como edad, ingresos, altura, peso) y las variables están en la misma escala. Se calcula de la siguiente forma:
+
+\[d(x_1, x_2) = \sqrt{\sum_{i=1}^{n} (x_{1i} - x_{2i})^2}\]
+
+\textbf{Ejemplo práctico:} Predecir precio de casa basado en metros cuadrados y número de habitaciones.
+
+\begin{itemize}
+    \item Casa A: 100m², 3 habitaciones, precio \$150,000
+    \item Casa B: 120m², 4 habitaciones, precio \$180,000  
+    \item Casa nueva: 105m², 3 habitaciones, precio desconocido
+\end{itemize}
+
+Distancia de la casa nueva a Casa A:
+\[d(x_1, x_2) = \sqrt{(105-100)^2 + (3-3)^2} = \sqrt{25 + 0} = 5.00\]
+
+Distancia de la casa nueva a Casa B:
+\[d(x_1, x_2) = \sqrt{(105-120)^2 + (3-4)^2} = \sqrt{225 + 1} = 15.03\]
+
+Si k=1, elegís la más cercana (Casa A). Predicción: \$150,000 \\
+Si k=2, promediás ambas: (\$150,000 + \$180,000)/2 = \$165,000
+
+\vspace{0.3em}
+\textbf{Pero hay un problema:} Si una variable tiene números mucho más grandes, domina todo. Si comparás ingresos (en miles) con número de hijos, los ingresos van a mandar.
+
+\subsection{Distancia Manhattan}
+
+La distancia Manhattan se llama así porque la forma en la que se calcula está inspirada en la forma de desplazarse en una ciudad organizada en cuadrículas como Manhattan. En este tipo de ciudades para desplazarte de una esquina a otra no podes moverte en diagonal a la ``Euclidea'' si no que tenes que avanzar calle por calle en direcciones verticales y horizontales. Por ejemplo si estuvieramos en la 1st Ave y la 2nd St y queremos llegar a la 4th Ave y la 6th St deberíamos movernos 3 cuadras en una dirección y 4 en la otra, para un total de 7 cuadras. Con Euclideana sería $\sqrt{3^2 + 4^2} = \sqrt{9 + 16} = \sqrt{25} = 5$ cuadras pero en la vida real no podes caminar en diagonal atravesando edificios (a menos que seas Spiderman).
+
+\vspace{0.5em}
+
+Útil cuando las variables tienen interpretaciones diferentes. La vamos a usar con variables que representen cantidades o conteos (como número de clicks o días de vacaciones). También cuando tengamos datos con muchas dimensiones o cuando querés considerar los outliers pero sin que dominen el cálculo (porque la euclidiana les da más peso al elevar esa diferencia al cuadrado).
+
+\[d(x_1, x_2) = \sum_{i=1}^{n} |x_{1i} - x_{2i}|\]
+
+\textbf{Ejemplo práctico:} Recomendación de productos basada en compras por categoría.
+
+\begin{itemize}
+    \item Cliente A: 5 libros, 2 películas, 3 ropa, le gusta la ciencia ficción
+    \item Cliente B: 3 libros, 4 películas, 1 ropa, le gusta el drama  
+    \item Cliente C: 2 libros, 1 película, 4 ropa, le gusta la ciencia ficción
+    \item Cliente nuevo: 4 libros, 2 películas, 2 ropa, género desconocido
+\end{itemize}
+
+Distancia del cliente nuevo a Cliente A: 
+\[d(x_1, x_2) = |4-5| + |2-2| + |2-3| = 1 + 0 + 1 = 2\]
+
+Distancia del cliente nuevo a Cliente B: 
+\[d(x_1, x_2) = |4-3| + |2-4| + |2-1| = 1 + 2 + 1 = 4\]
+
+Distancia del cliente nuevo a Cliente C: 
+\[d(x_1, x_2) = |4-2| + |2-1| + |2-4| = 2 + 1 + 2 = 5\]
+
+Si k=1, elegís la más cercana (Cliente A). Predicción: le gusta ciencia ficción \\
+Si k=3, elegís los 3 más cercanos: Cliente A (ciencia ficción), Cliente B (drama), Cliente C (ciencia ficción) $\rightarrow$ Predicción: le gusta ciencia ficción.
+
+\subsection{Distancia de Minkowski}
+
+La distancia de Minkowski es una generalización de la distancia Euclídea y la distancia Manhattan. La vamos a usar cuando queremos tener flexibilidad en la métrica y poder cambiar un hiperparámetro ajustandolo. El parametro $p$ te permite penalizar las diferencias entre coordenadas
+
+\[d(x_1, x_2) = \left(\sum_{i=1}^{n} |x_{1i} - x_{2i}|^p\right)^{1/p}\]
+
+\textbf{Casos especiales:}
+\begin{itemize}
+    \item $p=1$: Distancia Manhattan (suma de diferencias absolutas).
+    \item $p=2$: Distancia Euclidiana (la diagonal ``real'').
+    \item $p=3,4,5$: A medida que $p$ aumenta, las diferencias grandes pesan más (se penalizan más fuerte).
+    \item $p \to \infty$: Distancia de Chebyshev. Solo considera la diferencia máxima en alguna coordenada. 
+    Ejemplo: en un proceso de fábrica en paralelo, el tiempo total lo determina la etapa más lenta (la mayor diferencia porque es el cuello de botella).
+\end{itemize}
+
+\textbf{Ejemplo práctico:} Clasificacion de estudiantes basada en notas (del 1 al 10).
+\begin{itemize}
+    \item Estudiante A: 10, 7, 6, 9
+    \item Estudiante B: 6, 8, 8, 7
+    \item Con p=1: $|10-6| + |7-8| + |6-8| + |9-7| = 4 + 1 + 2 + 2 = 9$
+    \item Con p=2: $\sqrt{4^2 + 1^2 + 2^2 + 2^2} = \sqrt{16 + 1 + 4 + 4} = \sqrt{25} = 5$
+    \item Con p=3: $\sqrt[3]{4^3 + 1^3 + 2^3 + 2^3} = \sqrt[3]{64 + 1 + 8 + 8} = \sqrt[3]{81} = 4.33$
+    \item Con p=7: $\sqrt[7]{4^{7} + 1^{7} + 2^{7} + 2^{7}} \approx \sqrt[7]{16384 + 1 + 128 + 128} = \sqrt[7]{16641} \approx 3.16$
+    \item Con p muy grande (Chebyshev): $\max(|10-6|, |7-8|, |6-8|, |9-7|) = 4$
+\end{itemize}
+
+\subsection{Distancia de Hamming}
+
+Cuando trabajamos con KNN, a veces los datos no son numéricos, sino categóricos o binarios, como género, color, tipo de producto, respuestas sí/no o códigos de longitud fija. En esos casos no tiene sentido medir distancias geométricas como Euclídea o Manhattan, porque no podemos representar atributos como colores o estados en un eje X/Y. La distancia de Hamming es ideal para estos escenarios: mide simplemente cuántas posiciones difieren entre dos instancias, contando cada atributo distinto como 1 y los iguales como 0.
+
+\[
+d(x_1, x_2) = \sum_{i=1}^{n} I(x_{1i} \neq x_{2i})
+\]
+
+donde \(I(\cdot)\) es la función indicadora: vale 1 si la condición se cumple y 0 si no.
+
+Ejemplo práctico: Clasificación de clientes basada en características categóricas.
+\begin{itemize}
+    \item Cliente A: M, Soltero, Empleado, \textbf{Sí} tiene tarjeta.
+    \item Cliente B: F, Casada, Empleada, \textbf{No} tiene tarjeta.
+    \item Comparación posición por posición:
+    \begin{itemize}
+        \item M vs F $\rightarrow$ diferente (1)
+        \item Soltero vs Casada $\rightarrow$ diferente (1)
+        \item Empleado vs Empleada $\rightarrow$ igual (0)
+        \item Sí tiene tarjeta vs No tiene tarjeta $\rightarrow$ diferente (1)
+    \end{itemize}
+    \item Distancia de Hamming = 1 + 1 + 0 + 1 = 3
+\end{itemize}
+
+\textbf{Ventaja:} Es súper simple: solo contás cuántas características son diferentes. Perfecto para datos que no son números (porque no podríamos plotear en un eje X el color de ojos de una persona por ejemplo)
+
+\subsection{Resumen: ¿Cuál elegir?}
+
+\begin{itemize}
+    \item \textbf{Solo números, misma escala} $\rightarrow$ Euclidiana.
+    \item \textbf{Solo números, escalas diferentes} $\rightarrow$ Manhattan (o normalizar + euclidiana).
+    \item \textbf{Solo categorías} $\rightarrow$ Hamming.
+    \item \textbf{Mezcla de números y categorías} $\rightarrow$ Combinar métricas o convertir todo a números (con criterio).
+    \item \textbf{Querés controlar qué tan ``exigente'' es} $\rightarrow$ Minkowski con p que te guste.
+    \item \textbf{No estás seguro} $\rightarrow$ Probá Manhattan, es la más robusta.
+\end{itemize}
+
+\section{Normalización de Variables}
+
+KNN es muy sensible a la escala de las variables, ya que el cálculo de distancia se ve fuertemente influenciado por aquellas características que tienen valores grandes. Si una variable tiene magnitudes mucho mayores que otra, puede dominar la distancia y, por lo tanto, el resultado de la clasificación o regresión.
+
+\subsection{Ejemplo sin Normalización}
+
+Consideremos un conjunto de datos de empleados con las siguientes características:
+\begin{itemize}
+    \item Edad: 25 a 60 años
+    \item Salario: 30,000 a 100,000 pesos
+\end{itemize}
+
+Si calculamos la distancia euclidiana entre empleados, el salario dominará el resultado debido a su escala mucho mayor, mientras que la edad prácticamente no influirá en la distancia.
+
+\subsection{Min-Max Scaling}
+
+Una forma de corregir esto es escalar las variables al rango [0,1], usando la fórmula:
+
+\[
+x_{\text{norm}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}}
+\]
+
+De esta manera, todas las variables quedan en la misma escala, preservando la distribución relativa de los datos.
+
+\subsection{Z-Score Standardization}
+
+Otra opción es estandarizar las variables a media 0 y desviación estándar 1, usando:
+
+\[
+x_{\text{norm}} = \frac{x - \mu}{\sigma}
+\]
+
+Esto centra los datos y ajusta la dispersión, evitando que variables con varianzas grandes dominen el cálculo de distancia.
+
+\section{Ventajas y Desventajas de KNN}
+
+\subsection{Ventajas}
+
+KNN es un algoritmo fácil de entender y de implementar, ideal para arrancar con aprendizaje supervisado. No necesita asumir ninguna distribución particular de los datos, porque es un método no paramétrico, y se puede usar tanto para clasificación como para regresión. Además, es flexible: se adapta a nuevas observaciones sin tener que reentrenar todo el modelo, y si elegís bien el número de vecinos y la métrica de distancia, puede capturar relaciones complejas entre los datos.
+
+\subsection{Desventajas}
+
+A pesar de ser simple, KNN puede ser pesado cuando tenés muchos datos, porque calcula la distancia de la nueva observación con todos los puntos del conjunto de entrenamiento. Es muy sensible a la escala de las variables, así que generalmente hay que normalizar o estandarizar antes de usarlo. También puede verse afectado por ruido y valores atípicos que pueden distorsionar la clasificación. La elección de $k$ es clave: un valor mal elegido puede arruinar el desempeño del modelo. Por último, KNN no genera un modelo explícito; toda la info queda en los datos de entrenamiento, lo que a veces hace que sea menos interpretable.
+
+\textbf{Regla de oro:} Si no sabés cuál usar, empezá con Manhattan. Es la más "justa" y funciona bien en la mayoría de casos.
+
+\section{Curse of Dimensionality}
+
+Cuando trabajamos en espacios de alta dimensionalidad, todos los puntos tienden a estar prácticamente a la misma distancia entre sí. Esto hace que el concepto de ``vecino más cercano'' pierda sentido, porque ya no hay puntos claramente próximos o lejanos.
+
+\subsection{Problema}
+
+A medida que aumenta la cantidad de dimensiones, el volumen del espacio crece de manera exponencial y los datos se vuelven mucho más dispersos. Como consecuencia, las distancias entre puntos pierden capacidad de discriminación: los vecinos dejan de ser realmente cercanos, y esto afecta directamente el desempeño de algoritmos basados en distancias, como KNN.
+
+\subsection{Soluciones}
+
+Para mitigar este problema, se pueden tomar varias estrategias. Una es realizar una selección de características relevantes, quedándose solo con las dimensiones que aportan información útil. Otra opción es aplicar técnicas de reducción de dimensionalidad, como PCA o t-SNE, que condensan la información en menos dimensiones sin perder lo esencial. También se puede recurrir a métricas de distancia especializadas que sean más robustas en espacios de alta dimensión, o aumentar el tamaño del dataset para que los puntos cercanos sigan existiendo y los vecinos mantengan sentido.
+
+\section{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler # o MinMaxScaler
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Preparacion de datos
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Normalizacion
+scaler = StandardScaler() # o MinMaxScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Para clasificacion
+knn_clf = KNeighborsClassifier(
+    n_neighbors=5,
+    weights='distance',  # Pesos por distancia
+    metric='euclidean'
+)
+
+# Para regresion
+knn_reg = KNeighborsRegressor(
+    n_neighbors=3,
+    weights='uniform',
+    metric='manhattan'
+)
+
+# Entrenamiento
+knn_clf.fit(X_train_scaled, y_train)
+knn_reg.fit(X_train_scaled, y_train)
+
+# Predicciones
+y_pred_clf = knn_clf.predict(X_test_scaled)
+y_pred_reg = knn_reg.predict(X_test_scaled)
+
+# Validacion cruzada para seleccionar k
+k_values = range(1, 31)
+cv_scores = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    scores = cross_val_score(knn, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+optimal_k = k_values[np.argmax(cv_scores)]
+print(f"Mejor k: {optimal_k}")
+
+# Evaluacion de clasificacion
+print("Reporte de clasificacion:")
+print(classification_report(y_test, y_pred_clf))
+print("Matriz de confusion:")
+print(confusion_matrix(y_test, y_pred_clf))
+
+# Evaluacion de regresion
+mse = mean_squared_error(y_test, y_pred_reg)
+r2 = r2_score(y_test, y_pred_reg)
+print(f"MSE: {mse}")
+print(f"R-squared: {r2}")
+\end{lstlisting}
+
+\section{Casos de Uso y Aplicaciones}
+
+\subsection{Clasificación}
+
+Para clasificación, KNN se utiliza para predecir la categoría a la que pertenece una nueva instancia comparándola con sus vecinos más cercanos. Por ejemplo, se puede clasificar clientes según si es probable que compren un producto, diagnosticar pacientes en base a síntomas similares a otros ya conocidos, o identificar correos electrónicos como spam o no spam.
+
+\subsection{Regresión}
+
+Para regresión, KNN predice un valor continuo promediando los valores de los vecinos más cercanos. Esto se puede aplicar, por ejemplo, para estimar el precio de una propiedad según características de casas similares, predecir la temperatura en una localidad basándose en estaciones cercanas, o calcular la demanda esperada de un producto a partir de comportamientos de clientes semejantes.
+
+\section{Optimizaciones y Variantes}
+
+Aunque KNN es simple, existen varias estrategias y variantes para mejorar su eficiencia y desempeño. Una optimización común es usar estructuras de datos como \textit{KD-Trees} o \textit{Ball Trees} que aceleran la búsqueda de vecinos, especialmente en datasets grandes o de alta dimensión. También se puede ponderar la influencia de los vecinos según la distancia, dando más peso a los más cercanos en lugar de tratarlos a todos por igual. Otra variante es \textit{Weighted KNN}, que ajusta las predicciones en función de la proximidad. Para manejar mejor el ruido y outliers, se pueden combinar técnicas de filtrado de datos o ajustar dinámicamente el valor de $k$ según la densidad local de puntos. Además, existen extensiones como KNN basado en densidad o con métricas adaptativas que ajustan la distancia según la distribución de los datos, y versiones aproximadas que reducen la complejidad computacional sin perder demasiada precisión.
+
+\end{document}

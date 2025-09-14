@@ -156,6 +156,7 @@ Usando los mismos datos del ejercicio anterior:
 \begin{enumerate}
     \item Clasificá el punto (4.8, 1.6) usando k=1.
     \item Clasificá el mismo punto usando k=5.
+    \item Clasificá el mismo punto usando k=7.
     \item ¿Por qué pueden diferir los resultados?
 \end{enumerate}
 
@@ -207,9 +208,11 @@ Tenemos datos de clientes bancarios:
 \end{table}
 
 \begin{enumerate}
+    \item Calculá las distancias al punto (35, 40000, 15000) sin normalizar.
     \item Normalizá los datos.
-    \item Encontrá los 2 vecinos más cercanos al punto (35, 40000, 15000).
+    \item Encontrá los 2 vecinos más cercanos al punto normalizado.
     \item Clasificá el nuevo cliente.
+    \item ¿Cómo cambian los resultados con y sin normalización?
 \end{enumerate}
 
 \subsection{Ejercicio 5 - Datos Desbalanceados}
@@ -341,7 +344,27 @@ Tenemos datos de ventas:
 
 \subsection{Ejercicio 15 - Outliers}
 
+Tenemos datos de precios de casas con un outlier:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cc}
+        \toprule
+        \textbf{Área (m²)} & \textbf{Precio (USD)} \\
+        \midrule
+        50 & 80000 \\
+        60 & 95000 \\
+        70 & 110000 \\
+        80 & 125000 \\
+        90 & 140000 \\
+        100 & 155000 \\
+        95 & 500000 \\  % Outlier
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 \begin{enumerate}
+    \item Predicí el precio de una casa de 85 m² usando k=3 con y sin el outlier.
     \item ¿Cómo afectan los outliers a KNN en regresión?
     \item ¿Qué técnicas se pueden usar para mitigar su efecto?
     \item Compará con otros algoritmos de regresión.
@@ -468,7 +491,8 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
 \begin{enumerate}
     \item Con k=1: Versicolor (punto D)
     \item Con k=5: Versicolor (todos los vecinos son Versicolor)
-    \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos.
+    \item Con k=7: Versicolor (todos los vecinos son Versicolor)
+    \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 o k=7 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos. En este caso específico, todos los vecinos cercanos son Versicolor, por lo que la clasificación no cambia.
 \end{enumerate}
 
 \subsection{Soluciones - Ejercicio 3}
@@ -549,6 +573,8 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     Los 2 vecinos más cercanos son B y A (ambos Riesgo Bajo).
     
     \item Clasificación: Riesgo Bajo
+    
+    \item Sin normalización, la variable Ingresos domina completamente el cálculo de distancia debido a su escala mucho mayor (30000-60000 vs 25-55). Con normalización, todas las variables tienen igual peso en el cálculo de distancia, lo que permite una clasificación más justa.
 \end{enumerate}
 
 \subsection{Soluciones - Ejercicio 5}
@@ -668,6 +694,23 @@ def predict_classification(X_train, y_train, x_test, k):
             prediccion = clase
     return prediccion
 
+def predict_regression(X_train, y_train, x_test, k):
+    neighbors = get_neighbors(X_train, y_train, x_test, k)
+    neighbor_values = [neighbor[1] for neighbor in neighbors]
+    return sum(neighbor_values) / len(neighbor_values)
+
+def predict_regression_weighted(X_train, y_train, x_test, k):
+    neighbors = get_neighbors(X_train, y_train, x_test, k)
+    weighted_sum = 0
+    weight_sum = 0
+    for distance, value in neighbors:
+        if distance == 0:  # Evitar division por cero
+            return value
+        weight = 1 / distance
+        weighted_sum += weight * value
+        weight_sum += weight
+    return weighted_sum / weight_sum
+
 # Datos del ejercicio 1
 X_train = np.array([
     [1.4, 0.2], [1.4, 0.2], [1.3, 0.2],
@@ -677,10 +720,22 @@ X_train = np.array([
 y_train = ['Setosa', 'Setosa', 'Setosa', 'Versicolor', 'Versicolor', 
            'Versicolor', 'Virginica', 'Virginica', 'Virginica']
 
-# Prediccion
+# Prediccion de clasificacion
 x_test = np.array([4.8, 1.6])
 prediction = predict_classification(X_train, y_train, x_test, 3)
-print(f"Prediccion: {prediction}")
+print(f"Prediccion clasificacion: {prediction}")
+
+# Ejemplo de regresion
+X_reg = np.array([[50], [60], [70], [80], [90], [100]])
+y_reg = np.array([80000, 95000, 110000, 125000, 140000, 155000])
+
+x_test_reg = np.array([75])
+prediction_reg = predict_regression(X_reg, y_reg, x_test_reg, 3)
+print(f"Prediccion regresion: {prediction_reg}")
+
+# Ejemplo de regresion con pesos
+prediction_weighted = predict_regression_weighted(X_reg, y_reg, x_test_reg, 3)
+print(f"Prediccion regresion ponderada: {prediction_weighted}")
 \end{lstlisting}
 
 \subsection{Soluciones - Ejercicio 11}
@@ -762,6 +817,13 @@ print(f"Prediccion: {prediction}")
 \subsection{Soluciones - Ejercicio 15}
 
 \begin{enumerate}
+    \item Para una casa de 85 m²:
+    \begin{itemize}
+        \item \textbf{Sin outlier:} Los 3 vecinos más cercanos son 80m² (125000), 90m² (140000), 70m² (110000). Predicción: $(125000 + 140000 + 110000)/3 = 125000$ USD
+        \item \textbf{Con outlier:} Los 3 vecinos más cercanos son 80m² (125000), 90m² (140000), 95m² (500000). Predicción: $(125000 + 140000 + 500000)/3 = 255000$ USD
+    \end{itemize}
+    El outlier infla la predicción en más del 100\%.
+    
     \item Los outliers afectan a KNN en regresión porque:
     \begin{itemize}
         \item Pueden ser los vecinos más cercanos

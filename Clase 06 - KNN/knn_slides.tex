@@ -1,0 +1,691 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{fontawesome}
+
+\usetikzlibrary{positioning,shapes.multipart,calc,arrows,shapes.geometric}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{K-Nearest Neighbors (KNN)}}
+\author{Analítica de Datos}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{¿Qué es K-Nearest Neighbors?}
+    \textbf{KNN} es uno de los algoritmos de machine learning más simples e intuitivos.
+    
+    \begin{center}
+        \Large{\textbf{``Las cosas similares tienden a estar cerca''}}
+    \end{center}
+    
+    \begin{itemize}
+        \item Algoritmo ``lazy'' (vago) porque no entrena un modelo explícito.
+        \item No paramétrico (no hace suposiciones sobre la distribución de los datos)
+        \item Sensible a la escala de las variables
+        \item Depende del valor de k y la métrica de distancia
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Cómo funciona KNN?}
+    \begin{enumerate}
+        \item<1-> Llega un nuevo punto a clasificar o predecir
+        \item<2-> Calcula la distancia a todos los puntos de entrenamiento
+        \item<3-> Selecciona los k puntos más cercanos (vecinos)
+        \item<4-> Para clasificación: vota por la clase mayoritaria
+        \item<5-> Para regresión: promedia los valores objetivo
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Visualización del Concepto}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.8]
+    \shorthandoff{>}
+        % Grid
+        \draw[very thin,gray!30] (0,0) grid (7,6);
+        
+        % Axes
+        \draw[->] (0,0) -- (6.5,0);
+        \draw[->] (0,0) -- (0,5.5);
+        \node[right] at (6.5,0) {x1};
+        \node[above] at (0,5.5) {x2};
+        
+        % Class A points (blue circles)
+        \fill[blue!70] (1,1) circle (0.15);
+        \fill[blue!70] (1.5,2) circle (0.15);
+        \fill[blue!70] (2,1.5) circle (0.15);
+        \fill[blue!70] (0.8,2.2) circle (0.15);
+        \fill[blue!70] (1.8,0.8) circle (0.15);
+        
+        % Class B points (orange/red circles)
+        \fill[orange!80] (4,3.5) circle (0.15);
+        \fill[orange!80] (4.5,4) circle (0.15);
+        \fill[orange!80] (5,3.2) circle (0.15);
+        \fill[orange!80] (4.2,2.8) circle (0.15);
+        \fill[orange!80] (5.2,3.8) circle (0.15);
+        
+        % New point to classify
+        \fill[black] (3,2.5) circle (0.2);
+        \draw[black, thick] (3,2.5) circle (0.2);
+        
+        % Labels
+        \node[blue, above] at (1,1.3) {Clase A};
+        \node[orange, above] at (4.5,4.3) {Clase B};
+        \node[black, above] at (3,2.8) {Nuevo Punto};
+        \node[purple, below] at (4.2,1.5) {k=3 vecinos};
+        
+        % Distance lines to 3 nearest neighbors
+        \draw[dotted, thick] (3,2.5) -- (2,1.5);
+        \draw[dotted, thick] (3,2.5) -- (4.2,2.8);
+        \draw[dotted, thick] (3,2.5) -- (4,3.5);
+    \end{tikzpicture}
+    \shorthandon{>}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    Con k=3: 2 puntos naranjas + 1 punto azul $\rightarrow$ Predicción: Clase B
+\end{frame}
+
+\begin{frame}{KNN para Clasificación}
+    \textbf{Algoritmo:}
+    \begin{enumerate}
+        \item Calcular distancia del nuevo punto a todos los de entrenamiento
+        \item Seleccionar los k puntos con menor distancia
+        \item Contar votos de cada clase y asignar la mayoritaria
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Efecto del Parámetro k}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+    \shorthandoff{>}
+        % Grid
+        \draw[very thin,gray!30] (0,0) grid (6,5);
+        
+        % Axes
+        \draw[->] (0,0) -- (6,0);
+        \draw[->] (0,0) -- (0,5);
+        \node[right] at (6,0) {Edad};
+        \node[above] at (0,5) {Ingresos (x1000)};
+        
+        % Training points - Approved (blue)
+        \fill[blue!70] (1.2,1.8) circle (0.12);
+        \fill[blue!70] (2,2.5) circle (0.12);
+        \fill[blue!70] (1.5,3.2) circle (0.12);
+        \fill[blue!70] (0.8,2.2) circle (0.12);
+        \fill[blue!70] (3.5,2.3) circle (0.12);
+        \fill[blue!70] (4.2,1.5) circle (0.12);
+        
+        % Training points - Rejected (orange)
+        \fill[orange!80] (4.5,0.8) circle (0.12);
+        \fill[orange!80] (5.2,1.2) circle (0.12);
+        \fill[orange!80] (4.8,0.5) circle (0.12);
+        \fill[orange!80] (5.5,0.9) circle (0.12);
+        \fill[orange!80] (2.8,1.8) circle (0.12);
+        \fill[orange!80] (2.2,1.1) circle (0.12);
+        
+        % New point
+        \fill[black] (3,2) circle (0.15);
+        \draw[black, thick] (3,2) circle (0.15);
+        
+        % Distance lines to k=3 nearest neighbors (black)
+        \draw[dotted, thick, black] (3,2) -- (2.8,1.8);
+        \draw[dotted, thick, black] (3,2) -- (3.5,2.3);
+        \draw[dotted, thick, black] (3,2) -- (2.2,1.1);
+        
+        % Distance lines to k=5 nearest neighbors (violet)
+        \draw[dotted, thick, violet] (3,2) -- (2,2.5);
+        \draw[dotted, thick, violet] (3,2) -- (4.2,1.5);
+        
+        % Distance lines to k=7 nearest neighbors (green)
+        \draw[dotted, thick, green] (3,2) -- (1.2,1.8);
+        \draw[dotted, thick, green] (3,2) -- (4.5,0.8);
+        
+        % Labels
+        \node[black, below] at (3,1.7) {¿?};
+        
+        % Axis labels
+        \node[below] at (1.5,0) {25};
+        \node[below] at (3,0) {30};
+        \node[below] at (4.5,0) {35};
+        \node[left] at (0,1.5) {15};
+        \node[left] at (0,3) {25};
+        \node[left] at (0,4.5) {35};
+    \end{tikzpicture}
+    \shorthandon{>}
+    \end{center}
+
+    \textbf{Ejemplo numérico:} Aprobado (azul) vs Rechazado (naranja)
+    \begin{itemize}
+        \item k=3: \onslide<2->{1 aprobado, 2 rechazado $\rightarrow$ \textbf{Rechazado}}
+        \item k=5: \onslide<3->{3 aprobados, 2 rechazados $\rightarrow$ \textbf{Aprobado}}
+        \item k=7: \onslide<4->{4 aprobados, 3 rechazados $\rightarrow$ \textbf{Aprobado}}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Selección del Parámetro k}
+    \textbf{Reglas empíricas:}
+    \begin{itemize}
+        \item $k = \sqrt{n}$ donde n es el número de observaciones
+        \item Cross-validation: probar diferentes valores
+        \item Grid search: búsqueda exhaustiva
+    \end{itemize}
+    
+    \textbf{Consideraciones importantes:}
+    \begin{itemize}
+        \item k impar evita empates en clasificación binaria
+        \item k muy pequeño $\rightarrow$ overfitting
+        \item kmuy grande $\rightarrow$ underfitting
+        \item Considerar el balance de clases. ¿Qué pasa si tengo 25 aprobados y 3 rechazados?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{KNN para Regresión}
+    \textbf{Algoritmo:}
+    \begin{enumerate}
+        \item Calcular distancia del nuevo punto a todos los de entrenamiento
+        \item Seleccionar los k puntos con menor distancia
+        \item Promediar los valores objetivo de los k vecinos
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Ejemplo Visual de Regresión}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.7]
+    \shorthandoff{>}
+        % Grid
+        \draw[very thin,gray!30] (0,0) grid (6,5);
+        
+        % Axes
+        \draw[->] (0,0) -- (6,0);
+        \draw[->] (0,0) -- (0,5);
+        \node[right] at (6,0) {x};
+        \node[above] at (0,5) {y};
+        
+        % Training points (scattered)
+        \fill[blue!70] (0.8,1.2) circle (0.1);
+        \fill[blue!70] (1.5,2.1) circle (0.1);
+        \fill[blue!70] (2.2,1.8) circle (0.1);
+        \fill[blue!70] (2.8,3.1) circle (0.1);
+        \fill[blue!70] (3.2,2.4) circle (0.1);
+        \fill[blue!70] (3.8,3.8) circle (0.1);
+        \fill[blue!70] (4.2,2.9) circle (0.1);
+        \fill[blue!70] (4.8,4.1) circle (0.1);
+        \fill[blue!70] (5.2,3.5) circle (0.1);
+        \fill[blue!70] (1.8,0.9) circle (0.1);
+        \fill[blue!70] (2.5,4.2) circle (0.1);
+        \fill[blue!70] (4.5,1.7) circle (0.1);
+        
+        % New point to predict
+        \fill[red] (3,0) circle (0.1);
+        \draw[red, dashed] (3,0) -- (3,5);
+        
+        % k=3 nearest neighbors highlighted
+        \draw[thick, green] (2.8,3.1) circle (0.15);
+        \draw[thick, green] (3.2,2.4) circle (0.15);
+        \draw[thick, green] (2.2,1.8) circle (0.15);
+        
+        % Prediction line
+        \draw[red, thick] (2.8,2.4) -- (3.2,2.4);
+        \fill[red] (3,2.4) circle (0.1);
+        
+        % Labels
+        \node[red, above] at (3,2.6) {Predicción};
+        \node[blue, above] at (4.5,1) {k=3 vecinos};
+        \node[red, below] at (3,-0.5) {x nuevo};
+        
+        % Show calculation
+        \node[right] at (6.2,2.4) {y = (3.1 + 2.4 + 1.8)/3 = 2.4};
+        
+        % X-axis ticks
+        \node[below] at (1,0) {1};
+        \node[below] at (2,0) {2};
+        \node[below] at (3,0) {3};
+        \node[below] at (4,0) {4};
+        \node[below] at (5,0) {5};
+        
+        % Y-axis ticks
+        \node[left] at (0,1) {1};
+        \node[left] at (0,2) {2};
+        \node[left] at (0,3) {3};
+        \node[left] at (0,4) {4};
+    \end{tikzpicture}
+    \shorthandon{>}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Pesos por Distancia}
+    Hay veces en donde sería lógico darle más importancia a los vecinos más cercanos. Lo que podemos hacer ahí es en lugar de un promedio simple, usar pesos inversamente proporcionales a la distancia:
+
+    \[\hat{y} = \frac{\sum_{i=1}^{k} w_i \cdot y_i}{\sum_{i=1}^{k} w_i}\]
+    
+    donde $w_i = \frac{1}{d_i}$ y $d_i$ es la distancia al vecino i-ésimo.
+\end{frame}
+
+\begin{frame}{Métricas de Distancia}
+    \textbf{¿Por qué es importante?}
+    \begin{itemize}
+        \item Determina qué puntos considera ``similares''
+        \item Afecta la predicción final
+        \item Es sensible a la escala de las variables
+        \item Debe coincidir con el tipo de datos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia Euclidiana}
+    \textbf{Cuándo usar:} Variables continuas en la misma escala
+    
+    \[d(x_1, x_2) = \sqrt{\sum_{i=1}^{n} (x_{1i} - x_{2i})^2}\]
+    
+    \vspace{0.3cm}
+    
+    \textbf{Características:}
+    \begin{itemize}
+        \item Es la distancia ``real'' (línea recta)
+        \item Penaliza más las diferencias grandes (por el cuadrado)
+        \item Sensible a outliers
+        \item Requiere que las variables estén en la misma escala
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia Euclidiana}
+    \textbf{Ejemplo práctico:} Predecir precio de casa
+    \begin{itemize}
+        \item Casa A: 100m², 3 habitaciones, precio \$150,000
+        \item Casa B: 120m², 4 habitaciones, precio \$180,000  
+        \item Casa nueva: 105m², 3 habitaciones
+    \end{itemize}
+    
+    Distancia a Casa A: $\sqrt{(105-100)^2 + (3-3)^2} = 5.00$ \\
+    Distancia a Casa B: $\sqrt{(105-120)^2 + (3-4)^2} = 15.03$ \\
+    
+    Si k=1, elegís la más cercana (Casa A). Predicción: \$150,000 \\
+    Si k=2, promediás ambas: (\$150,000 + \$180,000)/2 = \$165,000
+
+    \vspace{0.3em}
+    \textbf{Pero hay un problema:} Si una variable tiene números mucho más grandes, domina todo. Si comparás ingresos (en miles) con número de hijos, los ingresos van a mandar.
+\end{frame}
+
+\begin{frame}{Distancia Manhattan}
+    \textbf{Inspiración:} Moverse en una ciudad con cuadrículas (como Manhattan). ¿Qué pasa si nos queremos mover de la 1st Ave, 2nd St a la 4th Ave, 6th St? ¿Cómo sería la distancia euclideana? ¿Es real?
+    
+    \[d(x_1, x_2) = \sum_{i=1}^{n} |x_{1i} - x_{2i}|\]
+    
+    \vspace{0.3cm}
+    
+    \textbf{Características:}
+    \begin{itemize}
+        \item Suma de diferencias absolutas
+        \item Menos sensible a outliers que Euclidiana
+        \item Más robusta en espacios de alta dimensión
+        \item Interpretación más intuitiva para conteos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia Manhattan}
+    \textbf{Cuándo usar:}
+    \begin{itemize}
+        \item Variables con interpretaciones diferentes
+        \item Cantidades o conteos
+        \item Datos con outliers (sin que dominen)
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Ejemplo:} Recomendación de productos
+    \begin{itemize}
+        \item Cliente A: 5 libros, 2 películas, 3 ropa, le gusta la ciencia ficción
+        \item Cliente B: 3 libros, 4 películas, 1 ropa, le gusta el drama  
+        \item Cliente C: 2 libros, 1 película, 4 ropa, le gusta la ciencia ficción
+        \item Cliente nuevo: 4 libros, 2 películas, 2 ropa, género desconocido
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia Manhattan}
+    Distancia del cliente nuevo a Cliente A: 
+    \[d(x_1, x_2) = |4-5| + |2-2| + |2-3| = 1 + 0 + 1 = 2\]
+
+    Distancia del cliente nuevo a Cliente B: 
+    \[d(x_1, x_2) = |4-3| + |2-4| + |2-1| = 1 + 2 + 1 = 4\]
+
+    Distancia del cliente nuevo a Cliente C: 
+    \[d(x_1, x_2) = |4-2| + |2-1| + |2-4| = 2 + 1 + 2 = 5\]
+
+    Si k=1, elegís la más cercana (Cliente A). Predicción: le gusta ciencia ficción \\
+    Si k=3, elegís los 3 más cercanos: Cliente A (ciencia ficción), Cliente B (drama), Cliente C (ciencia ficción) $\rightarrow$ Predicción: le gusta ciencia ficción.
+\end{frame}
+
+\begin{frame}{Distancia de Minkowski}
+    \textbf{Generalización} de Euclidiana y Manhattan
+    
+    \[d(x_1, x_2) = \left(\sum_{i=1}^{n} |x_{1i} - x_{2i}|^p\right)^{1/p}\]
+    
+    \vspace{0.3cm}
+    
+    \textbf{Características:}
+    \begin{itemize}
+        \item Parámetro $p$ controla qué tan ``exigente'' es la métrica
+        \item $p$ pequeño: menos penalización a diferencias grandes
+        \item $p$ grande: más penalización a diferencias grandes
+        \item Útil cuando querés ajustar la sensibilidad
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia de Minkowski}
+    \textbf{Casos especiales:}
+    \begin{itemize}
+        \item $p=1$: Distancia Manhattan (suma de diferencias absolutas).
+        \item $p=2$: Distancia Euclidiana (la diagonal ``real'').
+        \item $p=3,4,5$: A medida que $p$ aumenta, las diferencias grandes pesan más (se penalizan más fuerte).
+        \item $p \to \infty$: Distancia de Chebyshev. Solo considera la diferencia máxima en alguna coordenada. 
+        Ejemplo: en un proceso de fábrica en paralelo, el tiempo total lo determina la etapa más lenta (la mayor diferencia porque es el cuello de botella).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplo de Distancia de Minkowski}
+    \textbf{Notas de estudiantes} (1 al 10)
+    \begin{itemize}
+        \item Estudiante A: 10, 7, 6, 9
+        \item Estudiante B: 6, 8, 8, 7
+    \end{itemize}
+
+    \textbf{Comparación con diferentes valores de p:}
+    \begin{itemize}
+        \item Con p=1: $|10-6| + |7-8| + |6-8| + |9-7| = 4 + 1 + 2 + 2 = 9$
+        \item Con p=2: $\sqrt{4^2 + 1^2 + 2^2 + 2^2} = \sqrt{16 + 1 + 4 + 4} = \sqrt{25} = 5$
+        \item Con p=3: $\sqrt[3]{4^3 + 1^3 + 2^3 + 2^3} = \sqrt[3]{64 + 1 + 8 + 8} = \sqrt[3]{81} = 4.33$
+        \item Con p=7: $\sqrt[7]{4^{7} + 1^{7} + 2^{7} + 2^{7}} \approx 3.16$
+        \item Con p muy grande (Chebyshev): $\max(4, 1, 2, 2) = 4$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia de Hamming}
+    Si los datos son categóricos como género, color, tipo de producto, etc, no podemos representar atributos como colores o estados en un eje X/Y. Hamming mide cuántas posiciones difieren y suma 1 o 0 por cada una.
+    
+    \[d(x_1, x_2) = \sum_{i=1}^{n} I(x_{1i} \neq x_{2i})\]
+    
+    \vspace{0.3cm}
+    
+    \textbf{Características:}
+    \begin{itemize}
+        \item Cuenta simplemente cuántas características son diferentes
+        \item Cada atributo distinto suma 1, los iguales suman 0
+        \item Perfecto para datos que no son números
+        \item Muy simple de calcular e interpretar
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Distancia de Hamming}
+    \textbf{Cuándo usar:}
+    \begin{itemize}
+        \item Variables categóricas (género, color, tipo)
+        \item Datos binarios (sí/no, verdadero/falso)
+        \item Códigos de longitud fija
+        \item Cuando no podés representar atributos en ejes numéricos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplo de Distancia de Hamming}
+    \textbf{Clasificación de clientes} basada en características categóricas
+    
+    \begin{itemize}
+        \item Cliente A: M, Soltero, Empleado, \textbf{Sí} tiene tarjeta
+        \item Cliente B: F, Casada, Empleada, \textbf{No} tiene tarjeta
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Comparación posición por posición:}
+    \begin{itemize}
+        \item M vs F $\rightarrow$ diferente (1)
+        \item Soltero vs Casada $\rightarrow$ diferente (1)
+        \item Empleado vs Empleada $\rightarrow$ igual (0)
+        \item Sí tiene tarjeta vs No tiene tarjeta $\rightarrow$ diferente (1)
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Distancia de Hamming = 1 + 1 + 0 + 1 = 3}
+\end{frame}
+
+\begin{frame}{¿Cuál Métrica Elegir?}
+    \begin{itemize}
+        \item \textbf{Solo números, misma escala} $\rightarrow$ Euclidiana.
+        \item \textbf{Solo números, escalas diferentes} $\rightarrow$ Manhattan (o normalizar + euclidiana).
+        \item \textbf{Solo categorías} $\rightarrow$ Hamming.
+        \item \textbf{Mezcla de números y categorías} $\rightarrow$ Combinar métricas o convertir todo a números (con criterio).
+        \item \textbf{Querés controlar qué tan ``exigente'' es} $\rightarrow$ Minkowski con p que te guste.
+        \item \textbf{No estás seguro} $\rightarrow$ Probá Manhattan, es la más robusta.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Normalización de Variables}
+    \textbf{Problema:} KNN es sensible a la escala de las variables
+    
+    \vspace{0.3cm}
+    
+    \textbf{Ejemplo:}
+    \begin{itemize}
+        \item Edad: 25 a 60 años
+        \item Salario: 30,000 a 100,000 pesos
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Soluciones:}
+    \begin{itemize}
+        \item \textbf{Min-Max Scaling:} $x_{norm} = \frac{x - x_{min}}{x_{max} - x_{min}}$
+        \item \textbf{Z-Score:} $x_{norm} = \frac{x - \mu}{\sigma}$
+    \end{itemize}
+    
+    \vspace{0.5cm}
+    
+    \textbf{Resultado:} Todas las variables quedan en la misma escala
+\end{frame}
+
+\begin{frame}{Ventajas de KNN}
+    \begin{itemize}
+        \item Fácil de entender e implementar
+        \item No paramétrico (no asume distribuciones)
+        \item Flexible para clasificación y regresión
+        \item Se adapta a nuevas observaciones sin reentrenar
+        \item Puede capturar relaciones complejas
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Desventajas de KNN}
+    \begin{itemize}
+        \item Computacionalmente pesado con muchos datos
+        \item Muy sensible a la escala de las variables
+        \item Afectado por ruido y outliers
+        \item Elección de k es crucial
+        \item No genera modelo explícito
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Curse of Dimensionality}
+    \textbf{Problema:} En espacios de alta dimensionalidad (por ejemplo 100 variables: 100 dimensiones), todos los puntos tienden a estar prácticamente a la misma distancia.
+    
+    \textbf{Consecuencias:}
+    \begin{itemize}
+        \item Los vecinos dejan de ser realmente cercanos
+        \item Las distancias pierden capacidad de discriminación
+        \item Afecta el desempeño de KNN
+    \end{itemize}
+    
+    \textbf{Soluciones:}
+    \begin{itemize}
+        \item Selección de características
+        \item Reducción de dimensionalidad (PCA, t-SNE)
+        \item Métricas especializadas
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación en Python}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.preprocessing import StandardScaler # o MinMaxScaler
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Preparacion de datos
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Normalización y Preparación}
+\begin{lstlisting}[numbers=left, numbersep=5pt]
+# Normalizacion
+scaler = StandardScaler() # o MinMaxScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Para clasificacion
+knn_clf = KNeighborsClassifier(
+    n_neighbors=5,
+    weights='distance',  # Pesos por distancia
+    metric='euclidean'
+)
+
+# Para regresion
+knn_reg = KNeighborsRegressor(
+    n_neighbors=3,
+    weights='uniform',
+    metric='manhattan'
+)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Selección de k con Cross-Validation}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Entrenamiento
+knn_clf.fit(X_train_scaled, y_train)
+knn_reg.fit(X_train_scaled, y_train)
+
+# Predicciones
+y_pred_clf = knn_clf.predict(X_test_scaled)
+y_pred_reg = knn_reg.predict(X_test_scaled)
+
+# Validacion cruzada para seleccionar k
+k_values = range(1, 31)
+cv_scores = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    scores = cross_val_score(knn, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+optimal_k = k_values[np.argmax(cv_scores)]
+print(f"Mejor k: {optimal_k}")
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{Evaluación del Modelo}
+\begin{lstlisting}[numbers=left, numbersep=5pt]
+# Evaluacion de clasificacion
+print("Reporte de clasificacion:")
+print(classification_report(y_test, y_pred_clf))
+print("Matriz de confusion:")
+print(confusion_matrix(y_test, y_pred_clf))
+
+# Evaluacion de regresion
+mse = mean_squared_error(y_test, y_pred_reg)
+r2 = r2_score(y_test, y_pred_reg)
+print(f"MSE: {mse}")
+print(f"R-squared: {r2}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Casos de Uso y Aplicaciones}
+    \begin{center}
+        \begin{tabular}{cc}
+            \begin{minipage}{4cm}
+                \centering
+                \textbf{Clasificación}\\[0.1cm]
+                {\scriptsize Clasificar clientes, diagnosticar pacientes, detectar spam}
+            \end{minipage} &
+            \begin{minipage}{4cm}
+                \centering
+                \textbf{Regresión}\\[0.1cm]
+                {\scriptsize Predecir precios, estimar temperatura, calcular demanda}
+            \end{minipage}
+        \end{tabular}
+    \end{center}
+    
+    \vspace{0.8cm}
+    
+    \textbf{Optimizaciones:}
+    \begin{itemize}
+        \item KD-Trees o Ball Trees para búsqueda rápida
+        \item Weighted KNN con pesos por distancia
+        \item Filtrado de ruido y outliers
+        \item Métricas adaptativas
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}
