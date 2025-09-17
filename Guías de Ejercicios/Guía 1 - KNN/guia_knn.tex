@@ -14,8 +14,6 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 
-\geometry{margin=2.5cm}
-
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -72,7 +70,7 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \item La normalización de variables es opcional en KNN.
 \end{enumerate}
 
-\subsection{Opción Múltiple}
+\subsection{Multiple Choice}
 
 \begin{enumerate}
     \item ¿Cuál de las siguientes NO es una ventaja de KNN?
@@ -118,7 +116,7 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
 
 \section{Ejercicios de Clasificación}
 
-\subsection{Ejercicio 1 - Clasificación Simple}
+\subsection{Clasificación Simple}
 
 Tenemos los siguientes datos de entrenamiento para clasificar flores:
 
@@ -149,7 +147,7 @@ Un nuevo punto tiene longitud de pétalo = 4.8 y ancho de pétalo = 1.6.
     \item ¿Cuál es la clasificación del nuevo punto?
 \end{enumerate}
 
-\subsection{Ejercicio 2 - Efecto del Parámetro k}
+\subsection{Efecto del Parámetro k}
 
 Usando los mismos datos del ejercicio anterior:
 
@@ -160,7 +158,7 @@ Usando los mismos datos del ejercicio anterior:
     \item ¿Por qué pueden diferir los resultados?
 \end{enumerate}
 
-\subsection{Ejercicio 3 - Normalización}
+\subsection{Normalización}
 
 Tenemos datos de estudiantes con las siguientes características:
 
@@ -187,7 +185,7 @@ Tenemos datos de estudiantes con las siguientes características:
     \item[d)] ¿Cómo cambian los resultados?
 \end{enumerate}
 
-\subsection{Ejercicio 4 - Múltiples Variables}
+\subsection{Múltiples Variables}
 
 Tenemos datos de clientes bancarios:
 
@@ -215,7 +213,7 @@ Tenemos datos de clientes bancarios:
     \item ¿Cómo cambian los resultados con y sin normalización?
 \end{enumerate}
 
-\subsection{Ejercicio 5 - Datos Desbalanceados}
+\subsection{Datos Desbalanceados}
 
 Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
 
@@ -225,7 +223,7 @@ Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
     \item ¿Qué valor de k sería más apropiado?
 \end{enumerate}
 
-\subsection{Ejercicio 6 - Curse of Dimensionality}
+\subsection{Curse of Dimensionality}
 
 \begin{enumerate}
     \item Explicá qué es la curse of dimensionality.
@@ -233,7 +231,7 @@ Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
     \item ¿Qué técnicas se pueden usar para mitigarla?
 \end{enumerate}
 
-\subsection{Ejercicio 7 - Métricas de Distancia}
+\subsection{Métricas de Distancia}
 
 Tenemos dos puntos: A(1, 2, 3) y B(4, 6, 9).
 
@@ -244,7 +242,7 @@ Tenemos dos puntos: A(1, 2, 3) y B(4, 6, 9).
     \item ¿Cuál es la relación entre estas distancias?
 \end{enumerate}
 
-\subsection{Ejercicio 8 - Pesos por Distancia}
+\subsection{Pesos por Distancia}
 
 En lugar de votación simple, usamos pesos inversos a la distancia:
 
@@ -254,7 +252,7 @@ En lugar de votación simple, usamos pesos inversos a la distancia:
     \item ¿Cuándo es útil usar pesos?
 \end{enumerate}
 
-\subsection{Ejercicio 9 - Validación Cruzada}
+\subsection{Validación Cruzada}
 
 Para un dataset con 100 muestras:
 
@@ -264,7 +262,7 @@ Para un dataset con 100 muestras:
     \item ¿Cómo elegirías el mejor valor de k?
 \end{enumerate}
 
-\subsection{Ejercicio 10 - Implementación}
+\subsection{Implementación}
 
 Implementá KNN desde cero en Python:
 
@@ -277,7 +275,7 @@ Implementá KNN desde cero en Python:
 
 \section{Ejercicios de Regresión}
 
-\subsection{Ejercicio 11 - Regresión Simple}
+\subsection{Regresión Simple}
 
 Tenemos datos de precios de casas:
 
@@ -302,7 +300,7 @@ Tenemos datos de precios de casas:
     \item ¿Cuál es la diferencia con clasificación?
 \end{enumerate}
 
-\subsection{Ejercicio 12 - Múltiples Variables}
+\subsection{Múltiples Variables}
 
 Tenemos datos de ventas:
 
@@ -326,7 +324,7 @@ Tenemos datos de ventas:
     \item Predicí las ventas para publicidad=1800, precio=14 usando k=3.
 \end{enumerate}
 
-\subsection{Ejercicio 13 - Efecto de k en Regresión}
+\subsection{Efecto de k en Regresión}
 
 \begin{enumerate}
     \item ¿Qué pasa si k=1 en regresión?
@@ -334,7 +332,7 @@ Tenemos datos de ventas:
     \item ¿Cuál es el valor óptimo de k?
 \end{enumerate}
 
-\subsection{Ejercicio 14 - Pesos en Regresión}
+\subsection{Pesos en Regresión}
 
 \begin{enumerate}
     \item Explicá cómo funcionan los pesos en regresión KNN.
@@ -342,7 +340,7 @@ Tenemos datos de ventas:
     \item Calculá la predicción ponderada para el ejercicio 11.
 \end{enumerate}
 
-\subsection{Ejercicio 15 - Outliers}
+\subsection{Outliers}
 
 Tenemos datos de precios de casas con un outlier:
 
@@ -370,7 +368,7 @@ Tenemos datos de precios de casas con un outlier:
     \item Compará con otros algoritmos de regresión.
 \end{enumerate}
 
-\subsection{Ejercicio 16 - Selección de Variables}
+\subsection{Selección de Variables}
 
 Tenemos 10 variables predictoras:
 
@@ -380,7 +378,7 @@ Tenemos 10 variables predictoras:
     \item ¿Por qué es importante la selección de variables en KNN?
 \end{enumerate}
 
-\subsection{Ejercicio 17 - Validación en Regresión}
+\subsection{Validación en Regresión}
 
 \begin{enumerate}
     \item ¿Qué métricas usarías para evaluar KNN en regresión?
@@ -388,7 +386,7 @@ Tenemos 10 variables predictoras:
     \item ¿Qué gráficos serían útiles?
 \end{enumerate}
 
-\subsection{Ejercicio 18 - Comparación con Otros Métodos}
+\subsection{Comparación con Otros Métodos}
 
 \begin{enumerate}
     \item Compará KNN con regresión lineal.
@@ -396,7 +394,7 @@ Tenemos 10 variables predictoras:
     \item ¿Cuándo preferirías cada uno?
 \end{enumerate}
 
-\subsection{Ejercicio 19 - Optimización de Parámetros}
+\subsection{Optimización de Parámetros}
 
 \begin{enumerate}
     \item ¿Qué parámetros optimizarías en KNN para regresión?
@@ -404,7 +402,7 @@ Tenemos 10 variables predictoras:
     \item ¿Qué métrica usarías para optimizar?
 \end{enumerate}
 
-\subsection{Ejercicio 20 - Análisis de Datos Manual}
+\subsection{Análisis de Datos Manual}
 
 Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
 
@@ -438,9 +436,9 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
 
 \newpage
 
-\section{Anexo: Soluciones}
+\section{Soluciones}
 
-\subsection{Soluciones - Verdadero o Falso}
+\subsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item \textbf{Falso.} KNN no requiere entrenamiento previo, es un algoritmo lazy.
@@ -455,7 +453,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item \textbf{Falso.} La normalización es crucial en KNN.
 \end{enumerate}
 
-\subsection{Soluciones - Opción Múltiple}
+\subsection{Multiple Choice}
 
 \begin{enumerate}
     \item \textbf{c)} KNN no maneja datos faltantes automáticamente.
@@ -465,7 +463,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item \textbf{c)} Hamming es apropiada para variables categóricas.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 1}
+\subsection{Clasificación Simple}
 
 \begin{enumerate}
     \item Distancias euclidianas:
@@ -486,7 +484,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Clasificación: Versicolor (3 votos)
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 2}
+\subsection{Efecto del Parámetro k}
 
 \begin{enumerate}
     \item Con k=1: Versicolor (punto D)
@@ -495,7 +493,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 o k=7 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos. En este caso específico, todos los vecinos cercanos son Versicolor, por lo que la clasificación no cambia.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 3}
+\subsection{Normalización}
 
 \begin{enumerate}
     \item Distancias sin normalizar:
@@ -538,7 +536,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Los resultados cambian significativamente. Sin normalización, la variable altura domina por su mayor escala, mientras que con normalización ambas variables tienen igual peso.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 4}
+\subsection{Múltiples Variables}
 
 \begin{enumerate}
     \item Datos normalizados:
@@ -577,7 +575,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Sin normalización, la variable Ingresos domina completamente el cálculo de distancia debido a su escala mucho mayor (30000-60000 vs 25-55). Con normalización, todas las variables tienen igual peso en el cálculo de distancia, lo que permite una clasificación más justa.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 5}
+\subsection{Datos Desbalanceados}
 
 \begin{enumerate}
     \item Con k=5, es muy probable que todos los vecinos sean de clase A, ignorando completamente la clase B.
@@ -591,7 +589,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Un k más pequeño (1-3) sería más apropiado para capturar la clase minoritaria.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 6}
+\subsection{Curse of Dimensionality}
 
 \begin{enumerate}
     \item La curse of dimensionality es el fenómeno donde el rendimiento de algoritmos basados en distancia se degrada en espacios de alta dimensionalidad porque la distancia entre puntos se vuelve menos significativa.
@@ -610,7 +608,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 7}
+\subsection{Métricas de Distancia}
 
 \begin{enumerate}
     \item Distancia euclidiana: $\sqrt{(4-1)^2 + (6-2)^2 + (9-3)^2} = \sqrt{9 + 16 + 36} = \sqrt{61} = 7.81$
@@ -619,7 +617,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item La distancia de Minkowski generaliza las demas: p=1 es Manhattan, p=2 es Euclidiana, p=$\infty$ es Chebyshev.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 8}
+\subsection{Pesos por Distancia}
 
 \begin{enumerate}
     \item Pesos: $w_i = \frac{1}{d_i}$
@@ -638,7 +636,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 9}
+\subsection{Validación Cruzada}
 
 \begin{enumerate}
     \item Usaría 5 o 10 folds (k=5 o k=10) porque:
@@ -661,7 +659,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 10}
+\subsection{Implementación}
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -738,7 +736,7 @@ prediction_weighted = predict_regression_weighted(X_reg, y_reg, x_test_reg, 3)
 print(f"Prediccion regresion ponderada: {prediction_weighted}")
 \end{lstlisting}
 
-\subsection{Soluciones - Ejercicio 11}
+\subsection{Regresión Simple}
 
 \begin{enumerate}
     \item Para una casa de 75 m², los 3 vecinos más cercanos son:
@@ -751,7 +749,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \item En clasificación se vota por la clase mayoritaria, en regresión se promedia el valor objetivo.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 12}
+\subsection{Múltiples Variables}
 
 \begin{enumerate}
     \item Datos normalizados:
@@ -785,7 +783,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     Predicción: $(700 + 600 + 500) / 3 = 600$ ventas
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 13}
+\subsection{Efecto de k en Regresión}
 
 \begin{enumerate}
     \item Con k=1: La predicción es exactamente el valor del vecino más cercano.
@@ -793,7 +791,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \item El valor óptimo de k depende del dataset, pero generalmente está entre 3 y 10.
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 14}
+\subsection{Pesos en Regresión}
 
 \begin{enumerate}
     \item Los pesos en regresión KNN funcionan así:
@@ -814,7 +812,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 15}
+\subsection{Outliers}
 
 \begin{enumerate}
     \item Para una casa de 85 m²:
@@ -845,7 +843,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 16}
+\subsection{Selección de Variables}
 
 \begin{enumerate}
     \item Para elegir variables importantes:
@@ -870,7 +868,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 17}
+\subsection{Validación en Regresión}
 
 \begin{enumerate}
     \item Métricas para evaluar:
@@ -895,7 +893,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 18}
+\subsection{Comparación con Otros Métodos}
 
 \begin{enumerate}
     \item Comparación con regresión lineal:
@@ -920,7 +918,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 19}
+\subsection{Optimización de Parámetros}
 
 \begin{enumerate}
     \item Parámetros a optimizar:
@@ -946,7 +944,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Soluciones - Ejercicio 20}
+\subsection{Análisis de Datos Manual}
 
 \begin{enumerate}
     \item Datos normalizados (min-max scaling):
