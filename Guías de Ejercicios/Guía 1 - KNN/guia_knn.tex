@@ -53,9 +53,11 @@
 
 Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
 
-\section{Ejercicios Conceptuales}
+\section{Ejercicios}
 
-\subsection{Verdadero o Falso}
+\subsection{Ejercicios Conceptuales}
+
+\subsubsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item KNN es un algoritmo de aprendizaje supervisado que requiere entrenamiento previo.
@@ -70,7 +72,7 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \item La normalización de variables es opcional en KNN.
 \end{enumerate}
 
-\subsection{Multiple Choice}
+\subsubsection{Multiple Choice}
 
 \begin{enumerate}
     \item ¿Cuál de las siguientes NO es una ventaja de KNN?
@@ -114,9 +116,9 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \end{enumerate}
 \end{enumerate}
 
-\section{Ejercicios de Clasificación}
+\subsection{Ejercicios de Clasificación}
 
-\subsection{Clasificación Simple}
+\subsubsection{Clasificación Simple}
 
 Tenemos los siguientes datos de entrenamiento para clasificar flores:
 
@@ -147,7 +149,7 @@ Un nuevo punto tiene longitud de pétalo = 4.8 y ancho de pétalo = 1.6.
     \item ¿Cuál es la clasificación del nuevo punto?
 \end{enumerate}
 
-\subsection{Efecto del Parámetro k}
+\subsubsection{Efecto del Parámetro k}
 
 Usando los mismos datos del ejercicio anterior:
 
@@ -158,7 +160,7 @@ Usando los mismos datos del ejercicio anterior:
     \item ¿Por qué pueden diferir los resultados?
 \end{enumerate}
 
-\subsection{Normalización}
+\subsubsection{Normalización}
 
 Tenemos datos de estudiantes con las siguientes características:
 
@@ -185,7 +187,7 @@ Tenemos datos de estudiantes con las siguientes características:
     \item[d)] ¿Cómo cambian los resultados?
 \end{enumerate}
 
-\subsection{Múltiples Variables}
+\subsubsection{Múltiples Variables}
 
 Tenemos datos de clientes bancarios:
 
@@ -197,23 +199,23 @@ Tenemos datos de clientes bancarios:
         \midrule
         25 & 30000 & 5000 & Riesgo Bajo \\
         30 & 45000 & 8000 & Riesgo Bajo \\
-        35 & 60000 & 12000 & Riesgo Bajo \\
+        35 & 40000 & 12000 & Riesgo Bajo \\
         45 & 35000 & 25000 & Riesgo Alto \\
-        50 & 40000 & 30000 & Riesgo Alto \\
+        50 & 75000 & 30000 & Riesgo Alto \\
         55 & 55000 & 35000 & Riesgo Alto \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \begin{enumerate}
-    \item Calculá las distancias al punto (35, 40000, 15000) sin normalizar.
+    \item Calculá las distancias al punto (38, 70000, 15000) sin normalizar.
+    \item Encontrá los 3 vecinos más cercanos al punto sin normalizar y clasificá el nuevo cliente.
     \item Normalizá los datos.
-    \item Encontrá los 2 vecinos más cercanos al punto normalizado.
-    \item Clasificá el nuevo cliente.
+    \item Encontrá los 3 vecinos más cercanos al punto normalizado y clasificá el nuevo cliente.
     \item ¿Cómo cambian los resultados con y sin normalización?
 \end{enumerate}
 
-\subsection{Datos Desbalanceados}
+\subsubsection{Datos Desbalanceados}
 
 Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
 
@@ -223,7 +225,7 @@ Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
     \item ¿Qué valor de k sería más apropiado?
 \end{enumerate}
 
-\subsection{Curse of Dimensionality}
+\subsubsection{Curse of Dimensionality}
 
 \begin{enumerate}
     \item Explicá qué es la curse of dimensionality.
@@ -231,7 +233,7 @@ Tenemos un dataset con 100 puntos de clase A y 10 puntos de clase B:
     \item ¿Qué técnicas se pueden usar para mitigarla?
 \end{enumerate}
 
-\subsection{Métricas de Distancia}
+\subsubsection{Métricas de Distancia}
 
 Tenemos dos puntos: A(1, 2, 3) y B(4, 6, 9).
 
@@ -242,7 +244,7 @@ Tenemos dos puntos: A(1, 2, 3) y B(4, 6, 9).
     \item ¿Cuál es la relación entre estas distancias?
 \end{enumerate}
 
-\subsection{Pesos por Distancia}
+\subsubsection{Pesos por Distancia}
 
 En lugar de votación simple, usamos pesos inversos a la distancia:
 
@@ -252,17 +254,7 @@ En lugar de votación simple, usamos pesos inversos a la distancia:
     \item ¿Cuándo es útil usar pesos?
 \end{enumerate}
 
-\subsection{Validación Cruzada}
-
-Para un dataset con 100 muestras:
-
-\begin{enumerate}
-    \item ¿Cuántos folds usarías para k-fold CV?
-    \item ¿Por qué no usarías leave-one-out con KNN?
-    \item ¿Cómo elegirías el mejor valor de k?
-\end{enumerate}
-
-\subsection{Implementación}
+\subsubsection{Implementación}
 
 Implementá KNN desde cero en Python:
 
@@ -273,9 +265,9 @@ Implementá KNN desde cero en Python:
     \item Probá con los datos del ejercicio 1.
 \end{enumerate}
 
-\section{Ejercicios de Regresión}
+\subsection{Ejercicios de Regresión}
 
-\subsection{Regresión Simple}
+\subsubsection{Regresión Simple}
 
 Tenemos datos de precios de casas:
 
@@ -300,7 +292,7 @@ Tenemos datos de precios de casas:
     \item ¿Cuál es la diferencia con clasificación?
 \end{enumerate}
 
-\subsection{Múltiples Variables}
+\subsubsection{Múltiples Variables}
 
 Tenemos datos de ventas:
 
@@ -320,11 +312,14 @@ Tenemos datos de ventas:
 \end{table}
 
 \begin{enumerate}
-    \item Normalizá los datos.
+    \item Normalizá los datos usando min-max scaling.
+    \item Calculá las distancias del punto (1800, 14) a todos los puntos normalizados.
+    \item Encontrá los 3 vecinos más cercanos.
     \item Predicí las ventas para publicidad=1800, precio=14 usando k=3.
+    \item ¿Cómo cambiaría la predicción si usaras k=5?
 \end{enumerate}
 
-\subsection{Efecto de k en Regresión}
+\subsubsection{Efecto de k en Regresión}
 
 \begin{enumerate}
     \item ¿Qué pasa si k=1 en regresión?
@@ -332,7 +327,7 @@ Tenemos datos de ventas:
     \item ¿Cuál es el valor óptimo de k?
 \end{enumerate}
 
-\subsection{Pesos en Regresión}
+\subsubsection{Pesos en Regresión}
 
 \begin{enumerate}
     \item Explicá cómo funcionan los pesos en regresión KNN.
@@ -340,7 +335,7 @@ Tenemos datos de ventas:
     \item Calculá la predicción ponderada para el ejercicio 11.
 \end{enumerate}
 
-\subsection{Outliers}
+\subsubsection{Outliers}
 
 Tenemos datos de precios de casas con un outlier:
 
@@ -368,7 +363,7 @@ Tenemos datos de precios de casas con un outlier:
     \item Compará con otros algoritmos de regresión.
 \end{enumerate}
 
-\subsection{Selección de Variables}
+\subsubsection{Selección de Variables}
 
 Tenemos 10 variables predictoras:
 
@@ -378,15 +373,8 @@ Tenemos 10 variables predictoras:
     \item ¿Por qué es importante la selección de variables en KNN?
 \end{enumerate}
 
-\subsection{Validación en Regresión}
 
-\begin{enumerate}
-    \item ¿Qué métricas usarías para evaluar KNN en regresión?
-    \item ¿Cómo implementarías cross-validation?
-    \item ¿Qué gráficos serían útiles?
-\end{enumerate}
-
-\subsection{Comparación con Otros Métodos}
+\subsubsection{Comparación con Otros Métodos}
 
 \begin{enumerate}
     \item Compará KNN con regresión lineal.
@@ -394,15 +382,8 @@ Tenemos 10 variables predictoras:
     \item ¿Cuándo preferirías cada uno?
 \end{enumerate}
 
-\subsection{Optimización de Parámetros}
 
-\begin{enumerate}
-    \item ¿Qué parámetros optimizarías en KNN para regresión?
-    \item ¿Cómo usarías grid search?
-    \item ¿Qué métrica usarías para optimizar?
-\end{enumerate}
-
-\subsection{Análisis de Datos Manual}
+\subsubsection{Análisis de Datos Manual}
 
 Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
 
@@ -438,7 +419,9 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
 
 \section{Soluciones}
 
-\subsection{Verdadero o Falso}
+\subsection{Ejercicios Conceptuales}
+
+\subsubsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item \textbf{Falso.} KNN no requiere entrenamiento previo, es un algoritmo lazy.
@@ -453,7 +436,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item \textbf{Falso.} La normalización es crucial en KNN.
 \end{enumerate}
 
-\subsection{Multiple Choice}
+\subsubsection{Multiple Choice}
 
 \begin{enumerate}
     \item \textbf{c)} KNN no maneja datos faltantes automáticamente.
@@ -463,37 +446,44 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item \textbf{c)} Hamming es apropiada para variables categóricas.
 \end{enumerate}
 
-\subsection{Clasificación Simple}
+\subsection{Ejercicios de Clasificación}
+
+\subsubsection{Clasificación Simple}
 
 \begin{enumerate}
-    \item Distancias euclidianas:
+    \item Distancias euclidianas a todos los puntos:
     \begin{itemize}
-        \item A (1.4, 0.2): $\sqrt{(4.8-1.4)^2 + (1.6-0.2)^2} = \sqrt{11.56 + 1.96} = 3.68$
-        \item B (4.7, 1.4): $\sqrt{(4.8-4.7)^2 + (1.6-1.4)^2} = \sqrt{0.01 + 0.04} = 0.22$
-        \item C (4.5, 1.5): $\sqrt{(4.8-4.5)^2 + (1.6-1.5)^2} = \sqrt{0.09 + 0.01} = 0.32$
-        \item D (4.9, 1.5): $\sqrt{(4.8-4.9)^2 + (1.6-1.5)^2} = \sqrt{0.01 + 0.01} = 0.14$
+        \item (1.4, 0.2) Setosa: $\sqrt{(4.8-1.4)^2 + (1.6-0.2)^2} = \sqrt{11.56 + 1.96} = 3.68$
+        \item (1.4, 0.2) Setosa: $\sqrt{(4.8-1.4)^2 + (1.6-0.2)^2} = \sqrt{11.56 + 1.96} = 3.68$
+        \item (1.3, 0.2) Setosa: $\sqrt{(4.8-1.3)^2 + (1.6-0.2)^2} = \sqrt{12.25 + 1.96} = 3.77$
+        \item (4.7, 1.4) Versicolor: $\sqrt{(4.8-4.7)^2 + (1.6-1.4)^2} = \sqrt{0.01 + 0.04} = 0.22$
+        \item (4.5, 1.5) Versicolor: $\sqrt{(4.8-4.5)^2 + (1.6-1.5)^2} = \sqrt{0.09 + 0.01} = 0.32$
+        \item (4.9, 1.5) Versicolor: $\sqrt{(4.8-4.9)^2 + (1.6-1.5)^2} = \sqrt{0.01 + 0.01} = 0.14$
+        \item (6.0, 2.5) Virginica: $\sqrt{(4.8-6.0)^2 + (1.6-2.5)^2} = \sqrt{1.44 + 0.81} = 1.50$
+        \item (5.1, 1.9) Virginica: $\sqrt{(4.8-5.1)^2 + (1.6-1.9)^2} = \sqrt{0.09 + 0.09} = 0.42$
+        \item (5.9, 2.1) Virginica: $\sqrt{(4.8-5.9)^2 + (1.6-2.1)^2} = \sqrt{1.21 + 0.25} = 1.21$
     \end{itemize}
     
     \item Los 3 vecinos más cercanos son:
     \begin{enumerate}
-        \item D (4.9, 1.5) - Versicolor (distancia: 0.14)
-        \item B (4.7, 1.4) - Versicolor (distancia: 0.22)
-        \item C (4.5, 1.5) - Versicolor (distancia: 0.32)
+        \item (4.9, 1.5) - Versicolor (distancia: 0.14)
+        \item (4.7, 1.4) - Versicolor (distancia: 0.22)
+        \item (5.1, 1.9) - Virginica (distancia: 0.42)
     \end{enumerate}
     
-    \item Clasificación: Versicolor (3 votos)
+    \item Clasificación: Versicolor (2 votos vs 1 voto de Virginica)
 \end{enumerate}
 
-\subsection{Efecto del Parámetro k}
+\subsubsection{Efecto del Parámetro k}
 
 \begin{enumerate}
-    \item Con k=1: Versicolor (punto D)
-    \item Con k=5: Versicolor (todos los vecinos son Versicolor)
-    \item Con k=7: Versicolor (todos los vecinos son Versicolor)
-    \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 o k=7 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos. En este caso específico, todos los vecinos cercanos son Versicolor, por lo que la clasificación no cambia.
+    \item Con k=1: Versicolor (punto más cercano)
+    \item Con k=5: Los 5 vecinos más cercanos son: (4.9,1.5) Versicolor, (4.7,1.4) Versicolor, (5.1,1.9) Virginica, (4.5,1.5) Versicolor, (5.9,2.1) Virginica. Resultado: Versicolor (3 votos vs 2)
+    \item Con k=7: Los 7 vecinos más cercanos incluyen: 4 Versicolor, 2 Virginica, 1 Setosa. Resultado: Versicolor (4 votos vs 2 vs 1)
+    \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 o k=7 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos. En este caso, Versicolor mantiene la mayoría en todos los escenarios.
 \end{enumerate}
 
-\subsection{Normalización}
+\subsubsection{Normalización}
 
 \begin{enumerate}
     \item Distancias sin normalizar:
@@ -536,46 +526,83 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Los resultados cambian significativamente. Sin normalización, la variable altura domina por su mayor escala, mientras que con normalización ambas variables tienen igual peso.
 \end{enumerate}
 
-\subsection{Múltiples Variables}
+\subsubsection{Múltiples Variables}
 
 \begin{enumerate}
-    \item Datos normalizados:
+    \item \textbf{Distancias SIN Normalizar (k=3)}
+    
+    El punto a clasificar es \textbf{P(38, 70000, 15000)}. Calculamos la distancia euclidiana a todos los puntos de entrenamiento:
+    
+    \begin{align*}
+        A(25, 30000, 5000) & = \sqrt{(38-25)^2 + (70000-30000)^2 + (15000-5000)^2} \\ &= \sqrt{13^2 + 40000^2 + 10000^2} \\ &= 41231
+    \end{align*}
+
+    \begin{align*}
+        B(30, 45000, 8000) & = \sqrt{(38-30)^2 + (70000-45000)^2 + (15000-8000)^2} \\ &= \sqrt{8^2 + 25000^2 + 7000^2} \\ &= 25962
+    \end{align*}
+
+    \begin{align*}
+        C(35, 40000, 12000) & = \sqrt{(38-35)^2 + (70000-40000)^2 + (15000-12000)^2} \\ &= \sqrt{3^2 + 30000^2 + 3000^2} \\ &= 30150
+    \end{align*}
+
+    \begin{align*}
+        D(45, 35000, 25000) & = \sqrt{(38-45)^2 + (70000-35000)^2 + (15000-25000)^2} \\ &= \sqrt{(-7)^2 + 35000^2 + (-10000)^2} \\ &= 36401
+    \end{align*}
+
+    \begin{align*}
+        E(50, 75000, 30000) & = \sqrt{(38-50)^2 + (70000-75000)^2 + (15000-30000)^2} \\ &= \sqrt{(-12)^2 + (-5000)^2 + (-15000)^2} \\ &= 15811
+    \end{align*}
+
+    \begin{align*}
+        F(55, 55000, 35000) & = \sqrt{(38-55)^2 + (70000-55000)^2 + (15000-35000)^2} \\ &= \sqrt{(-17)^2 + 15000^2 + (-20000)^2} \\ &= 25000
+    \end{align*}
+
+    \item \textbf{Vecinos:} E (Riesgo Alto), F (Riesgo Alto), B (Riesgo Bajo).
+    
+    \textbf{Clasificación: Riesgo Alto} (2 votos vs 1).
+
+    \item \textbf{Normalizando}
+    
+    Punto P(38, 70000, 15000) se normaliza a \textbf{P\_norm(0.43, 0.89, 0.33)}.
+
     \begin{table}[H]
-        \centering
-        \begin{tabular}{cccc}
-            \toprule
-            \textbf{Edad Norm} & \textbf{Ingresos Norm} & \textbf{Deuda Norm} & \textbf{Clase} \\
-            \midrule
-            0.00 & 0.00 & 0.00 & Riesgo Bajo \\
-            0.17 & 0.50 & 0.12 & Riesgo Bajo \\
-            0.33 & 1.00 & 0.28 & Riesgo Bajo \\
-            0.67 & 0.17 & 0.67 & Riesgo Alto \\
-            0.83 & 0.33 & 0.83 & Riesgo Alto \\
-            1.00 & 0.83 & 1.00 & Riesgo Alto \\
-            \bottomrule
-        \end{tabular}
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Punto} & \textbf{Edad Norm} & \textbf{Ingresos Norm} & \textbf{Deuda Norm} & \textbf{Clase} \\
+        \midrule
+        A & 0.00 & 0.00 & 0.00 & RB \\
+        B & 0.17 & 0.33 & 0.10 & RB \\
+        C & 0.33 & 0.22 & 0.23 & RB \\
+        D & 0.67 & 0.11 & 0.67 & RA \\
+        E & 0.83 & 1.00 & 0.83 & RA \\
+        F & 1.00 & 0.56 & 1.00 & RA \\
+        \bottomrule
+    \end{tabular}
     \end{table}
+
+    \item \textbf{Distancias Normalizadas}
+
+    Ahora, calculamos las distancias desde \textbf{P\_norm(0.43, 0.89, 0.33)}:
+
+    \begin{align*}
+        A\_norm &= \sqrt{(0.43-0)^2 + (0.89-0)^2 + (0.33-0)^2} \approx 1.04 \\
+        B\_norm &= \sqrt{(0.43-0.17)^2 + (0.89-0.33)^2 + (0.33-0.1)^2} \approx \textbf{0.66} \\
+        C\_norm &= \sqrt{(0.43-0.33)^2 + (0.89-0.22)^2 + (0.33-0.23)^2} \approx \textbf{0.68} \\
+        D\_norm &= \sqrt{(0.43-0.67)^2 + (0.89-0.11)^2 + (0.33-0.67)^2} \approx 0.88 \\
+        E\_norm &= \sqrt{(0.43-0.83)^2 + (0.89-1)^2 + (0.33-0.83)^2} \approx \textbf{0.65} \\
+        F\_norm &= \sqrt{(0.43-1)^2 + (0.89-0.56)^2 + (0.33-1)^2} \approx 0.94
+    \end{align*}
     
-    \item Punto a clasificar normalizado: (0.33, 0.33, 0.33)
+    \textbf{Vecinos:} E\_norm (Riesgo Alto), B\_norm (Riesgo Bajo), C\_norm (Riesgo Bajo).
+
+    \textbf{Clasificación: Riesgo Bajo} (2 votos vs 1).
+
+    \item La normalización cambió todo. Sin normalizar clasificaba como Riesgo Alto porque la variable ingresos dominaba.
     
-    Distancias:
-    \begin{itemize}
-        \item A: $\sqrt{(0.33-0.00)^2 + (0.33-0.00)^2 + (0.33-0.00)^2} = 0.57$
-        \item B: $\sqrt{(0.33-0.17)^2 + (0.33-0.50)^2 + (0.33-0.12)^2} = 0.39$
-        \item C: $\sqrt{(0.33-0.33)^2 + (0.33-1.00)^2 + (0.33-0.28)^2} = 0.68$
-        \item D: $\sqrt{(0.33-0.67)^2 + (0.33-0.17)^2 + (0.33-0.67)^2} = 0.58$
-        \item E: $\sqrt{(0.33-0.83)^2 + (0.33-0.33)^2 + (0.33-0.83)^2} = 0.71$
-        \item F: $\sqrt{(0.33-1.00)^2 + (0.33-0.83)^2 + (0.33-1.00)^2} = 0.87$
-    \end{itemize}
-    
-    Los 2 vecinos más cercanos son B y A (ambos Riesgo Bajo).
-    
-    \item Clasificación: Riesgo Bajo
-    
-    \item Sin normalización, la variable Ingresos domina completamente el cálculo de distancia debido a su escala mucho mayor (30000-60000 vs 25-55). Con normalización, todas las variables tienen igual peso en el cálculo de distancia, lo que permite una clasificación más justa.
 \end{enumerate}
 
-\subsection{Datos Desbalanceados}
+\subsubsection{Datos Desbalanceados}
 
 \begin{enumerate}
     \item Con k=5, es muy probable que todos los vecinos sean de clase A, ignorando completamente la clase B.
@@ -589,7 +616,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item Un k más pequeño (1-3) sería más apropiado para capturar la clase minoritaria.
 \end{enumerate}
 
-\subsection{Curse of Dimensionality}
+\subsubsection{Curse of Dimensionality}
 
 \begin{enumerate}
     \item La curse of dimensionality es el fenómeno donde el rendimiento de algoritmos basados en distancia se degrada en espacios de alta dimensionalidad porque la distancia entre puntos se vuelve menos significativa.
@@ -608,7 +635,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \end{itemize}
 \end{enumerate}
 
-\subsection{Métricas de Distancia}
+\subsubsection{Métricas de Distancia}
 
 \begin{enumerate}
     \item Distancia euclidiana: $\sqrt{(4-1)^2 + (6-2)^2 + (9-3)^2} = \sqrt{9 + 16 + 36} = \sqrt{61} = 7.81$
@@ -617,7 +644,7 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \item La distancia de Minkowski generaliza las demas: p=1 es Manhattan, p=2 es Euclidiana, p=$\infty$ es Chebyshev.
 \end{enumerate}
 
-\subsection{Pesos por Distancia}
+\subsubsection{Pesos por Distancia}
 
 \begin{enumerate}
     \item Pesos: $w_i = \frac{1}{d_i}$
@@ -636,30 +663,8 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \end{itemize}
 \end{enumerate}
 
-\subsection{Validación Cruzada}
 
-\begin{enumerate}
-    \item Usaría 5 o 10 folds (k=5 o k=10) porque:
-    \begin{itemize}
-        \item Proporciona buen balance entre bias y varianza
-        \item Es computacionalmente eficiente
-        \item Da estimaciones confiables del rendimiento
-    \end{itemize}
-    \item Leave-one-out no es ideal con KNN porque:
-    \begin{itemize}
-        \item Es computacionalmente costoso
-        \item Puede dar estimaciones sesgadas
-        \item No aprovecha la estructura de los datos
-    \end{itemize}
-    \item Para elegir el mejor k:
-    \begin{itemize}
-        \item Usar grid search con cross-validation
-        \item Evaluar múltiples métricas
-        \item Considerar el contexto del problema
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Implementación}
+\subsubsection{Implementación}
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -736,7 +741,9 @@ prediction_weighted = predict_regression_weighted(X_reg, y_reg, x_test_reg, 3)
 print(f"Prediccion regresion ponderada: {prediction_weighted}")
 \end{lstlisting}
 
-\subsection{Regresión Simple}
+\subsection{Ejercicios de Regresión}
+
+\subsubsection{Regresión Simple}
 
 \begin{enumerate}
     \item Para una casa de 75 m², los 3 vecinos más cercanos son:
@@ -749,13 +756,16 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \item En clasificación se vota por la clase mayoritaria, en regresión se promedia el valor objetivo.
 \end{enumerate}
 
-\subsection{Múltiples Variables}
+\subsubsection{Múltiples Variables}
 
 \begin{enumerate}
-    \item Datos normalizados:
+    \item \textbf{Normalización de datos (min-max scaling):}
+    
+    Rangos: Publicidad (2000), Precio (10)
+    
     \begin{table}[H]
         \centering
-        \begin{tabular}{cccc}
+        \begin{tabular}{ccc}
             \toprule
             \textbf{Publicidad Norm} & \textbf{Precio Norm} & \textbf{Ventas} \\
             \midrule
@@ -768,22 +778,33 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
         \end{tabular}
     \end{table}
     
-    \item Punto a predecir normalizado: (0.40, 0.40)
+    Punto a predecir: (1800, 14) se normaliza a (0.40, 0.40)
     
-    Distancias:
-    \begin{itemize}
-        \item A: $\sqrt{(0.40-0.00)^2 + (0.40-0.00)^2} = 0.57$
-        \item B: $\sqrt{(0.40-0.25)^2 + (0.40-0.20)^2} = 0.25$
-        \item C: $\sqrt{(0.40-0.50)^2 + (0.40-0.50)^2} = 0.14$
-        \item D: $\sqrt{(0.40-0.75)^2 + (0.40-0.80)^2} = 0.47$
-        \item E: $\sqrt{(0.40-1.00)^2 + (0.40-1.00)^2} = 0.85$
-    \end{itemize}
+    \item \textbf{Distancias desde el punto normalizado (0.40, 0.40):}
     
-    Los 3 vecinos más cercanos son C, B, A con ventas 700, 600, 500.
-    Predicción: $(700 + 600 + 500) / 3 = 600$ ventas
+    \begin{align*}
+        d_1 &= \sqrt{(0.40-0.00)^2 + (0.40-0.00)^2} = \sqrt{0.16 + 0.16} = 0.57 \\
+        d_2 &= \sqrt{(0.40-0.25)^2 + (0.40-0.20)^2} = \sqrt{0.0225 + 0.04} = 0.25 \\
+        d_3 &= \sqrt{(0.40-0.50)^2 + (0.40-0.50)^2} = \sqrt{0.01 + 0.01} = 0.14 \\
+        d_4 &= \sqrt{(0.40-0.75)^2 + (0.40-0.80)^2} = \sqrt{0.1225 + 0.16} = 0.53 \\
+        d_5 &= \sqrt{(0.40-1.00)^2 + (0.40-1.00)^2} = \sqrt{0.36 + 0.36} = 0.85
+    \end{align*}
+    
+    \item \textbf{Los 3 vecinos más cercanos son:}
+    \begin{enumerate}
+        \item Punto 3: (2000, 15) → Ventas: 700 (distancia: 0.14)
+        \item Punto 2: (1500, 12) → Ventas: 600 (distancia: 0.25)
+        \item Punto 4: (2500, 18) → Ventas: 800 (distancia: 0.53)
+    \end{enumerate}
+    
+    \item \textbf{Predicción con k=3:} $(700 + 600 + 800) / 3 = 700$ ventas
+    
+    \item \textbf{Con k=5:} Se incluyen todos los puntos, predicción: $(500 + 600 + 700 + 800 + 900) / 5 = 700$ ventas
+    
+    En este caso particular, ambas predicciones dan el mismo resultado porque los datos están bien distribuidos.
 \end{enumerate}
 
-\subsection{Efecto de k en Regresión}
+\subsubsection{Efecto de k en Regresión}
 
 \begin{enumerate}
     \item Con k=1: La predicción es exactamente el valor del vecino más cercano.
@@ -791,7 +812,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \item El valor óptimo de k depende del dataset, pero generalmente está entre 3 y 10.
 \end{enumerate}
 
-\subsection{Pesos en Regresión}
+\subsubsection{Pesos en Regresión}
 
 \begin{enumerate}
     \item Los pesos en regresión KNN funcionan así:
@@ -812,7 +833,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Outliers}
+\subsubsection{Outliers}
 
 \begin{enumerate}
     \item Para una casa de 85 m²:
@@ -843,7 +864,7 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Selección de Variables}
+\subsubsection{Selección de Variables}
 
 \begin{enumerate}
     \item Para elegir variables importantes:
@@ -868,30 +889,6 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Validación en Regresión}
-
-\begin{enumerate}
-    \item Métricas para evaluar:
-    \begin{itemize}
-        \item Mean Squared Error (MSE)
-        \item Root Mean Squared Error (RMSE)
-        \item Mean Absolute Error (MAE)
-        \item R² (coeficiente de determinación)
-    \end{itemize}
-    \item Cross-validation:
-    \begin{itemize}
-        \item k-fold CV
-        \item Leave-one-out (para datasets pequeños)
-        \item Time series CV (para datos temporales)
-    \end{itemize}
-    \item Gráficos útiles:
-    \begin{itemize}
-        \item Predicted vs Actual
-        \item Residual plots
-        \item Q-Q plots
-        \item Learning curves
-    \end{itemize}
-\end{enumerate}
 
 \subsection{Comparación con Otros Métodos}
 
@@ -918,31 +915,6 @@ print(f"Prediccion regresion ponderada: {prediction_weighted}")
     \end{itemize}
 \end{enumerate}
 
-\subsection{Optimización de Parámetros}
-
-\begin{enumerate}
-    \item Parámetros a optimizar:
-    \begin{itemize}
-        \item k (número de vecinos)
-        \item Métrica de distancia
-        \item Pesos (uniforme vs distancia)
-        \item Algoritmo de búsqueda
-    \end{itemize}
-    \item Grid search:
-    \begin{itemize}
-        \item Definir una grilla de parámetros a probar (k, métricas, pesos)
-        \item Para cada combinación de parámetros, entrenar el modelo
-        \item Evaluar el rendimiento con cross-validation
-        \item Seleccionar la combinación que dé mejor rendimiento
-        \item Validar el modelo final en un conjunto de test
-    \end{itemize}
-    \item Métrica para optimizar:
-    \begin{itemize}
-        \item RMSE para problemas de regresión
-        \item MAE para robustez a outliers
-        \item R² para interpretabilidad
-    \end{itemize}
-\end{enumerate}
 
 \subsection{Análisis de Datos Manual}
 
