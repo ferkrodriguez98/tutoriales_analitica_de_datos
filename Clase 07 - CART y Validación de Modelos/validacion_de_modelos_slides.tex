@@ -603,6 +603,157 @@ precision, recall, _ = precision_recall_curve(y_true, y_pred_proba)
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}{Cross Validation}
+    \begin{center}
+        \Large La validación cruzada es una técnica de evaluación de modelos que nos permite estimar qué tan bien un modelo se generalizará a datos nuevos
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{itemize}
+        \item Especialmente útil cuando tenemos datos limitados
+        \item Evita el sobreajuste (overfitting)
+        \item Proporciona una estimación más robusta del rendimiento
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{K-Fold Cross Validation}
+    \begin{enumerate}
+        \item <1-> Dividimos los datos en k partes iguales (folds)
+        \item <2-> En cada iteración, usamos un fold como validación
+        \item <3-> Los k-1 folds restantes se usan para entrenar
+        \item <4-> Repetimos k veces
+        \item <5-> Promediamos los resultados
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Visualización de 5-Fold CV}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+        \foreach \i in {0,1,2,3,4} {
+            \fill[gray!50] (\i*2,0) rectangle (\i*2+1.5,1);
+        }
+        \fill[red!30] (0,0) rectangle (1.5,1);
+        \node at (0.75,1.5) {Fold 1};
+        \node at (2.75,1.5) {Fold 2};
+        \node at (4.75,1.5) {Fold 3};
+        \node at (6.75,1.5) {Fold 4};
+        \node at (8.75,1.5) {Fold 5};
+    \end{tikzpicture}
+    \end{center}
+    
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+        \foreach \i in {0,1,2,3,4} {
+            \fill[gray!50] (\i*2,0) rectangle (\i*2+1.5,1);
+        }
+        \fill[red!30] (2,0) rectangle (3.5,1);
+    \end{tikzpicture}
+    \end{center}
+
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+        \foreach \i in {0,1,2,3,4} {
+            \fill[gray!50] (\i*2,0) rectangle (\i*2+1.5,1);
+        }
+        \fill[red!30] (4,0) rectangle (5.5,1);
+    \end{tikzpicture}
+    \end{center}
+    
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+        \foreach \i in {0,1,2,3,4} {
+            \fill[gray!50] (\i*2,0) rectangle (\i*2+1.5,1);
+        }
+        \fill[red!30] (6,0) rectangle (7.5,1);
+    \end{tikzpicture}
+    \end{center}
+
+    \begin{center}
+    \begin{tikzpicture}[scale=0.6]
+        \foreach \i in {0,1,2,3,4} {
+            \fill[gray!50] (\i*2,0) rectangle (\i*2+1.5,1);
+        }
+        \fill[red!30] (8,0) rectangle (9.5,1);
+    \end{tikzpicture}
+    \end{center}
+
+    \begin{center}
+        \small Rojo = Validación, Gris = Entrenamiento
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo Práctico de CV}
+    \begin{center}
+        \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Iteración} & \textbf{Error Entrenamiento} & \textbf{Error Validación} \\
+        \hline
+        1 & 0.15 & 0.18 \\
+        2 & 0.14 & 0.19 \\
+        3 & 0.16 & 0.17 \\
+        4 & 0.15 & 0.20 \\
+        5 & 0.14 & 0.18 \\
+        \hline
+        \textbf{Promedio} & \textbf{0.148} & \textbf{0.184} \\
+        \hline
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{itemize}
+        \item Error promedio de validación: estimación robusta
+        \item Diferencia entre entrenamiento y validación: indica overfitting
+        \item Variación en validación: estabilidad del modelo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Consideraciones Importantes}
+    \textbf{Elección de k:}
+    \begin{itemize}
+        \item k=5: Más rápido, mayor sesgo, menor varianza
+        \item k=10: Más preciso, menor sesgo, mayor varianza
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \textbf{Mezcla de datos:}
+    \begin{itemize}
+        \item Siempre mezclar aleatoriamente antes de dividir
+        \item Usar random\_state para reproducibilidad
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \textbf{Preprocesamiento:}
+    \begin{itemize}
+        \item Hacer preprocesamiento dentro de cada fold
+        \item Evitar data leakage
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación en Python - Cross Validation}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from sklearn.model_selection import KFold, cross_val_score
+from sklearn.linear_model import LogisticRegression
+
+# Crear el modelo
+model = LogisticRegression()
+
+# Configurar 5-fold CV
+kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+
+# Calcular scores
+scores = cross_val_score(model, X, y, cv=kfold)
+
+# Imprimir resultados
+print(f"Scores por fold: {scores}")
+print(f"Score promedio: {scores.mean():.3f}")
+print(f"Desviacion estandar: {scores.std():.3f}")
+\end{lstlisting}
+\end{frame}
+
 \begin{frame}{Terminamos}
     \begin{center}
         \Large{\textbf{¿Dudas?\\¿Consultas?}}

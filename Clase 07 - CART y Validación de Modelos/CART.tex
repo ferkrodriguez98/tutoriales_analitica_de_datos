@@ -694,4 +694,51 @@ Ordenamos entonces los Ginis que nos dieron las cuentas de recién. Dado que hay
 \end{forest}
 \end{center}
 
+\section{En resumen}
+
+El algoritmo CART tiene varias características importantes que lo distinguen de otros algoritmos de machine learning:
+
+\begin{itemize}
+    \item \textbf{Algoritmo greedy}: Toma la mejor decisión local en cada paso
+    \item \textbf{División binaria}: Cada nodo se divide en exactamente dos ramas
+    \item \textbf{Índice de Gini}: Minimiza la impureza en cada división
+    \item \textbf{Árbol óptimo}: CART garantiza el árbol con menos nodos
+\end{itemize}
+
+\subsection{Ventajas de CART}
+
+Los árboles de decisión CART ofrecen varias ventajas importantes:
+
+\begin{itemize}
+    \item Fácil de interpretar y visualizar
+    \item Maneja variables categóricas y numéricas
+    \item No requiere normalización de datos
+    \item Maneja valores faltantes automáticamente
+    \item No es sensible a valores atípicos
+\end{itemize}
+
+\subsection{Desventajas de CART}
+
+Sin embargo, CART también presenta algunas limitaciones importantes:
+
+\begin{itemize}
+    \item Propenso al sobreajuste (overfitting)
+      \item Inestable con pequeños cambios en los datos
+      \item Sesgado hacia variables con muchos niveles
+      \item No funciona bien con relaciones no lineales complejas
+      \item Algoritmo greedy puede no encontrar la solución óptima global
+\end{itemize}
+
+\subsection{Consideraciones Prácticas}
+
+Al usar CART en la práctica, es importante considerar:
+
+\begin{itemize}
+    \item \textbf{Pruning}: Técnica para reducir el sobreajuste eliminando ramas poco importantes
+    \item \textbf{Validación cruzada}: Para evaluar el rendimiento real del modelo
+    \item \textbf{Ensemble methods}: Combinar múltiples árboles (Random Forest, Gradient Boosting) para mejorar el rendimiento
+    \item \textbf{Balance de clases}: Considerar técnicas de balanceo cuando las clases están desbalanceadas
+    \item \textbf{Selección de hiperparámetros}: Ajustar parámetros como profundidad máxima y número mínimo de muestras por hoja
+\end{itemize}
+
 \end{document}

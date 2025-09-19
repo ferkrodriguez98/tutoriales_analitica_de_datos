@@ -51,9 +51,11 @@
 
 Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
 
-\section{Ejercicios Conceptuales}
+\section{Ejercicios}
 
-\subsection{Verdadero o Falso}
+\subsection{Ejercicios Conceptuales}
+
+\subsubsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item La accuracy es siempre la mejor métrica para evaluar un modelo de clasificación.
@@ -78,7 +80,20 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \item Un modelo con R² = 0.8 explica el 80\% de la varianza de la variable objetivo.
 \end{enumerate}
 
-\subsection{Opción Múltiple}
+\subsubsection{Verdadero o Falso (Cross Validation)}
+
+\begin{enumerate}
+    \item Cross validation permite obtener una estimación más robusta del rendimiento del modelo.
+    \item En k-fold cross validation, el dataset se divide en k particiones exactamente iguales.
+    \item Leave-one-out cross validation es siempre la mejor opción para evaluar modelos.
+    \item Cross validation se puede usar tanto para seleccionar hiperparámetros como para evaluar el rendimiento final.
+    \item En 5-fold cross validation, cada observación se usa exactamente 4 veces para entrenar y 1 vez para validar.
+    \item Stratified cross validation es importante para datasets desbalanceados.
+    \item Cross validation siempre reduce el overfitting del modelo.
+    \item Un mayor número de folds siempre es mejor en cross validation.
+\end{enumerate}
+
+\subsubsection{Multiple Choice}
 
 \begin{enumerate}
     \item ¿Cuál es la diferencia principal entre precisión y recall?
@@ -154,9 +169,53 @@ Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail 
     \end{enumerate}
 \end{enumerate}
 
-\section{Ejercicios Prácticos}
+\subsubsection{Multiple Choice (Cross Validation)}
 
-\subsection{Matriz de Confusión y Métricas Básicas}
+\begin{enumerate}
+    \item ¿Cuál es la principal ventaja de cross validation sobre hold-out validation?
+    \begin{enumerate}
+        \item Es más rápido computacionalmente
+        \item Usa toda la data para entrenamiento y validación
+        \item No requiere dividir los datos
+        \item Es más fácil de implementar
+    \end{enumerate}
+    
+    \item En 10-fold cross validation, ¿qué porcentaje de los datos se usa para entrenar en cada fold?
+    \begin{enumerate}
+        \item 10\%
+        \item 80\%
+        \item 90\%
+        \item 100\%
+    \end{enumerate}
+    
+    \item ¿Cuándo es recomendable usar Leave-One-Out cross validation?
+    \begin{enumerate}
+        \item Con datasets muy grandes
+        \item Con datasets muy pequeños
+        \item Siempre que sea posible
+        \item Nunca
+    \end{enumerate}
+    
+    \item ¿Qué es stratified cross validation?
+    \begin{enumerate}
+        \item Una técnica para datasets grandes
+        \item Una forma de mantener la proporción de clases en cada fold
+        \item Un método más rápido de validación
+        \item Una técnica solo para regresión
+    \end{enumerate}
+    
+    \item ¿Cuál es el trade-off principal al elegir el número de folds?
+    \begin{enumerate}
+        \item Sesgo vs Varianza
+        \item Velocidad vs Precisión
+        \item Complejidad vs Simplicidad
+        \item Todas las anteriores
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Ejercicios Prácticos}
+
+\subsubsection{Matriz de Confusión y Métricas Básicas}
 
 Un modelo de clasificación binaria para detectar fraude en transacciones tiene los siguientes resultados en un conjunto de prueba de 1000 transacciones:
 
@@ -188,7 +247,7 @@ Un modelo de clasificación binaria para detectar fraude en transacciones tiene 
     \item[d.] ¿Qué métrica sería más importante para este caso de uso y por qué?
 \end{enumerate}
 
-\subsection{Predicción de Precios}
+\subsubsection{Predicción de Precios}
 
 Un modelo para predecir el precio de casas (en miles de dólares) tiene los siguientes resultados en un conjunto de prueba:
 
@@ -217,7 +276,7 @@ Un modelo para predecir el precio de casas (en miles de dólares) tiene los sigu
     \item[d.] ¿Qué estrategia usarías para manejar este problema?
 \end{enumerate}
 
-\subsection{Comparación de Modelos de Predicción}
+\subsubsection{Comparación de Modelos de Predicción}
 
 Tenés dos modelos para predecir ventas mensuales (en miles de unidades):
 
@@ -231,7 +290,7 @@ Tenés dos modelos para predecir ventas mensuales (en miles de unidades):
     \item[d.] Si el R² del Modelo A fuera 0.95, ¿cambiaría tu respuesta en (a)?
 \end{enumerate}
 
-\subsection{Comparación de Modelos}
+\subsubsection{Comparación de Modelos}
 
 Tenés dos modelos para clasificar emails como spam o no spam. Los resultados son: 
 \begin{itemize}
@@ -245,7 +304,7 @@ Tenés dos modelos para clasificar emails como spam o no spam. Los resultados so
     \item[c.] ¿Cambiaría tu elección si el costo de un falso negativo fuera 10 veces mayor que el de un falso positivo?
 \end{enumerate}
 
-\subsection{Matriz de Confusión Multiclase}
+\subsubsection{Matriz de Confusión Multiclase}
 
 Un modelo clasifica el clima en tres categorías: Soleado (S), Nublado (N), Lluvioso (L). La matriz de confusión es:
 
@@ -291,7 +350,7 @@ Un modelo clasifica el clima en tres categorías: Soleado (S), Nublado (N), Lluv
     \item[d.] Calcular las métricas macro y micro average.
 \end{enumerate}
 
-\subsection{Curva ROC}
+\subsubsection{Curva ROC}
 
 Un modelo de clasificación binaria produce las siguientes probabilidades para 8 casos de prueba:
 
@@ -327,7 +386,7 @@ Un modelo de clasificación binaria produce las siguientes probabilidades para 8
     \item[d.] Estimar el valor aproximado del AUC.
 \end{enumerate}
 
-\subsection{Problema Médico}
+\subsubsection{Problema Médico}
 
 Un hospital desarrolla un modelo para detectar neumonía en radiografías. El dataset tiene las siguientes características:
 \begin{itemize}
@@ -345,7 +404,7 @@ El modelo B tiene una accuracy del 92\% pero detecta el 85\% de los casos de neu
     \item[c.] ¿Qué estrategias podrías usar para mejorar el modelo seleccionado?
 \end{enumerate}
 
-\subsection{Implementación en Python}
+\subsubsection{Implementación en Python}
 
 Implementar en Python un análisis completo de validación de modelos que incluya:
 
@@ -373,7 +432,7 @@ X, y = make_classification(n_samples=1000, n_features=20,
 # 6. Analizar cual modelo es mejor para este caso
 \end{lstlisting}
 
-\subsection{Caso de Negocio}
+\subsubsection{Caso de Negocio}
 
 Una empresa de e-commerce quiere implementar un sistema de detección de reseñas falsas. Tenés los siguientes datos de rendimiento de tres modelos:
 
@@ -399,11 +458,188 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
     \item[d.] Proponer una estrategia que combine múltiples modelos.
 \end{enumerate}
 
+\subsection{Ejercicios Prácticos (Cross Validation)}
+
+\subsubsection{Cálculo de Modelos a Entrenar}
+
+Considerar los siguientes escenarios e indicar cuántos árboles es necesario entrenar en cada caso:
+
+\begin{enumerate}
+    \item En el entrenamiento de un modelo CART se usa 5-fold cross validation para seleccionar el hiperparámetro max\_depth de la siguiente grilla: [none, 10, 20, 30]
+    
+    \item En el entrenamiento de un modelo CART se usa 5-fold cross validation para seleccionar la mejor combinación de los siguientes hiperparámetros:
+    \begin{itemize}
+        \item max\_depth: [None, 10, 20, 30, 40, 50]
+        \item min\_samples\_split: [2, 5, 10]
+        \item min\_samples\_leaf: [1, 2, 4]
+    \end{itemize}
+    
+    \item En el entrenamiento de un modelo Random Forest se usa 5-fold cross validation para seleccionar la mejor combinación de los siguientes hiperparámetros:
+    \begin{itemize}
+        \item n\_estimators: [100, 200, 500, 1000]
+        \item max\_depth: [10, 20, 30]
+        \item min\_samples\_split: [2, 5, 10]
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Interpretación de Resultados}
+
+Tener en cuenta los siguientes resultados de la cross validation del hiperparámetro n\_estimators para un modelo CART. ¿Qué valor del hiperparámetro elegirían? ¿Por qué?
+
+\begin{lstlisting}[language=Python]
+{
+'mean_fit_time': array([7.5903286, 12.5109745, 30.5498374, 61.4766215]),
+'std_fit_time': array([2.8521561, 0.3776906, 0.5143247, 0.6323429]),
+'mean_score_time': array([0.1880916, 0.0871274, 0.9984307, 1.9107995]),
+'std_score_time': array([0.0091651, 0.0154946, 0.1213947, 0.1533748]),
+'param_n_estimators': masked_array(data=[100, 200, 500, 1000]),
+'params': [{'n_estimators': 100},
+           {'n_estimators': 200},
+           {'n_estimators': 500},
+           {'n_estimators': 1000}],
+'split0_test_score': array([0.7995629, 0.7997190, 0.7998751, 0.7998751]),
+'split1_test_score': array([0.7995629, 0.7997190, 0.7997190, 0.7997190]),
+'split2_test_score': array([0.7995316, 0.7998438, 0.7998438, 0.7998438]),
+'split3_test_score': array([0.7993754, 0.7996877, 0.7996877, 0.7998438]),
+'split4_test_score': array([0.7996877, 0.7998438, 0.7998438, 0.7998438]),
+'mean_test_score': array([0.7995754, 0.799762, 0.7997939, 0.7998251]),
+'std_test_score': array([1.2270604e-04, 6.7250609e-05, 7.5455567e-05, 5.4430172e-05]),
+'rank_test_score': array([4, 3, 2, 1], dtype=int32)
+}
+\end{lstlisting}
+
+\subsubsection{KNN y Cross Validation}
+
+Considerar el siguiente conjunto de datos donde se quiere predecir la etiqueta, + o - en función de la variable X. Con este conjunto de datos se quiere entrenar un modelo knn, para el cual el hiperparámetro k se seleccionará por cross-validation:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline
+        & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{10} \\
+        \hline
+        \textbf{X} & -0.1 & 0.7 & 1.0 & 1.6 & 2.0 & 2.5 & 3.0 & 3.5 & 4.1 & 4.9 \\
+        \hline
+        \textbf{Y} & - & + & + & - & + & + & - & - & + & + \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item Dar el accuracy de cross-validation por leave-one-out (es decir 10-folds cross-validation) de 1 vecino más cercano para la muestra de entrenamiento.
+    \item Dar el accuracy de cross-validation por leave-one-out (es decir 10-folds cross-validation) de 3 vecinos más cercanos para la muestra de entrenamiento.
+    \item ¿Qué valor de k seleccionas?
+\end{enumerate}
+
+\subsubsection{Implementación de K-Fold}
+
+Implementá k-fold cross validation desde cero en Python para evaluar un modelo de regresión lineal:
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+def k_fold_cv(X, y, k=5, model_class=LinearRegression):
+    """
+    Implementa k-fold cross validation
+    
+    Parameters:
+    X: features
+    y: target
+    k: numero de folds
+    model_class: clase del modelo a evaluar
+    
+    Returns:
+    scores: lista de scores para cada fold
+    """
+    # Tu codigo aca
+    pass
+
+# Datos de ejemplo
+X = np.random.randn(100, 3)
+y = X[:, 0] + 2*X[:, 1] - X[:, 2] + np.random.randn(100)*0.1
+
+# Evaluar modelo
+scores = k_fold_cv(X, y, k=5)
+print(f"MSE promedio: {np.mean(scores):.4f}")
+print(f"Desviacion estandar: {np.std(scores):.4f}")
+\end{lstlisting}
+
+\subsubsection{Stratified Cross Validation}
+
+Tenemos un dataset desbalanceado con las siguientes clases:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cc}
+        \toprule
+        \textbf{Clase} & \textbf{Cantidad} \\
+        \midrule
+        A & 800 \\
+        B & 150 \\
+        C & 50 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item ¿Por qué es importante usar stratified cross validation en este caso?
+    \item ¿Cuántas observaciones de cada clase habría en cada fold si usamos 5-fold stratified CV?
+    \item ¿Qué pasaría si usáramos k-fold simple sin estratificación?
+\end{enumerate}
+
+\subsubsection{Grid Search con Cross Validation}
+
+Implementá grid search con cross validation para optimizar hiperparámetros de un SVM:
+
+\begin{lstlisting}[language=Python]
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from sklearn.datasets import make_classification
+
+# Generar datos
+X, y = make_classification(n_samples=1000, n_features=10, 
+                          n_classes=2, random_state=42)
+
+# Definir grilla de parametros
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto', 0.001, 0.01, 0.1],
+    'kernel': ['rbf', 'linear']
+}
+
+# Tu codigo aca para implementar grid search con CV
+\end{lstlisting}
+
+\subsubsection{Comparación de Modelos}
+
+Usando cross validation, compará el rendimiento de los siguientes modelos en un problema de clasificación:
+
+\begin{enumerate}
+    \item Logistic Regression
+    \item Random Forest
+    \item SVM
+    \item KNN
+\end{enumerate}
+
+¿Qué métrica usarías? ¿Cómo determinarías si las diferencias son estadísticamente significativas?
+
+\subsubsection{Análisis de Varianza}
+
+\begin{enumerate}
+    \item ¿Por qué es importante reportar tanto la media como la desviación estándar de los scores de CV?
+    \item ¿Qué indica una alta varianza en los scores de cross validation?
+    \item ¿Cómo podríamos reducir la varianza en los resultados de CV?
+\end{enumerate}
+
 \newpage
 
 \section{Soluciones}
 
-\subsection{Verdadero o Falso}
+\subsection{Ejercicios Conceptuales}
+
+\subsubsection{Verdadero o Falso}
 
 \begin{enumerate}
     \item \textbf{Falso.} Accuracy puede ser engañosa con clases desbalanceadas.
@@ -428,7 +664,20 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
     \item \textbf{Verdadero.} R² mide la proporción de varianza explicada.
 \end{enumerate}
 
-\subsection{Opción Múltiple}
+\subsubsection{Verdadero o Falso (Cross Validation)}
+
+\begin{enumerate}
+    \item \textbf{Verdadero.} CV proporciona múltiples estimaciones del rendimiento, reduciendo la dependencia de una única división train/test.
+    \item \textbf{Falso.} Los folds pueden tener tamaños ligeramente diferentes si n no es divisible por k.
+    \item \textbf{Falso.} LOOCV puede tener alta varianza y ser computacionalmente costoso.
+    \item \textbf{Verdadero.} CV se usa tanto para model selection como para model evaluation.
+    \item \textbf{Verdadero.} En 5-fold CV, cada observación se usa 4 veces para entrenar y 1 vez para validar.
+    \item \textbf{Verdadero.} Mantiene la proporción de clases en cada fold.
+    \item \textbf{Falso.} CV ayuda a detectar overfitting, pero no lo reduce directamente.
+    \item \textbf{Falso.} Más folds aumenta la varianza y el costo computacional.
+\end{enumerate}
+
+\subsubsection{Multiple Choice}
 
 \begin{enumerate}
     \item \textbf{b)} Precisión se enfoca en predicciones positivas correctas, recall en casos positivos reales detectados.
@@ -442,7 +691,19 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
     \item \textbf{b)} Es fácil de interpretar como porcentaje, aunque tiene problemas con ceros.
 \end{enumerate}
 
-\subsection{Matriz de Confusión y Métricas Básicas}
+\subsubsection{Multiple Choice (Cross Validation)}
+
+\begin{enumerate}
+    \item \textbf{b)} Usa toda la data tanto para entrenamiento como para validación en diferentes momentos.
+    \item \textbf{c)} 90\% (9 de los 10 folds se usan para entrenamiento).
+    \item \textbf{b)} Con datasets muy pequeños, cuando queremos usar todos los datos posibles.
+    \item \textbf{b)} Mantiene la proporción de clases en cada fold.
+    \item \textbf{d)} Todas las anteriores: más folds aumentan sesgo pero reducen varianza, son más lentos pero más precisos, y más complejos pero potencialmente mejores.
+\end{enumerate}
+
+\subsection{Ejercicios Prácticos}
+
+\subsubsection{Matriz de Confusión y Métricas Básicas}
 
 \textbf{a)} Métricas calculadas:
 \begin{align*}
@@ -459,7 +720,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 \textbf{d)} Recall es más importante para no perder casos de fraude.
 
-\subsection{Predicción de Precios}
+\subsubsection{Predicción de Precios}
 
 \textbf{a)} Cálculos:
 \begin{align*}
@@ -478,7 +739,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 \textbf{d)} Reemplazar ceros por valor muy pequeño, filtrar ceros, o usar sMAPE.
 
-\subsection{Comparación de Modelos de Predicción}
+\subsubsection{Comparación de Modelos de Predicción}
 
 \textbf{a)} Modelo A - tiene menor MSE (25 vs 30), penaliza menos los errores grandes.
 
@@ -488,7 +749,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 \textbf{d)} Sí, R² = 0.95 indicaría que el Modelo A explica mucha más varianza, compensando el mayor MAE.
 
-\subsection{Comparación de Modelos}
+\subsubsection{Comparación de Modelos}
 
 \textbf{Modelo A:}
 \begin{align*}
@@ -506,7 +767,7 @@ Una empresa de e-commerce quiere implementar un sistema de detección de reseña
 
 Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más, definitivamente elegir Modelo A.
 
-\subsection{Matriz de Confusión Multiclase}
+\subsubsection{Matriz de Confusión Multiclase}
 
 \textbf{a.} Accuracy = (85 + 82 + 81) / 300 = 0.827
 
@@ -519,7 +780,7 @@ Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más,
 
 \textbf{c.} Nublado es la más difícil (menor F1).
 
-\subsection{Curva ROC}
+\subsubsection{Curva ROC}
 
 \textbf{a.} Para cada umbral:
 \begin{itemize}
@@ -532,13 +793,13 @@ Modelo A tiene mejor recall y F1. Si los falsos negativos cuestan 10 veces más,
 \textbf{c.} Para minimizar FN: umbral bajo (0.1) \\
 \textbf{d.} AUC aproximado: 0.75
 
-\subsection{Problema Médico}
+\subsubsection{Problema Médico}
 
 \textbf{a.} Modelo A: VP=200, FN=300, FP=100, VN=9400. Modelo B: VP=425, FN=75, FP=725, VN=8775 \\
 \textbf{b.} Modelo B porque detecta más casos de neumonía, crucial en medicina. \\
 \textbf{c.} Estrategias: datos más balanceados, ensemble, ajuste de umbral.
 
-\subsection{Implementación en Python}
+\subsubsection{Implementación en Python}
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -613,11 +874,278 @@ plt.show()
 # Tambien comparar AUC y la curva PR, que es mas informativa en datasets desbalanceados
 \end{lstlisting}
 
-\subsection{Caso de Negocio}
+\subsubsection{Caso de Negocio}
 
 \textbf{a.} Naive Bayes (mayor recall para no bloquear reseñas legítimas). \\
 \textbf{b.} SVM (mayor precisión para mantener calidad). \\
 \textbf{c.} Costos de errores, volumen de reseñas, recursos disponibles. \\
 \textbf{d.} Ensemble que combine todo con pesos según objetivos del negocio.
+
+\subsection{Ejercicios Prácticos (Cross Validation)}
+
+\subsubsection{Cálculo de Modelos a Entrenar}
+
+\begin{enumerate}
+    \item \textbf{CART con 5-fold CV y 4 valores de max\_depth:}
+    \begin{itemize}
+        \item 4 valores de hiperparámetro × 5 folds = \textbf{20 árboles}
+    \end{itemize}
+    
+    \item \textbf{CART con 5-fold CV y múltiples hiperparámetros:}
+    \begin{itemize}
+        \item max\_depth: 6 valores
+        \item min\_samples\_split: 3 valores  
+        \item min\_samples\_leaf: 3 valores
+        \item Total combinaciones: 6 × 3 × 3 = 54
+        \item 54 combinaciones × 5 folds = \textbf{270 árboles}
+    \end{itemize}
+    
+    \item \textbf{Random Forest con 5-fold CV:}
+    \begin{itemize}
+        \item n\_estimators: 4 valores
+        \item max\_depth: 3 valores
+        \item min\_samples\_split: 3 valores
+        \item Total combinaciones: 4 × 3 × 3 = 36
+        \item 36 combinaciones × 5 folds = 180 Random Forests
+        \item Cada Random Forest tiene su propio n\_estimators (100, 200, 500, o 1000)
+        \item Total de árboles individuales = 180 × promedio de n\_estimators
+        \item Promedio de n\_estimators = (100+200+500+1000)/4 = 450
+        \item \textbf{Total aproximado: 81,000 árboles individuales}
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Interpretación de Resultados}
+
+Analizando los resultados:
+
+\begin{itemize}
+    \item \textbf{n\_estimators = 100:} score = 0.7996, tiempo = 7.59s, std = 1.23e-04
+    \item \textbf{n\_estimators = 200:} score = 0.7998, tiempo = 12.51s, std = 6.73e-05
+    \item \textbf{n\_estimators = 500:} score = 0.7998, tiempo = 30.55s, std = 7.55e-05
+    \item \textbf{n\_estimators = 1000:} score = 0.7999, tiempo = 61.48s, std = 5.44e-05
+\end{itemize}
+
+\textbf{Recomendación: n\_estimators = 100}
+
+\vspace{1em}
+
+\textbf{Justificación:}
+\begin{itemize}
+    \item La diferencia de score entre 100 y 200 es solo 0.0002 (0.7996 vs 0.7998)
+    \item Esta diferencia es muy pequeña y probablemente no sea estadísticamente significativa
+    \item El tiempo aumenta 65\% (de 7.59s a 12.51s) para una ganancia mínima
+    \item La desviación estándar es ligeramente mayor en 100, pero aún muy baja
+    \item En términos prácticos, 0.0002 de diferencia no justifica el costo computacional adicional
+\end{itemize}
+
+\subsubsection{KNN y Cross Validation}
+
+\textbf{Dataset ordenado por X:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{Punto} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+        \hline
+        \textbf{X} & -0.1 & 0.7 & 1.0 & 1.6 & 2.0 & 2.5 & 3.0 & 3.5 & 4.1 & 4.9 \\
+        \hline
+        \textbf{Y} & - & + & + & - & + & + & - & - & + & + \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\textbf{a) LOOCV con k=1 (1-NN):}
+
+Para cada punto, encontramos su vecino más cercano y vemos si coincide la clase:
+
+\begin{itemize}
+    \item Punto 1 (X=-0.1, Y=-): vecino más cercano es punto 2 (Y=+) → \textbf{Error}
+    \item Punto 2 (X=0.7, Y=+): vecino más cercano es punto 3 (Y=+) → \textbf{Correcto}  
+    \item Punto 3 (X=1.0, Y=+): vecino más cercano es punto 2 (Y=+) → \textbf{Correcto}
+    \item Punto 4 (X=1.6, Y=-): vecino más cercano es punto 5 (Y=+) → \textbf{Error}
+    \item Punto 5 (X=2.0, Y=+): vecino más cercano es punto 4 (Y=-) → \textbf{Error}
+    \item Punto 6 (X=2.5, Y=+): vecino más cercano es punto 5 (Y=+) → \textbf{Correcto}
+    \item Punto 7 (X=3.0, Y=-): vecino más cercano es punto 6 (Y=+) → \textbf{Error}
+    \item Punto 8 (X=3.5, Y=-): vecino más cercano es punto 7 (Y=-) → \textbf{Correcto}
+    \item Punto 9 (X=4.1, Y=+): vecino más cercano es punto 8 (Y=-) → \textbf{Error}
+    \item Punto 10 (X=4.9, Y=+): vecino más cercano es punto 9 (Y=+) → \textbf{Correcto}
+\end{itemize}
+
+\textbf{Accuracy k=1: 6/10 = 0.60}
+
+\vspace{1em}
+
+\textbf{b) LOOCV con k=3 (3-NN):}
+
+Para cada punto, encontramos sus 3 vecinos más cercanos y usamos votación por mayoría:
+
+\begin{itemize}
+    \item Punto 1: vecinos [2,3,4] → clases [+,+,-] → mayoría + → \textbf{Error}
+    \item Punto 2: vecinos [1,3,4] → clases [-,+,-] → mayoría - → \textbf{Error}
+    \item Punto 3: vecinos [2,4,5] → clases [+,-,+] → mayoría + → \textbf{Correcto}
+    \item Punto 4: vecinos [3,5,6] → clases [+,+,+] → mayoría + → \textbf{Error}
+    \item Punto 5: vecinos [4,6,7] → clases [-,+,-] → mayoría - → \textbf{Error}
+    \item Punto 6: vecinos [5,7,8] → clases [+,-,-] → mayoría - → \textbf{Error}
+    \item Punto 7: vecinos [6,8,9] → clases [+,-,+] → mayoría + → \textbf{Error}
+    \item Punto 8: vecinos [7,9,10] → clases [-,+,+] → mayoría + → \textbf{Error}
+    \item Punto 9: vecinos [8,10,7] → clases [-,+,-] → mayoría - → \textbf{Error}
+    \item Punto 10: vecinos [9,8,7] → clases [+,-,-] → mayoría - → \textbf{Error}
+\end{itemize}
+
+\textbf{Accuracy k=3: 1/10 = 0.10}
+
+\vspace{1em}
+
+\textbf{c) Selección de k:}
+Elegiría \textbf{k=1} porque tiene mejor accuracy (0.60 vs 0.10). Con este dataset pequeño y ruidoso, k=3 incluye demasiados vecinos que añaden ruido a la predicción.
+
+\subsubsection{Implementación de K-Fold}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+def k_fold_cv(X, y, k=5, model_class=LinearRegression):
+    """
+    Implementa k-fold cross validation
+    """
+    n_samples = len(X)
+    fold_size = n_samples // k
+    indices = np.arange(n_samples)
+    np.random.shuffle(indices)  # mezclar indices
+    
+    scores = []
+    
+    for i in range(k):
+        # Definir indices de validacion
+        start_idx = i * fold_size
+        end_idx = start_idx + fold_size if i < k-1 else n_samples
+        val_indices = indices[start_idx:end_idx]
+        train_indices = np.concatenate([indices[:start_idx], 
+                                       indices[end_idx:]])
+        
+        # Dividir datos
+        X_train, X_val = X[train_indices], X[val_indices]
+        y_train, y_val = y[train_indices], y[val_indices]
+        
+        # Entrenar modelo
+        model = model_class()
+        model.fit(X_train, y_train)
+        
+        # Predecir y evaluar
+        y_pred = model.predict(X_val)
+        score = mean_squared_error(y_val, y_pred)
+        scores.append(score)
+    
+    return scores
+\end{lstlisting}
+
+\subsubsection{Stratified Cross Validation}
+
+\begin{enumerate}
+    \item \textbf{Importancia de stratified CV:} Con clases desbalanceadas, k-fold simple podría crear folds sin representación de clases minoritarias. Stratified CV garantiza que cada fold mantenga la proporción original de clases.
+    
+    \item \textbf{Observaciones por fold en 5-fold stratified CV:}
+    \begin{itemize}
+        \item Total: 1000 observaciones
+        \item Proporción: A=80\%, B=15\%, C=5\%
+        \item Por fold (200 obs): A=160, B=30, C=10
+    \end{itemize}
+    
+    \item \textbf{Problema sin estratificación:} Algunos folds podrían tener muy pocas o ninguna observación de clases B y C, dando estimaciones sesgadas del rendimiento.
+\end{enumerate}
+
+\subsubsection{Grid Search con Cross Validation}
+
+\begin{lstlisting}[language=Python]
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from sklearn.datasets import make_classification
+
+# Generar datos
+X, y = make_classification(n_samples=1000, n_features=10, 
+                          n_classes=2, random_state=42)
+
+# Definir grilla de parametros
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto', 0.001, 0.01, 0.1],
+    'kernel': ['rbf', 'linear']
+}
+
+# Grid search con CV
+grid_search = GridSearchCV(
+    SVC(), 
+    param_grid, 
+    cv=5, 
+    scoring='accuracy',
+    n_jobs=-1,
+    verbose=1
+)
+
+grid_search.fit(X, y)
+
+print(f"Mejores parametros: {grid_search.best_params_}")
+print(f"Mejor score: {grid_search.best_score_:.4f}")
+\end{lstlisting}
+
+\subsubsection{Comparación de Modelos}
+
+\begin{lstlisting}[language=Python]
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+
+# Modelos a comparar
+models = {
+    'Logistic Regression': LogisticRegression(),
+    'Random Forest': RandomForestClassifier(),
+    'SVM': SVC(),
+    'KNN': KNeighborsClassifier()
+}
+
+# Comparar modelos
+results = {}
+for name, model in models.items():
+    scores = cross_val_score(model, X, y, cv=5, scoring='f1_weighted')
+    results[name] = scores
+    print(f"{name}: {scores.mean():.4f} (+/- {scores.std()*2:.4f})")
+
+# Test estadistico (t-test pareado) para comparar modelos
+from scipy import stats
+model1_scores = results['Random Forest']
+model2_scores = results['SVM'] 
+t_stat, p_value = stats.ttest_rel(model1_scores, model2_scores)
+print(f"p-value: {p_value:.4f}")
+\end{lstlisting}
+
+Usaría \textbf{F1-score weighted} para datasets desbalanceados o \textbf{accuracy} para balanceados. Para significancia estadística, usaría t-test pareado entre scores de CV.
+
+\subsubsection{Análisis de Varianza}
+
+\begin{enumerate}
+    \item \textbf{Importancia de media y desviación:} La media indica el rendimiento esperado, la desviación indica la estabilidad del modelo. Ambas son cruciales para tomar decisiones informadas.
+    
+    \item \textbf{Alta varianza indica:}
+    \begin{itemize}
+        \item Modelo sensible a cambios en datos de entrenamiento
+        \item Posible overfitting
+        \item Dataset pequeño o muy heterogéneo
+        \item Necesidad de regularización
+    \end{itemize}
+    
+    \item \textbf{Reducir varianza:}
+    \begin{itemize}
+        \item Aumentar el dataset
+        \item Usar modelos más simples
+        \item Aplicar regularización
+        \item Aumentar el número de folds (trade-off con costo computacional)
+        \item Usar stratified CV para datasets desbalanceados
+    \end{itemize}
+\end{enumerate}
 
 \end{document}

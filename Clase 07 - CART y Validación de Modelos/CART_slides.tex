@@ -1,0 +1,847 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{forest}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{CART}}
+\subtitle{Classification And Regression Trees}
+\author{Analítica de Datos, Universidad de San Andrés}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{¿Qué es CART?}
+    \begin{center}
+        \Large CART es una técnica de aprendizaje automático para clasificación y regresión
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{itemize}
+        \item Su objetivo es dividir un conjunto de datos en grupos homogéneos
+        \item Utiliza el índice de Gini para evaluar la calidad de las divisiones
+        \item Es un algoritmo \textbf{greedy} (voraz)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Índice de Gini}
+    \begin{center}
+        \Large $\mathrm{Gini} = 1 - \sum_{k=1}^K p_k^2$
+    \end{center}
+    
+    \vspace{1em}
+    
+    donde $p_k$ es la proporción de la clase $k$ en el nodo
+    
+    \vspace{1em}
+    
+    \begin{itemize}
+        \item \textbf{Gini = 0}: Nodo puro (todas las instancias de una clase)
+        \item \textbf{Gini = 0.5}: Máxima impureza (distribución uniforme)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Algoritmo Greedy}
+    ¿Por qué se dice \textbf{greedy}? Porque en cada paso tomamos la mejor decisión localmente, sin importar lo que viene después.
+    
+    \vspace{1em}
+    
+    \begin{itemize}
+        \item Chequeamos cada punto de corte
+        \item Determinamos si es útil o no sin tener en cuenta lo que viene después
+        \item Puede llevar a soluciones subóptimas, pero es suficiente en muchos casos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejercicio 1 - Datos}
+    \begin{center}
+        \begin{tabular}{ccccc}
+            \toprule
+            Edad & Ingreso & Historial & Deuda Actual & Aprobado \\
+            \midrule
+            25 & 3.5 & Bueno & 10 & Sí \\
+            40 & 5.0 & Malo & 20 & No \\
+            30 & 4.2 & Bueno & 30 & Sí \\
+            22 & 2.8 & Malo & 40 & No \\
+            35 & 6.1 & Bueno & 15 & Sí \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Queremos predecir si una persona es aprobada o no para un crédito
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Variable Objetivo}
+    \begin{itemize}
+        \item \textbf{Aprobado = Sí}: 3 instancias
+        \item \textbf{Aprobado = No}: 2 instancias
+    \end{itemize}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large $\mathrm{Gini}_{\text{Aprobado}} = 1 - \left[\left(\tfrac{3}{5}\right)^2 + \left(\tfrac{2}{5}\right)^2\right] = 0.48$
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        Este es nuestro benchmark para mejorar
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Edad - Ordenamiento}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Edad & Aprobado \\
+            \midrule
+            22 & No \\
+            25 & Sí \\
+            30 & Sí \\
+            35 & Sí \\
+            40 & No \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Para variables continuas, calculamos el Gini en cada punto de corte
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Edad - Punto de Corte 23.5}
+    \begin{itemize}
+        \item \textbf{Edad $\leq$ 23.5}: 1 instancia (0 aprobados, 1 no aprobado)
+        \item \textbf{Edad $>$ 23.5}: 4 instancias (3 aprobados, 1 no aprobado)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 23.5} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 23.5} &= 1 - \left[\left(\tfrac{3}{4}\right)^2 + \left(\tfrac{1}{4}\right)^2\right] = 0.375 \\
+        \mathrm{Gini}_{\text{Edad, 23.5}} &= \tfrac{1}{5}\times0 + \tfrac{4}{5}\times0.375 = 0.3
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Edad - Punto de Corte 27.5}
+    \begin{itemize}
+        \item \textbf{Edad $\leq$ 27.5}: 2 instancias (1 aprobado, 1 no aprobado)
+        \item \textbf{Edad $>$ 27.5}: 3 instancias (2 aprobados, 1 no aprobado)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 27.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{> 27.5} &= 1 - \left[\left(\tfrac{2}{3}\right)^2 + \left(\tfrac{1}{3}\right)^2\right] = 0.444 \\
+        \mathrm{Gini}_{\text{Edad, 27.5}} &= \tfrac{2}{5}\times0.5 + \tfrac{3}{5}\times0.444 = 0.467
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Edad - Punto de Corte 32.5}
+    \begin{itemize}
+        \item \textbf{Edad $\leq$ 32.5}: 3 instancias (2 aprobados, 1 no aprobado)
+        \item \textbf{Edad $>$ 32.5}: 2 instancias (1 aprobado, 1 no aprobado)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 32.5} &= 1 - \left[\left(\tfrac{2}{3}\right)^2 + \left(\tfrac{1}{3}\right)^2\right] = 0.444 \\
+        \mathrm{Gini}_{> 32.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Edad, 32.5}} &= \tfrac{3}{5}\times0.444 + \tfrac{2}{5}\times0.5 = 0.467
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Edad - Punto de Corte 37.5}
+    \begin{itemize}
+        \item \textbf{Edad $\leq$ 37.5}: 4 instancias (3 aprobados, 1 no aprobado)
+        \item \textbf{Edad $>$ 37.5}: 1 instancia (0 aprobados, 1 no aprobado)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 37.5} &= 1 - \left[\left(\tfrac{3}{4}\right)^2 + \left(\tfrac{1}{4}\right)^2\right] = 0.375 \\
+        \mathrm{Gini}_{> 37.5} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Edad, 37.5}} &= \tfrac{4}{5}\times0.375 + \tfrac{1}{5}\times0 = 0.3
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Resumen de Ginis - Edad}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Punto de Corte & Gini \\
+            \midrule
+            23.5 & 0.3 \\
+            27.5 & 0.467 \\
+            32.5 & 0.467 \\
+            37.5 & 0.3 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    Los mejores puntos de corte son 23.5 y 37.5 (Gini = 0.3)
+\end{frame}
+
+\begin{frame}{Partición por Historial}
+    \begin{itemize}
+        \item \textbf{Historial = Bueno}: 3 instancias (3 aprobados, 0 no aprobados)
+        \item \textbf{Historial = Malo}: 2 instancias (0 aprobados, 2 no aprobados)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Bueno}} &= 1 - \left[\left(\tfrac{3}{3}\right)^2 + \left(\tfrac{0}{3}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Malo}} &= 1 - \left[\left(\tfrac{0}{2}\right)^2 + \left(\tfrac{2}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Historial}} &= \tfrac{3}{5}\times0 + \tfrac{2}{5}\times0 = 0
+    \end{align*}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large \textbf{¡Gini = 0! División perfecta}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Árbol Resultante - Ejercicio 1}
+    \begin{center}
+        \begin{forest}
+            for tree={draw, rounded corners, l sep=2em, anchor=north}
+            [\(\text{Historial}\)
+                [\textbf{Aprobado: Sí}, edge label={node[midway,left]{Bueno}}]
+                [\textbf{Aprobado: No}, edge label={node[midway,right]{Malo}}]
+            ]
+        \end{forest}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Árbol de un solo nodo - división perfecta
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 2 - Datos}
+    \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            Depto. & Antigüedad & Cumpl. de Obj. & Recibe Bono \\
+            \midrule
+            Ventas    & 2 & 80 & No \\
+            Soporte   & 5 & 60 & No \\
+            Logística & 3 & 75 & Sí \\
+            Ventas    & 1 & 50 & No \\
+            Soporte   & 4 & 85 & Sí \\
+            Logística & 6 & 70 & No \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Queremos predecir si un empleado recibe bono
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Variable Objetivo - Ejercicio 2}
+    \begin{center}
+        \Large $\mathrm{Gini}_{\text{Recibe Bono}} = 1 - \left[\left(\tfrac{2}{6}\right)^2 + \left(\tfrac{4}{6}\right)^2\right] = 0.444$
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Departamento - Ventas vs Resto}
+    \begin{itemize}
+        \item \textbf{Ventas}: 2 observaciones (0 Sí, 2 No)
+        \item \textbf{Soporte y Logística}: 4 observaciones (2 Sí, 2 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Ventas}} &= 1 - \left[\left(\tfrac{0}{2}\right)^2 + \left(\tfrac{2}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Soporte y Logística}} &= 1 - \left[\left(\tfrac{2}{4}\right)^2 + \left(\tfrac{2}{4}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Departamento, Ventas}} &= \tfrac{2}{6}\times0 + \tfrac{4}{6}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Departamento - Soporte vs Resto}
+    \begin{itemize}
+        \item \textbf{Soporte}: 2 observaciones (1 Sí, 1 No)
+        \item \textbf{Logística}: 4 observaciones (1 Sí, 3 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Soporte}} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Logística}} &= 1 - \left[\left(\tfrac{1}{4}\right)^2 + \left(\tfrac{3}{4}\right)^2\right] = 0.375 \\
+        \mathrm{Gini}_{\text{Departamento, Soporte}} &= \tfrac{2}{6}\times0.5 + \tfrac{4}{6}\times0.375 = 0.4167
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Departamento - Logística vs Resto}
+    \begin{itemize}
+        \item \textbf{Logística}: 2 observaciones (1 Sí, 1 No)
+        \item \textbf{Soporte}: 4 observaciones (1 Sí, 3 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+
+    \begin{align*}
+        \mathrm{Gini}_{\text{Logística}} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Soporte}} &= 1 - \left[\left(\tfrac{1}{4}\right)^2 + \left(\tfrac{3}{4}\right)^2\right] = 0.375 \\
+        \mathrm{Gini}_{\text{Departamento, Logística}} &= \tfrac{2}{6}\times0.5 + \tfrac{4}{6}\times0.375 = 0.4167
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento de Objetivos - Ordenamiento}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Cumplimiento de Objetivos & Recibe Bono \\
+            \midrule
+            50 & No \\
+            60 & No \\
+            70 & No \\
+            75 & Si \\
+            80 & No \\
+            85 & Si \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Puntos de corte: 55, 65, 72.5, 77.5, 82.5
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento - Punto 55}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 55}: 1 instancia (0 Sí, 1 No)
+        \item \textbf{Cumplimiento $>$ 55}: 5 instancias (2 Sí, 3 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 55} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 55} &= 1 - \left[\left(\tfrac{2}{5}\right)^2 + \left(\tfrac{3}{5}\right)^2\right] = 0.48 \\
+        \mathrm{Gini}_{\text{55}} &= \tfrac{1}{6}\times0 + \tfrac{5}{6}\times0.48 = 0.4
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento - Punto 65}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 65}: 2 instancias (0 Sí, 2 No)
+        \item \textbf{Cumplimiento $>$ 65}: 4 instancias (2 Sí, 2 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 65} &= 1 - \left[\left(\tfrac{0}{2}\right)^2 + \left(\tfrac{2}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 65} &= 1 - \left[\left(\tfrac{2}{4}\right)^2 + \left(\tfrac{2}{4}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{65}} &= \tfrac{2}{6}\times0 + \tfrac{4}{6}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento - Punto 72.5}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 72.5}: 3 instancias (0 Sí, 3 No)
+        \item \textbf{Cumplimiento $>$ 72.5}: 3 instancias (2 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 72.5} &= 1 - \left[\left(\tfrac{0}{3}\right)^2 + \left(\tfrac{3}{3}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 72.5} &= 1 - \left[\left(\tfrac{2}{3}\right)^2 + \left(\tfrac{1}{3}\right)^2\right] = 0.444 \\
+        \mathrm{Gini}_{\text{72.5}} &= \tfrac{3}{6}\times0 + \tfrac{3}{6}\times0.444 = 0.222
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento - Punto 77.5}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 77.5}: 4 instancias (1 Sí, 3 No)
+        \item \textbf{Cumplimiento $>$ 77.5}: 2 instancias (1 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 77.5} &= 1 - \left[\left(\tfrac{1}{4}\right)^2 + \left(\tfrac{3}{4}\right)^2\right] = 0.375 \\
+        \mathrm{Gini}_{> 77.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{77.5}} &= \tfrac{4}{6}\times0.375 + \tfrac{2}{6}\times0.5 = 0.417
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Cumplimiento - Punto 82.5}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 82.5}: 5 instancias (1 Sí, 4 No)
+        \item \textbf{Cumplimiento $>$ 82.5}: 1 instancia (1 Sí, 0 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 82.5} &= 1 - \left[\left(\tfrac{1}{5}\right)^2 + \left(\tfrac{4}{5}\right)^2\right] = 0.32 \\
+        \mathrm{Gini}_{> 82.5} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{0}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{82.5}} &= \tfrac{5}{6}\times0.32 + \tfrac{1}{6}\times0 = 0.267
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Ordenamiento}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Antigüedad & Recibe Bono \\
+            \midrule
+            1 & No \\
+            2 & No \\
+            3 & Si \\
+            4 & Si \\
+            5 & No \\
+            6 & No \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Puntos de corte: 1.5, 2.5, 3.5, 4.5, 5.5
+    \end{center}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Punto 1.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 1.5}: 1 instancia (0 Sí, 1 No)
+        \item \textbf{Antigüedad $>$ 1.5}: 5 instancias (2 Sí, 3 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 1.5} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 1.5} &= 1 - \left[\left(\tfrac{2}{5}\right)^2 + \left(\tfrac{3}{5}\right)^2\right] = 0.48 \\
+        \mathrm{Gini}_{\text{Antigüedad, 1.5}} &= \tfrac{1}{6}\times0 + \tfrac{5}{6}\times0.48 = 0.4
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Punto 2.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 2.5}: 2 instancias (0 Sí, 2 No)
+        \item \textbf{Antigüedad $>$ 2.5}: 4 instancias (2 Sí, 2 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 2.5} &= 1 - \left[\left(\tfrac{0}{2}\right)^2 + \left(\tfrac{2}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 2.5} &= 1 - \left[\left(\tfrac{2}{4}\right)^2 + \left(\tfrac{2}{4}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Antigüedad, 2.5}} &= \tfrac{2}{6}\times0 + \tfrac{4}{6}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Punto 3.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 3.5}: 3 instancias (2 Sí, 1 No)
+        \item \textbf{Antigüedad $>$ 3.5}: 3 instancias (0 Sí, 3 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 3.5} &= 1 - \left[\left(\tfrac{2}{3}\right)^2 + \left(\tfrac{1}{3}\right)^2\right] = 0.444 \\
+        \mathrm{Gini}_{> 3.5} &= 1 - \left[\left(\tfrac{0}{3}\right)^2 + \left(\tfrac{3}{3}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Antigüedad, 3.5}} &= \tfrac{3}{6}\times0.444 + \tfrac{3}{6}\times0 = 0.222
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Punto 4.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 4.5}: 4 instancias (2 Sí, 2 No)
+        \item \textbf{Antigüedad $>$ 4.5}: 2 instancias (0 Sí, 2 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 4.5} &= 1 - \left[\left(\tfrac{2}{4}\right)^2 + \left(\tfrac{2}{4}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{> 4.5} &= 1 - \left[\left(\tfrac{0}{2}\right)^2 + \left(\tfrac{2}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Antigüedad, 4.5}} &= \tfrac{4}{6}\times0.5 + \tfrac{2}{6}\times0 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Partición por Antigüedad - Punto 5.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 5.5}: 5 instancias (2 Sí, 3 No)
+        \item \textbf{Antigüedad $>$ 5.5}: 1 instancia (0 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 5.5} &= 1 - \left[\left(\tfrac{2}{5}\right)^2 + \left(\tfrac{3}{5}\right)^2\right] = 0.48 \\
+        \mathrm{Gini}_{> 5.5} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Antigüedad, 5.5}} &= \tfrac{5}{6}\times0.48 + \tfrac{1}{6}\times0 = 0.4
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Tabla de Ginis - Ejercicio 2}
+    \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            Variable & Partición & Gini \\
+            \midrule
+            Cumplimiento de Objetivos & 72.5 & 0.222 \\
+            Antigüedad & 3.5 & 0.222 \\
+            Departamento & Ventas & 0.333 \\
+            Antigüedad & 2.5 & 0.333 \\
+            Antigüedad & 4.5 & 0.333 \\
+            Cumplimiento de Objetivos & 65 & 0.333 \\
+            Antigüedad & 1.5 & 0.4 \\
+            Antigüedad & 5.5 & 0.4 \\
+            Cumplimiento de Objetivos & 55 & 0.4 \\
+            Cumplimiento de Objetivos & 82.5 & 0.4 \\
+            Departamento & Soporte & 0.4167 \\
+            Departamento & Logística & 0.4167 \\
+            Cumplimiento de Objetivos & 77.5 & 0.417 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Elegimos Cumplimiento de Objetivos $\leq$ 72.5 (empate con Antigüedad)
+    \end{center}
+\end{frame}
+
+\begin{frame}{2da Iteración - Datos Restantes}
+    \begin{center}
+        \begin{tabular}{lccc}
+            \toprule
+            Depto. & Antigüedad & Cumpl. de Obj. & Recibe Bono \\
+            \midrule
+            Ventas    & 2 & 80 & No \\
+            Logística & 3 & 75 & Sí \\
+            Soporte   & 4 & 85 & Sí \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Solo los datos donde Cumplimiento $>$ 72.5
+    \end{center}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Departamento - Ventas vs Resto}
+    \begin{itemize}
+        \item \textbf{Ventas}: 1 observación (0 Sí, 1 No)
+        \item \textbf{Soporte y Logística}: 2 observaciones (2 Sí, 0 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Ventas}} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Soporte y Logística}} &= 1 - \left[\left(\tfrac{2}{2}\right)^2 + \left(\tfrac{0}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Departamento, Ventas}} &= \tfrac{1}{3}\times0 + \tfrac{2}{3}\times0 = 0
+    \end{align*}
+
+    ¡Separación perfecta! Podríamos frenar pero vamos a seguir solo por cuestiones \textit{pedagógicas}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Departamento - Soporte vs Resto}
+    \begin{itemize}
+        \item \textbf{Soporte}: 1 observación (1 Sí, 0 No)
+        \item \textbf{Ventas y Logística}: 2 observaciones (1 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Soporte}} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{0}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Ventas y Logística}} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Departamento, Soporte}} &= \tfrac{1}{3}\times0 + \tfrac{2}{3}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Departamento - Logística vs Resto}
+    \begin{itemize}
+        \item \textbf{Logística}: 1 observación (1 Sí, 0 No)
+        \item \textbf{Ventas y Soporte}: 2 observaciones (1 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\text{Logística}} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{0}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Ventas y Soporte}} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Departamento, Logística}} &= \tfrac{1}{3}\times0 + \tfrac{2}{3}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Antigüedad - Ordenamiento}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Antigüedad & Recibe Bono \\
+            \midrule
+            2 & No \\
+            3 & Sí \\
+            4 & Sí \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Puntos de corte: 2.5, 3.5
+    \end{center}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Antigüedad 2.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 2.5}: 1 instancia (0 Sí, 1 No)
+        \item \textbf{Antigüedad $>$ 2.5}: 2 instancias (2 Sí, 0 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 2.5} &= 1 - \left[\left(\tfrac{0}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 2.5} &= 1 - \left[\left(\tfrac{2}{2}\right)^2 + \left(\tfrac{0}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Antigüedad, 2.5}} &= \tfrac{1}{3}\times0 + \tfrac{2}{3}\times0 = 0
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Antigüedad 3.5}
+    \begin{itemize}
+        \item \textbf{Antigüedad $\leq$ 3.5}: 2 instancias (1 Sí, 1 No)
+        \item \textbf{Antigüedad $>$ 3.5}: 1 instancia (1 Sí, 0 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 3.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{> 3.5} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{0}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Antigüedad, 3.5}} &= \tfrac{2}{3}\times0.5 + \tfrac{1}{3}\times0 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Cumplimiento de Objetivos - Ordenamiento}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Cumplimiento de Objetivos & Recibe Bono \\
+            \midrule
+            75 & Sí \\
+            80 & No \\
+            85 & Sí \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Puntos de corte: 77.5, 82.5
+    \end{center}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Cumplimiento 77.5}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 77.5}: 1 instancia (1 Sí, 0 No)
+        \item \textbf{Cumplimiento $>$ 77.5}: 2 instancias (1 Sí, 1 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 77.5} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{0}{1}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{> 77.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{1}{2}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{\text{Cumplimiento, 77.5}} &= \tfrac{1}{3}\times0 + \tfrac{2}{3}\times0.5 = 0.333
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Gini por Cumplimiento 82.5}
+    \begin{itemize}
+        \item \textbf{Cumplimiento $\leq$ 82.5}: 1 instancia (1 Sí, 1 No)
+        \item \textbf{Cumplimiento $>$ 82.5}: 2 instancias (1 Sí, 0 No)
+    \end{itemize}
+    
+    \vspace{0.5em}
+    
+    \begin{align*}
+        \mathrm{Gini}_{\leq 82.5} &= 1 - \left[\left(\tfrac{1}{1}\right)^2 + \left(\tfrac{1}{1}\right)^2\right] = 0.5 \\
+        \mathrm{Gini}_{> 82.5} &= 1 - \left[\left(\tfrac{1}{2}\right)^2 + \left(\tfrac{0}{2}\right)^2\right] = 0 \\
+        \mathrm{Gini}_{\text{Cumplimiento, 82.5}} &= \tfrac{1}{3}\times0.5 + \tfrac{2}{3}\times0 = 0.167
+    \end{align*}
+\end{frame}
+
+\begin{frame}{2da Iteración - Ginis}
+    \begin{center}
+        \begin{tabular}{lcc}
+            \toprule
+            Variable & Partición & Gini \\
+            \midrule
+            Antigüedad & 2.5 & 0 \\
+            Departamento & Ventas & 0 \\
+            Cumplimiento de Objetivos & 82.5 & 0.167 \\
+            Departamento & Soporte & 0.333 \\
+            Departamento & Logística & 0.333 \\
+            Antigüedad & 3.5 & 0.333 \\
+            Cumplimiento de Objetivos & 77.5 & 0.333 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{1em}
+    
+    \begin{center}
+        \Large Elegimos Antigüedad $\leq$ 2.5 (Gini = 0)
+    \end{center}
+\end{frame}
+
+\begin{frame}{Árbol Resultante - Ejercicio 2}
+    \begin{center}
+        \begin{forest}
+            for tree={draw, rounded corners, l sep=2em, anchor=north}
+            [\(\text{Cumplimiento de Objetivos} \leq 72.5?\)
+                [\textbf{Recibe Bono: No}, edge label={node[midway,left]{Sí}}]
+                [\(\text{Antigüedad} \leq 2.5?\), edge label={node[midway,right]{No}}
+                    [\textbf{Recibe Bono: No}, edge label={node[midway,left]{Sí}}]
+                    [\textbf{Recibe Bono: Sí}, edge label={node[midway,right]{No}}]
+                ]
+            ]
+        \end{forest}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Características de CART}
+    \begin{itemize}
+        \item \textbf{Algoritmo greedy}: Toma la mejor decisión local en cada paso
+        \item \textbf{División binaria}: Cada nodo se divide en exactamente dos ramas
+        \item \textbf{Índice de Gini}: Minimiza la impureza en cada división
+        \item \textbf{Árbol óptimo}: CART garantiza el árbol con menos nodos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ventajas de CART}
+    \begin{itemize}
+        \item Fácil de interpretar y visualizar
+        \item Maneja variables categóricas y numéricas
+        \item No requiere normalización de datos
+        \item Maneja valores faltantes automáticamente
+        \item No es sensible a valores atípicos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Desventajas de CART}
+    \begin{itemize}
+        \item Propenso al sobreajuste (overfitting)
+        \item Inestable con pequeños cambios en los datos
+        \item Sesgado hacia variables con muchos niveles
+        \item No funciona bien con relaciones no lineales complejas
+        \item Algoritmo greedy puede no encontrar la solución óptima global
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Consideraciones Prácticas}
+    \begin{itemize}
+        \item \textbf{Pruning}: Técnica para reducir el sobreajuste eliminando ramas poco importantes
+        \item \textbf{Validación cruzada}: Para evaluar el rendimiento real del modelo
+        \item \textbf{Ensemble methods}: Combinar múltiples árboles (Random Forest, Gradient Boosting) para mejorar el rendimiento
+        \item \textbf{Balance de clases}: Considerar técnicas de balanceo cuando las clases están desbalanceadas
+        \item \textbf{Selección de hiperparámetros}: Ajustar parámetros como profundidad máxima y número mínimo de muestras por hoja
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}
