@@ -468,18 +468,18 @@ Tenemos datos de estudiantes con sus notas en 3 materias y si aprobaron o no:
     \begin{enumerate}
         \item (4.9, 1.5) - Versicolor (distancia: 0.14)
         \item (4.7, 1.4) - Versicolor (distancia: 0.22)
-        \item (5.1, 1.9) - Virginica (distancia: 0.42)
+        \item (4.5, 1.5) - Versicolor (distancia: 0.32)
     \end{enumerate}
     
-    \item Clasificación: Versicolor (2 votos vs 1 voto de Virginica)
+    \item Clasificación: Versicolor (3 votos)
 \end{enumerate}
 
 \subsubsection{Efecto del Parámetro k}
 
 \begin{enumerate}
     \item Con k=1: Versicolor (punto más cercano)
-    \item Con k=5: Los 5 vecinos más cercanos son: (4.9,1.5) Versicolor, (4.7,1.4) Versicolor, (5.1,1.9) Virginica, (4.5,1.5) Versicolor, (5.9,2.1) Virginica. Resultado: Versicolor (3 votos vs 2)
-    \item Con k=7: Los 7 vecinos más cercanos incluyen: 4 Versicolor, 2 Virginica, 1 Setosa. Resultado: Versicolor (4 votos vs 2 vs 1)
+    \item Con k=5: Los 5 vecinos más cercanos son: (4.9,1.5) Versicolor, (4.7,1.4) Versicolor, (4.5,1.5) Versicolor, (5.1,1.9) Virginica, (5.9,2.1) Virginica. Resultado: Versicolor (3 votos vs 2)
+    \item Con k=7: Los 7 vecinos más cercanos incluyen: 3 Versicolor, 3 Virginica, 1 Setosa. Resultado: Versicolor (desempate por el más cercano)
     \item Los resultados pueden diferir porque con k=1 solo se considera el vecino más cercano, mientras que con k=5 o k=7 se consideran más puntos, lo que puede cambiar la clasificación si hay puntos de otras clases cercanos. En este caso, Versicolor mantiene la mayoría en todos los escenarios.
 \end{enumerate}
 
