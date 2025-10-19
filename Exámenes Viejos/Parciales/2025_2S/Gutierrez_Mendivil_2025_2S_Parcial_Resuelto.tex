@@ -1,0 +1,114 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{siunitx}
+
+\geometry{margin=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Texto diagonal "¡RESUELTO!" en rojo como estampa
+\begin{tikzpicture}[remember picture,overlay]
+    \node[rotate=-42.69, text=red, font=\Huge\bfseries, anchor=center, 
+          draw=red, line width=1pt, fill=white!90, 
+          inner sep=8pt, outer sep=0pt, z=1] 
+          at (13.5cm, -2.5cm) {¡RESUELTO PARA USTED!};
+\end{tikzpicture}
+
+\begin{center}
+    {\LARGE \textbf{Exámen Parcial\\[0.5em]Analítica de Datos}}\\[0.5em]
+    {Segundo Semestre 2025}\\[0.5em]
+    {Universidad de San Andrés}
+\end{center}
+
+\section{Pregunta 1}
+
+Aspectos a mejorar pueden incluir ordenamiento de las barras de menor a mayor o de mayor a menor para que tengan un orden lógico. Mover la ubicación de la leyenda, usar una paleta de colores que deje distinguir más las regiones, agregar título explicativo, nombre de las regiones sobre las barras para evitar referencia a leyenda, sin distinción de colores porque no agrega nada o un color para los negativos y otro para los positivos, entre otras.
+
+\section{Pregunta 2}
+
+uso\_promedio\_minutos, antiguedad\_meses e ingreso\_mensual. Los boxplots muestran diferencias claras entre grupos de churn para estas variables, no están altamente correlacionadas entre sí y capturan aspectos clave: engagement, retención y poder adquisitivo. ingreso\_mensual\_reportado se excluye por cantidad de nulls.
+
+\section{Pregunta 3}
+
+\textbf{1.} Sensibilidad (Recall). En diagnóstico médico es crítico no perder casos de tumores malignos, ya que un falso negativo puede tener consecuencias graves para el paciente.
+
+\textbf{2.} KNN-3 (K=3). Tiene la mejor sensibilidad en test (0.87) manteniendo buena especificidad (0.90) y accuracy (0.89). Además, muestra menor overfitting comparado con KNN-1 que tiene gran diferencia entre train y test.
+
+\section{Pregunta 4}
+
+\textbf{1.} Árbol con max\_depth=2:
+
+Raíz en frecuencia\_palabras.
+\begin{itemize}[nosep]
+    \item Si frecuencia\_palabras = baja → no (hoja pura en train).
+    \item Si frecuencia\_palabras != baja → sí (hoja pura en train).
+\end{itemize}
+
+\textbf{2.} Accuracy en test: 50\%. Predice correctamente ID8 (baja→no) y falla ID7 (baja es \emph{sí} en test, pero el árbol aprendido con train predice \emph{no}).
+
+\section{Pregunta 5}
+
+\textbf{1.} Con alpha = 0: No podar el árbol. Tiene el menor error de clasificación (0.2) y sin penalización por complejidad.
+
+\textbf{2.} Con alpha = 0.2: No podar. Costo total = 0.2 + 0.2×8 = 1.8 vs Opción 1 = 0.28 + 0.2×5 = 1.28 vs Opción 2 = 0.23 + 0.2×7 = 1.63. La opción 1 tiene menor costo total.
+
+\section{Pregunta 6}
+
+4375 modelos. Combinaciones: 7 × 5 × 5 × 5 = 875 configuraciones de hiperparámetros. Cada configuración se entrena 5 veces (5 folds), total: 875 × 5 = 4375 modelos.
+
+\section{Pregunta Extra}
+
+Error de Bayes = 0.095. Contando los puntos mal clasificados por la frontera óptima (línea magenta): 9 puntos naranjas en región azul + 10 puntos azules en región naranja = 19 puntos mal clasificados de 200 total. 19/200 = 0.095.
+
+
+\end{document}

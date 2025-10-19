@@ -3,10 +3,12 @@
 
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{listings}
+\usepackage{fontawesome}
 
 % Definición de colores personalizados
 \definecolor{primary}{RGB}{46, 204, 113}
@@ -15,6 +17,9 @@
 \definecolor{background}{RGB}{236, 240, 241}
 \definecolor{gradient1}{RGB}{255, 107, 107}
 \definecolor{gradient2}{RGB}{255, 159, 67}
+
+% TikZ libs como en el template
+\usetikzlibrary{positioning,shapes.multipart,calc,arrows,shapes.geometric}
 
 % Configuración del tema
 \setbeamercolor{normal text}{fg=black,bg=background}
@@ -46,26 +51,31 @@
 }
 
 \title{\Huge\textbf{Boosting}}
-\author{Analítica de Datos, Universidad de San Andrés}
+\author{Analítica de Datos}
 \date{}
 
 \begin{document}
 
 \begin{frame}
     \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../../TEMPLATES_TEX/misc/UdeSA.png}
+        };
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}{¿Qué es Boosting?}
-    Boosting es una técnica de ensamble que combina múltiples modelos `débiles' para crear un modelo `fuerte'. A diferencia de Random Forest, que construye árboles independientes en paralelo, Boosting construye modelos secuencialmente.
+    Boosting es una técnica de ensamble que combina múltiples modelos ``débiles'' para crear un modelo ``fuerte''. A diferencia de Random Forest, que construye árboles independientes en paralelo, Boosting construye modelos secuencialmente.
 \end{frame}
 
 \begin{frame}{Principios Fundamentales del Boosting}
     \textbf{Características Clave:}
     \begin{itemize}
-        \item<2-> Construcción secuencial de modelos
-        \item<3-> Ponderación de observaciones
-        \item<4-> Combinación ponderada de predicciones
-        \item<5-> Enfoque en errores previos
+        \item Construcción secuencial de modelos
+        \item Ponderación de observaciones
+        \item Combinación ponderada de predicciones
+        \item Enfoque en errores previos
     \end{itemize}
 \end{frame}
 
@@ -74,55 +84,55 @@
     
     \textbf{Características:}
     \begin{itemize}
-        \item<2-> Todas las observaciones inician con el mismo peso
-        \item<3-> En cada iteración:
+        \item Todas las observaciones inician con el mismo peso
+        \item En cada iteración:
         \begin{itemize}
-            \item<4-> Se entrena un modelo débil
-            \item<5-> Se identifican errores
-            \item<6-> Se aumenta el peso de errores
-            \item<7-> Se disminuye el peso de aciertos
+            \item<2-> Se entrena un modelo débil
+            \item<3-> Se identifican errores
+            \item<4-> Se aumenta el peso de errores
+            \item<5-> Se disminuye el peso de aciertos
         \end{itemize}
-        \item<8-> Predicción final por promedio ponderado
+        \item Predicción final por promedio ponderado
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Gradient Boosting - Características}
     \textbf{Características y Ventajas:}
     \begin{itemize}
-        \item<2-> Utiliza el gradiente del error para identificar la dirección de máximo descenso
-        \item<3-> Aplicable a cualquier función de pérdida diferenciable
-        \item<4-> Más flexible que AdaBoost al no limitarse a clasificación binaria
-        \item<5-> Mayor control sobre el proceso de aprendizaje
+        \item Utiliza el gradiente del error para identificar la dirección de máximo descenso
+        \item Aplicable a cualquier función de pérdida diferenciable
+        \item Más flexible que AdaBoost al no limitarse a clasificación binaria
+        \item Mayor control sobre el proceso de aprendizaje
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Gradient Boosting - Parámetros}
     \textbf{Parámetros Clave:}
     \begin{itemize}
-        \item<2-> n\_estimators: Número de árboles
-        \item<3-> learning\_rate: Tasa de aprendizaje
-        \item<4-> max\_depth: Profundidad máxima
-        \item<5-> subsample: Fracción de datos por árbol
+        \item n\_estimators: Número de árboles
+        \item learning\_rate: Tasa de aprendizaje
+        \item max\_depth: Profundidad máxima
+        \item subsample: Fracción de datos por árbol
     \end{itemize}
 \end{frame}
 
 \begin{frame}{XGBoost - Optimizaciones}
     \textbf{Optimizaciones:}
     \begin{itemize}
-        \item<2-> Paralelización y optimización de memoria: Procesamiento más rápido usando múltiples núcleos
-        \item<3-> Estructuras de datos especializadas: Formatos optimizados para mejor rendimiento
-        \item<4-> Regularización L1 y L2 incorporada: Previene overfitting automáticamente
-        \item<5-> Manejo automático de valores faltantes: Procesa datos incompletos sin preprocesamiento
+        \item Paralelización y optimización de memoria: Procesamiento más rápido usando múltiples núcleos
+        \item Estructuras de datos especializadas: Formatos optimizados para mejor rendimiento
+        \item Regularización L1 y L2 incorporada: Previene overfitting automáticamente
+        \item Manejo automático de valores faltantes: Procesa datos incompletos sin preprocesamiento
     \end{itemize}
 \end{frame}
 
 \begin{frame}{XGBoost - Características Avanzadas}
     \textbf{Características Avanzadas:}
     \begin{itemize}
-        \item<2-> Early stopping inteligente: Monitorea el rendimiento y detiene el entrenamiento cuando no hay mejora
-        \item<3-> Feature Importance: Proporciona métricas precisas sobre la contribución de cada variable
-        \item<4-> Procesamiento optimizado de datos dispersos: Utiliza estructuras especializadas para matrices sparse
-        \item<5-> Entrenamiento distribuido: Permite escalar el entrenamiento a múltiples núcleos de procesamiento
+        \item Early stopping inteligente: Monitorea el rendimiento y detiene el entrenamiento cuando no hay mejora
+        \item Feature Importance: Proporciona métricas precisas sobre la contribución de cada variable
+        \item Procesamiento optimizado de datos dispersos: Utiliza estructuras especializadas para matrices sparse
+        \item Entrenamiento distribuido: Permite escalar el entrenamiento a múltiples núcleos de procesamiento
     \end{itemize}
 \end{frame}
 
@@ -255,23 +265,34 @@ y_pred = model.predict(X_test)
 
 \begin{frame}{Buenas Prácticas}
     \begin{itemize}
-        \item<1-> \textbf{Preprocesamiento:}
+        \item \textbf{Preprocesamiento:}
         \begin{itemize}
             \item Escalar variables numéricas
             \item Codificar variables categóricas
         \end{itemize}
-        \item<2-> \textbf{Validación:}
+        \item \textbf{Validación:}
         \begin{itemize}
             \item Validación cruzada
             \item Ajuste de hiperparámetros
         \end{itemize}
-        \item<3-> \textbf{Optimización:}
+        \item \textbf{Optimización:}
         \begin{itemize}
             \item Early stopping
             \item Learning rate bajo (0.01-0.1)
             \item Monitoreo de errores
         \end{itemize}
     \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
 \end{frame}
 
 \end{document} 

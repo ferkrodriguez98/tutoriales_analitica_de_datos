@@ -246,9 +246,43 @@ No, no es necesario. Los árboles de decisión son inmunes al escalado de las va
 
 \subsection{Ejercicio 3}
 
-El Gini inicial (5 Si, 5 No) es 0.5. Hay un empate en la primera división (Gini ponderado de 0.167) entre \texttt{participa\_clase}, \texttt{usa\_material\_extra} y \texttt{horas\_estudio <= 2.5}.
-  
-Si elegimos \texttt{usa\_material\_extra}:
+El Gini inicial (5 Si, 5 No) es 0.5. 
+
+\textbf{Cálculo de todas las opciones de división:}
+
+\textbf{1. horas\_estudio $\leq$ 2.5:}
+\begin{itemize}
+    \item Izquierda ($\leq$2.5): 4 muestras (0 Si, 4 No) $\rightarrow$ Gini = 0 (puro)
+    \item Derecha ($>$2.5): 6 muestras (5 Si, 1 No) $\rightarrow$ Gini = $1 - (5/6)^2 - (1/6)^2 = 10/36 \approx 0.278$
+    \item Gini ponderado = $(4/10) \times 0 + (6/10) \times 0.278 = 0.167$
+\end{itemize}
+
+\textbf{2. horas\_estudio $\leq$ 3.5:}
+\begin{itemize}
+    \item Izquierda ($\leq$3.5): 6 muestras (1 Si, 5 No) $\rightarrow$ Gini = $1 - (1/6)^2 - (5/6)^2 = 10/36 \approx 0.278$
+    \item Derecha ($>$3.5): 4 muestras (4 Si, 0 No) $\rightarrow$ Gini = 0 (puro)
+    \item Gini ponderado = $(6/10) \times 0.278 + (4/10) \times 0 = 0.167$
+\end{itemize}
+
+\textbf{3. usa\_material\_extra:}
+\begin{itemize}
+    \item Si: 4 muestras (4 Si, 0 No) $\rightarrow$ Gini = 0 (puro)
+    \item No: 6 muestras (1 Si, 5 No) $\rightarrow$ Gini = $1 - (1/6)^2 - (5/6)^2 = 10/36 \approx 0.278$
+    \item Gini ponderado = $(4/10) \times 0 + (6/10) \times 0.278 = 0.167$
+\end{itemize}
+
+\textbf{4. participa\_clase:}
+\begin{itemize}
+    \item Si: 5 muestras (4 Si, 1 No) $\rightarrow$ Gini = $1 - (4/5)^2 - (1/5)^2 = 8/25 = 0.32$
+    \item No: 5 muestras (1 Si, 4 No) $\rightarrow$ Gini = $1 - (1/5)^2 - (4/5)^2 = 8/25 = 0.32$
+    \item Gini ponderado = $(5/10) \times 0.32 + (5/10) \times 0.32 = 0.32$
+\end{itemize}
+
+\textbf{Resultado:} Hay un \textbf{empate triple} entre \texttt{horas\_estudio $\leq$ 2.5}, \texttt{horas\_estudio $\leq$ 3.5} y \texttt{usa\_material\_extra} (todos con Gini ponderado = 0.167). 
+
+\textbf{Nota sobre el desempate:} El algoritmo CART real no tiene un criterio de desempate estandarizado. Las implementaciones típicas pueden elegir la primera variable en orden alfabético, la primera en el orden de los datos, o usar un criterio aleatorio con semilla fija. En este ejercicio se elige \texttt{usa\_material\_extra} como ejemplo, pero cualquiera de las tres opciones sería válida según la implementación específica.
+
+\textbf{Continuación del árbol:}
 \begin{itemize}
     \item \textbf{Rama 1 (usa\_material\_extra = Si):} 4 muestras (todas Si). Nodo puro. Se detiene.
     \item \textbf{Rama 2 (usa\_material\_extra = No):} 6 muestras (1 Si, 5 No). Se puede seguir dividiendo. El mejor split es por \texttt{participa\_clase}, que separa un grupo puro de 4 No y un grupo mixto de 2 muestras que no se puede seguir dividiendo por el hiperparámetro.
