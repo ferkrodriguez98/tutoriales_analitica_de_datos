@@ -1,0 +1,201 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Random Forest}}\\[0.5em]
+  {\normalsize (Bosques Aleatorios)}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{¿Qué es Random Forest?}
+Random Forest es básicamente un montón de árboles de decisión trabajando juntos. ¿Por qué? Porque un solo árbol puede ser muy caprichoso y ajustarse demasiado a los datos de entrenamiento (overfitting). Es como si un solo árbol dijera ``bueno, vi estos datos y ahora me sé todo'', pero cuando llegan datos nuevos, se confunde. La idea de Random Forest es simple: en lugar de confiar en un solo árbol, construimos muchos árboles y que voten. Es como preguntarle a un montón de amigos su opinión en lugar de solo a uno. La mayoría probablemente tenga razón.
+
+\vspace{1em}
+
+\textit{¿Por qué funciona mejor?} Porque cada árbol ve los datos de manera diferente (usando subconjuntos aleatorios), entonces cuando se equivocan, se equivocan de maneras distintas. Al promediar sus respuestas, los errores se cancelan y obtenemos una predicción más estable.
+
+\section{¿Cómo funciona el algoritmo?}
+El algoritmo de Random Forest es bastante directo:
+
+\begin{enumerate}
+    \item \textbf{Bootstrap:} Para cada árbol, tomamos una muestra aleatoria de nuestros datos (con reemplazo). Esto significa que algunos datos podrían aparecer varias veces y otros no aparecer en absoluto.
+    \item \textbf{Selección aleatoria de variables:} En cada división del árbol, solo consideramos un subconjunto aleatorio de las variables disponibles. Esto evita que una variable muy importante domine todos los árboles.
+    \item \textbf{Construcción del árbol:} Construimos el árbol completo usando CART con los datos y variables seleccionadas.
+    \item \textbf{Repetir:} Hacemos esto muchas veces (típicamente 100-1000 árboles).
+    \item \textbf{Votación:} Para predecir, cada árbol vota y tomamos la decisión de la mayoría (clasificación) o el promedio (regresión).
+\end{enumerate}
+
+\section{Ventajas de Random Forest}
+Random Forest tiene varias ventajas que lo hacen muy popular:
+
+\begin{itemize}
+    \item \textbf{Reduce el overfitting:} Al promediar muchos árboles, suavizamos las decisiones y evitamos ajustarnos demasiado a los datos de entrenamiento.
+    \item \textbf{Maneja bien diferentes tipos de variables:} No le importa si son numéricas o categóricas, las maneja todas bien.
+    \item \textbf{Es robusto:} Los outliers y el ruido en los datos no lo afectan tanto como a otros algoritmos.
+    \item \textbf{Importancia de variables:} Nos dice qué variables son más importantes para hacer predicciones.
+    \item \textbf{No necesita preprocesamiento:} No tenemos que normalizar los datos ni hacer transformaciones complicadas.
+    \item \textbf{Es rápido:} Aunque construye muchos árboles, cada uno es simple y se puede hacer en paralelo.
+\end{itemize}
+
+\section{Parámetros importantes}
+Cuando usamos Random Forest, hay algunos parámetros que podemos ajustar:
+
+\begin{itemize}
+    \item \textbf{n\_estimators:} Cuántos árboles queremos (más árboles = mejor rendimiento pero más lento). Típicamente entre 100-1000.
+    \item \textbf{max\_features:} Cuántas variables considerar en cada división. Por defecto es $\sqrt{\text{número de variables}}$ para clasificación.
+    \item \textbf{max\_depth:} Profundidad máxima de cada árbol. Si no la ponemos, los árboles crecen hasta que no se pueden dividir más.
+    \item \textbf{min\_samples\_split:} Mínimo de muestras necesarias para dividir un nodo.
+    \item \textbf{min\_samples\_leaf:} Mínimo de muestras en cada hoja final.
+    \item \textbf{bootstrap:} Si queremos usar bootstrap (por defecto es True).
+\end{itemize}
+
+\textit{¿Cómo elegimos estos parámetros?} La mayoría de las veces, los valores por defecto funcionan bien. Si queremos optimizar, podemos usar validación cruzada para encontrar la mejor combinación.
+
+\section{Implementación en Python}
+\begin{lstlisting}[language=Python]
+# Importamos las librerias necesarias
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_wine
+
+# Cargamos el dataset Wine
+wine = load_wine()
+X = wine.data
+y = wine.target
+
+# Dividimos en entrenamiento y prueba
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Creamos el modelo de Random Forest
+rf_model = RandomForestClassifier(
+    n_estimators=100,        # 100 arboles
+    max_features='sqrt',     # sqrt del numero de variables
+    random_state=42
+)
+
+# Entrenamos el modelo
+rf_model.fit(X_train, y_train)
+
+# Hacemos predicciones
+y_pred = rf_model.predict(X_test)
+
+# Evaluamos el rendimiento
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Precision: {accuracy:.3f}')
+
+# Vemos el reporte detallado
+print(classification_report(y_test, y_pred))
+\end{lstlisting}
+
+\section{Importancia de variables}
+Una de las cosas más útiles de Random Forest es que nos dice qué variables son más importantes:
+
+\begin{lstlisting}[language=Python]
+# Obtenemos la importancia de las variables
+importances = rf_model.feature_importances_
+feature_names = wine.feature_names
+
+# Creamos un DataFrame para ver mejor
+import pandas as pd
+importance_df = pd.DataFrame({
+    'Variable': feature_names,
+    'Importancia': importances
+}).sort_values('Importancia', ascending=False)
+
+print(importance_df)
+
+# Graficamos la importancia
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10, 6))
+plt.barh(importance_df['Variable'], importance_df['Importancia'])
+plt.xlabel('Importancia')
+plt.title('Importancia de Variables en Random Forest')
+plt.show()
+\end{lstlisting}
+
+\section{Comparación con CART}
+¿Por qué Random Forest es mejor que un solo árbol CART?
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{p{4cm}|p{4cm}|p{4cm}}
+        \toprule
+        \textbf{Característica} & \textbf{CART} & \textbf{Random Forest} \\
+        \midrule
+        Overfitting & Propenso & Menos propenso \\
+        Estabilidad & Baja & Alta \\
+        Interpretabilidad & Alta & Media \\
+        Velocidad & Rápido & Más lento \\
+        Precisión & Variable & Generalmente mejor \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textit{¿Cuándo usar cada uno?} Si necesitamos entender exactamente cómo toma las decisiones, CART es mejor. Si queremos la mejor precisión posible y no nos importa tanto la interpretabilidad, Random Forest es la opción.
+
+\section{Notebook Anexo}
+En el repositorio hay un notebook anexo en el que usamos el dataset \textbf{Wine} de scikit-learn, que contiene información química de 178 vinos de tres variedades diferentes. Cada observación tiene 13 variables numéricas (alcohol, magnesio, fenoles, color, etc.) y una variable objetivo que indica la clase de vino (0, 1 o 2).
+
+\vspace{0.5em}
+Para detalles completos de las variables y análisis exploratorio, consultar el notebook. En el experimento:
+
+\begin{itemize}
+    \item \textbf{CART:} Se equivocó en 2 casos de 36 (94.4\% de precisión)
+    \item \textbf{Random Forest:} Se equivocó en 0 casos de 36 (100\% de precisión)
+\end{itemize}
+
+\textit{¿Por qué Random Forest fue mejor?} Porque al promediar las decisiones de 100 árboles, suavizamos los errores individuales y obtenemos una predicción más robusta. Es como tener 100 expertos en vino en lugar de uno solo.
+
+\vspace{1em}
+
+\textit{¿Qué pasa si aumentamos el test size?} Probablemente Random Forest siga siendo mejor, pero la diferencia podría ser menor. La clave está en que Random Forest generaliza mejor a datos nuevos.
+
+\end{document}
