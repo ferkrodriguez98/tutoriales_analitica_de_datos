@@ -12,9 +12,8 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 6 - KNN](): Método de regresión y clasificación por vecinos cercanos.
 - [Clase 7 - CART y Validación de Modelos](): Árboles de decisión (CART), teoría y ejercicios prácticos. Métricas de evaluación de modelos, matriz de confusión, curva ROC y PR.
 - [Clase 8 - Resolución del Parcial](): Resolución del parcial por parte de los tutores.
-- [Clase 9 - Random Forest](): Random Forest, comparación con CART, análisis y visualizaciones.
-- [Clase 10 - Boosting](): Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost.
-- [Clase 11 - Naive Bayes y Cross Validation](): Clasificador Naive Bayes y Validación cruzada con k-folds
+- [Clase 9 - Random Forest y Boosting](): Random Forest, comparación con CART, análisis y visualizaciones. Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost.
+- [Clase 10 - Naive Bayes](): Clasificador Naive Bayes
 - [Clase 12 - Series Temporales](): Visualización de tendencias y patrones, descomposición.
 - [Clase 13 - Clustering](): K-means.
 - [Clase 14 - PCA](): Reducción de dimensionalidad.

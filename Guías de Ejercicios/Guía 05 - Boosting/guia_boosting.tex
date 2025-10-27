@@ -1,0 +1,839 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Definir colores para los nodos segun diferencia de valores
+\definecolor{orangelight}{rgb}{1.0,0.8,0.6}
+\definecolor{orangemedium}{rgb}{1.0,0.6,0.3}
+\definecolor{orangedark}{rgb}{0.8,0.4,0.1}
+\definecolor{bluelight}{rgb}{0.7,0.8,1.0}
+\definecolor{bluemedium}{rgb}{0.4,0.6,1.0}
+\definecolor{bluedark}{rgb}{0.2,0.4,0.8}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Guía de Ejercicios\\Boosting}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Ejercicios}
+
+\subsection{Ejercicio 1}
+
+¿De qué manera son entrenados los clasificadores débiles en este tipo de modelos? ¿Por qué?
+
+\subsection{Ejercicio 2}
+
+Considerando el siguiente conjunto de datos de entrenamiento y los clasificadores débiles entrenados en las dos primeras iteraciones de un algoritmo de AdaBoost.M1, indicar el error de clasificación del clasificador, el peso del clasificador y los pesos de cada una de las observaciones para cada una de las dos iteraciones.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+    X\_1 & X\_2 & X\_3 & Y & $w_0$ & pred 1 & $w_1$ & pred 2 & $w_2$ \\
+    \hline
+    0.1 & 1.2 & 3.1 & 1  &       &              &       &              &      \\
+    \hline
+    1   & 0.5 & 2.3 & 1  &       &              &       &              &      \\
+    \hline
+    0.3 & 1   & 1.8 & -1 &       &              &       &              &      \\
+    \hline
+    2   & 1.5 & 0.7 & -1 &       &              &       &              &      \\
+    \hline
+    1.5 & 2   & 1   & 1  &       &              &       &              &      \\
+    \hline
+    2.3 & 0.3 & 1.1 & 1  &       &              &       &              &      \\
+    \hline
+    1.8 & 1.8 & 2.2 & -1 &       &              &       &              &      \\
+    \hline
+    0.5 & 1.1 & 0.9 & -1 &       &              &       &              &      \\
+    \hline
+    2.2 & 1.4 & 1.5 & 1  &       &              &       &              &      \\
+    \hline
+    0.6 & 0.9 & 2   & -1 &       &              &       &              &      \\
+    \hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Title node
+    \node[font=\small\bfseries] (title1) at (0,0) {Stump - Iteración 1};
+    % Root node
+    \node[draw, rounded corners, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.3cm of title1] (root) {
+        X3 $\leq$ 2.1\\
+        gini = 0.5\\
+        samples = 10\\
+        value = [0.5,\; 0.5]\\
+        class = -1
+    };
+    % Left child
+    \node[draw, fill=orange!30, rounded corners, below left=1cm and -1.5cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (left1) {
+        gini = 0.408\\
+        samples = 7\\
+        value = [0.5,\; 0.2]\\
+        class = -1
+    };
+    % Right child
+    \node[draw, fill=blue!20, rounded corners, below right=1cm and -1.5cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (right1) {
+        gini = 0.0\\
+        samples = 3\\
+        value = [0.0,\; 0.3]\\
+        class = +1
+    };
+    % Edges and labels
+    \draw[-] (root.south) -- (left1.north) node[midway, left, font=\scriptsize] {True};
+    \draw[-] (root.south) -- (right1.north) node[midway, right, font=\scriptsize] {False};
+\end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Title node
+    \node[font=\small\bfseries] (title2) at (0,0) {Stump - Iteración 2};
+    % Root node
+    \node[draw, rounded corners, fill=blue!20, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.3cm of title2] (root) {
+        X2 $\leq$ 1.15\\
+        gini = 0.43\\
+        samples = 8\\
+        value = [0.312,\; 0.688]\\
+        class = +1
+    };
+    % Left child
+    \node[draw, fill=orange!30, rounded corners, below left=1cm and -1.5cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (left2) {
+        gini = 0.32\\
+        samples = 3\\
+        value = [0.25,\; 0.062]\\
+        class = -1
+    };
+    % Right child
+    \node[draw, fill=blue!20, rounded corners, below right=1cm and -1.5cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (right2) {
+        gini = 0.165\\
+        samples = 5\\
+        value = [0.062,\; 0.625]\\
+        class = +1
+    };
+    % Edges and labels
+    \draw[-] (root.south) -- (left2.north) node[midway, left, font=\scriptsize] {True};
+    \draw[-] (root.south) -- (right2.north) node[midway, right, font=\scriptsize] {False};
+\end{tikzpicture}
+\end{minipage}
+\end{center}
+
+\subsection{Ejercicio 3}
+
+Clasificar a las observaciones 1, 2 y 3 teniendo en cuenta el modelo de AdaBoost.M1 expuesto a continuación. ¿Por qué es importante para un modelo AdaBoost.M1 de clasificación binario que las etiquetas sean -1 y 1?
+
+
+\begin{center}
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol 1
+    \node[font=\small\bfseries] (title1) at (0,0) {Stump - Iteración 1};
+    % Nodo raíz
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.3cm of title1] (root) {
+        X2 $\leq$ 1.15\\
+        gini = 0.5\\
+        samples = 10\\
+        value = [0.5,\; 0.5]\\
+        class = -1
+    };
+    % Hijo izquierdo
+    \node[draw, fill=orange!30, rounded corners, below left=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (left1) {
+        gini = 0.278\\
+        samples = 6\\
+        value = [0.5,\; 0.1]\\
+        class = -1
+    };
+    % Hijo derecho
+    \node[draw, fill=blue!20, rounded corners, below right=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (right1) {
+        gini = 0.0\\
+        samples = 4\\
+        value = [0.0,\; 0.4]\\
+        class = +1
+    };
+    % Conexiones y labels
+    \draw[-] (root.south) -- (left1.north) node[midway, left, font=\scriptsize] {True};
+    \draw[-] (root.south) -- (right1.north) node[midway, right, font=\scriptsize] {False};
+\end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol 2
+    \node[font=\small\bfseries] (title2) at (0,0) {Stump - Iteración 2};
+    % Nodo raíz
+    \node[draw, rounded corners, fill=blue!20, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.3cm of title2] (root) {
+        X3 $\leq$ 2.1\\
+        gini = 0.401\\
+        samples = 10\\
+        value = [0.278,\; 0.722]\\
+        class = +1
+    };
+    % Hijo izquierdo
+    \node[draw, fill=orange!30, rounded corners, below left=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (left2) {
+        gini = 0.408\\
+        samples = 7\\
+        value = [0.278,\; 0.111]\\
+        class = -1
+    };
+    % Hijo derecho
+    \node[draw, fill=blue!20, rounded corners, below right=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (right2) {
+        gini = 0.0\\
+        samples = 3\\
+        value = [0.0,\; 0.611]\\
+        class = +1
+    };
+    % Conexiones y labels
+    \draw[-] (root.south) -- (left2.north) node[midway, left, font=\scriptsize] {True};
+    \draw[-] (root.south) -- (right2.north) node[midway, right, font=\scriptsize] {False};
+\end{tikzpicture}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol 3
+    \node[font=\small\bfseries] (title3) at (0,0) {Stump - Iteración 3};
+    % Nodo raíz
+    \node[draw, rounded corners, fill=blue!20, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.3cm of title3] (root) {
+        X1 $\leq$ 2.25\\
+        gini = 0.264\\
+        samples = 10\\
+        value = [0.156,\; 0.844]\\
+        class = +1
+    };
+    % Hijo izquierdo
+    \node[draw, fill=blue!20, rounded corners, below left=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (left3) {
+        gini = 0.18\\
+        samples = 8\\
+        value = [0.094,\; 0.844]\\
+        class = +1
+    };
+    % Hijo derecho
+    \node[draw, fill=orange!30, rounded corners, below right=1cm and -1.6cm of root, align=center, minimum width=2.7cm, minimum height=0.8cm] (right3) {
+        gini = 0.0\\
+        samples = 2\\
+        value = [0.062,\; 0.0]\\
+        class = -1
+    };
+    % Conexiones y labels
+    \draw[-] (root.south) -- (left3.north) node[midway, left, font=\scriptsize] {True};
+    \draw[-] (root.south) -- (right3.north) node[midway, right, font=\scriptsize] {False};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l c}
+    \toprule
+    Parámetro & Valor \\
+    \midrule
+    $alpha_1$ & 1.0986 \\
+    $alpha_2$ & 1.0397 \\
+    $alpha_3$ & 1.1343 \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+    \hline
+    Obs & X\_1 & X\_2 & X\_3 \\
+    \hline
+    1 & 1 & 1.8 & 3 \\
+    \hline
+    2 & 0.9 & 0.7 & 1.9 \\
+    \hline
+    3 & 1.5 & 1.2 & 1.1 \\
+    \hline
+\end{tabular}
+\end{center}
+
+\subsection{Ejercicio 4}
+
+¿Qué efecto tiene el learning rate sobre cada uno de los clasificadores en un modelo AdaBoost.M1? 
+
+\subsection{Ejercicio 5}
+
+
+Clasificar a las observaciones A, B y C con el siguiente modelo de XGBoost.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Obs & f0 & f1 & f2 & f3 & f4 \\
+\hline
+A & 0.3 & -0.1 & 0.9 & -0.7 & 0.2 \\
+\hline
+B & -1 & -0.5 & 1 & 0 & 0.3 \\
+\hline
+C & 2 & 1.5 & -1 & 0.3 & -0.7 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol
+    \node[font=\small\bfseries] (title) at (0,0) {Árbol 1};
+    
+    % Nodo raíz
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.5cm of title] (root) {
+        f0 $<$ -0.0626790971
+    };
+    
+    % Nodo izquierdo (f0 < -0.0626790971 = True)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below left=1cm and -1.5cm of root] (left) {
+        f1 $<$ 0.955142319
+    };
+    
+    % Nodo derecho (f0 < -0.0626790971 = False)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below right=1cm and -1.5cm of root] (right) {
+        f2 $<$ 1.35387242
+    };
+    
+    % Hoja izquierda izquierda (f0 < -0.0626790971 = True, f1 < 0.955142319 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and 0.5cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf1) {
+        leaf = -1.6915288
+    };
+    
+    % Hoja izquierda derecha (f0 < -0.0626790971 = True, f1 < 0.955142319 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and -3cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf2) {
+        leaf = 0.360092461
+    };
+    
+    % Hoja derecha izquierda (f0 < -0.0626790971 = False, f2 < 1.35387242 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and -3cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf3) {
+        leaf = 1.47733867
+    };
+    
+    % Hoja derecha derecha (f0 < -0.0626790971 = False, f2 < 1.35387242 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and 0.5cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf4) {
+        leaf = -0.376093417
+    };
+    
+    % Conexiones principales
+    \draw[-] (root.south) -- (left.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (root.south) -- (right.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo izquierdo
+    \draw[-] (left.south) -- (leaf1.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (left.south) -- (leaf2.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo derecho
+    \draw[-] (right.south) -- (leaf3.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (right.south) -- (leaf4.north) node[midway, right, font=\scriptsize] {no, missing};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol
+    \node[font=\small\bfseries] (title) at (0,0) {Árbol 2};
+    
+    % Nodo raíz
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.5cm of title] (root) {
+        f0 $<$ 0.250492841
+    };
+    
+    % Nodo izquierdo (f0 < 0.250492841 = True)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below left=1cm and -1.5cm of root] (left) {
+        f1 $<$ 0.955142319
+    };
+    
+    % Nodo derecho (f0 < 0.250492841 = False)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below right=1cm and -1.5cm of root] (right) {
+        f1 $<$ -0.857157528
+    };
+    
+    % Hoja izquierda izquierda (f0 < 0.250492841 = True, f1 < 0.955142319 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and 0.5cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf1) {
+        leaf = -1.08458626
+    };
+    
+    % Hoja izquierda derecha (f0 < 0.250492841 = True, f1 < 0.955142319 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and -3cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf2) {
+        leaf = 0.390942872
+    };
+    
+    % Hoja derecha izquierda (f0 < 0.250492841 = False, f1 < -0.857157528 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and -3cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf3) {
+        leaf = -0.171245024
+    };
+    
+    % Hoja derecha derecha (f0 < 0.250492841 = False, f1 < -0.857157528 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and 0.5cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf4) {
+        leaf = 1.12084329
+    };
+    
+    % Conexiones principales
+    \draw[-] (root.south) -- (left.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (root.south) -- (right.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo izquierdo
+    \draw[-] (left.south) -- (leaf1.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (left.south) -- (leaf2.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo derecho
+    \draw[-] (right.south) -- (leaf3.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (right.south) -- (leaf4.north) node[midway, right, font=\scriptsize] {no, missing};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}]
+    % Título del árbol
+    \node[font=\small\bfseries] (title) at (0,0) {Árbol 3};
+    
+    % Nodo raíz
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below=0.5cm of title] (root) {
+        f2 $<$ 0.00524369953
+    };
+    
+    % Nodo izquierdo (f2 < 0.00524369953 = True)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below left=1cm and -1.5cm of root] (left) {
+        f1 $<$ -0.0720101222
+    };
+    
+    % Nodo derecho (f2 < 0.00524369953 = False)
+    \node[draw, rounded corners, fill=white, align=center, minimum width=3.5cm, minimum height=0.8cm, below right=1cm and -1.5cm of root] (right) {
+        f2 $<$ 0.473832935
+    };
+    
+    % Hoja izquierda izquierda (f2 < 0.00524369953 = True, f1 < -0.0720101222 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and 0.5cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf1) {
+        leaf = 0.0632046983
+    };
+    
+    % Hoja izquierda derecha (f2 < 0.00524369953 = True, f1 < -0.0720101222 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and -3cm of left, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf2) {
+        leaf = 0.814428747
+    };
+    
+    % Hoja derecha izquierda (f2 < 0.00524369953 = False, f2 < 0.473832935 = True)
+    \node[draw, fill=white, rounded corners, below left=1.5cm and -3cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf3) {
+        leaf = -1.28828251
+    };
+    
+    % Hoja derecha derecha (f2 < 0.00524369953 = False, f2 < 0.473832935 = False)
+    \node[draw, fill=white, rounded corners, below right=1.5cm and 0.5cm of right, align=center, minimum width=2.5cm, minimum height=0.6cm] (leaf4) {
+        leaf = 0.120746091
+    };
+    
+    % Conexiones principales
+    \draw[-] (root.south) -- (left.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (root.south) -- (right.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo izquierdo
+    \draw[-] (left.south) -- (leaf1.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (left.south) -- (leaf2.north) node[midway, right, font=\scriptsize] {no, missing};
+    
+    % Conexiones del nodo derecho
+    \draw[-] (right.south) -- (leaf3.north) node[midway, left, font=\scriptsize] {yes};
+    \draw[-] (right.south) -- (leaf4.north) node[midway, right, font=\scriptsize] {no, missing};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Ejercicio 6}
+
+¿Cómo se elige la cantidad de árboles en modelos de boosting? ¿De qué parámetro depende?
+
+\subsection{Ejercicio 7}
+
+Una academia de cursos online quiere predecir si una persona se inscribirá (y=1) o no (y=0) a un curso corto a partir de las siguientes 3 variables:
+
+\begin{itemize}
+    \item Tiene Beca: Si / No.
+    \item Turno: Mañana / Tarde.
+    \item Canal: Referido / Web / Redes.
+\end{itemize}
+
+Usar el siguiente dataset para entrenar y testear un modelo XGBoost con los siguientes hiperparámetros:
+
+\vspace{1em}
+
+\begin{minipage}{0.48\textwidth}
+\begin{itemize}
+    \item max\_depth = 2
+    \item n\_estimators = 3
+    \item learning\_rate $\eta$ = 0.3
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\begin{itemize}
+    \item $\lambda = \alpha = \gamma$ = 0
+    \item subsample = 0.8
+    \item colsample\_bytree = 0.66
+\end{itemize}
+\end{minipage}
+
+\vspace{1em}
+
+\begin{center}
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Train}
+\vspace{0.5em}
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+id & Beca & Turno & Canal & y \\
+\hline
+1 & Si  & M & Ref  & 1 \\
+2 & No  & T & Web  & 0 \\
+3 & Si  & M & Ref  & 1 \\
+4 & No  & T & Red  & 0 \\
+7 & Si  & T & Ref  & 1 \\
+8 & No  & M & Red  & 0 \\
+9 & Si  & M & Ref  & 1 \\
+\hline
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Test}
+\vspace{0.5em}
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+id & Beca & Turno & Canal & y \\
+\hline
+5  & Si  & M & Ref & 1 \\
+6  & No  & M & Web & 0 \\
+10  & No & T & Web & 0 \\
+\hline
+\end{tabular}
+\end{minipage}
+\end{center}
+
+\vspace{1em}
+
+Para cada iteración mostrar los cálculos de gradientes, hessianos, ganancia de los splits y peso de cada hoja, actualización de predicciones y probabilidades. Usar el dataset de test para reportar accuracy y la pérdida del modelo (log-loss).
+
+\newpage
+
+\section{Soluciones}
+
+\subsection{Ejercicio 1}
+
+Los clasificadores debiles en modelos de boosting son entrenados de manera secuencial, donde cada nuevo clasificador se enfoca en corregir los errores cometidos por los clasificadores anteriores. Esto se logra mediante el ajuste de los pesos de las observaciones: aquellas que fueron mal clasificadas reciben mayor peso en la siguiente iteracion, forzando al nuevo clasificador a prestarles mas atencion. De esta manera, el modelo aprende iterativamente enfocandose en los casos mas dificiles.
+
+\subsection{Ejercicio 2}
+
+Primero calculamos los pesos iniciales (todos iguales): $w_0 = \frac{1}{10} = 0.1$ para cada observacion.
+
+\subsubsection*{\underline{Iteracion 1}}
+
+El stump divide segun $X_3 \leq 2.1$:
+\begin{itemize}
+    \item Nodo izquierdo (True): predice clase -1
+    \item Nodo derecho (False): predice clase +1
+\end{itemize}
+
+Predicciones para cada observacion:
+\begin{itemize}
+    \item Obs 1: $X_3 = 3.1 > 2.1$ $\rightarrow$ pred = +1 (real = +1) \checkmark
+    \item Obs 2: $X_3 = 2.3 > 2.1$ $\rightarrow$ pred = +1 (real = +1) \checkmark
+    \item Obs 3: $X_3 = 1.8 \leq 2.1$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+    \item Obs 4: $X_3 = 0.7 \leq 2.1$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+    \item Obs 5: $X_3 = 1 \leq 2.1$ $\rightarrow$ pred = -1 (real = +1) $\times$
+    \item Obs 6: $X_3 = 1.1 \leq 2.1$ $\rightarrow$ pred = -1 (real = +1) $\times$
+    \item Obs 7: $X_3 = 2.2 > 2.1$ $\rightarrow$ pred = +1 (real = -1) $\times$
+    \item Obs 8: $X_3 = 0.9 \leq 2.1$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+    \item Obs 9: $X_3 = 1.5 \leq 2.1$ $\rightarrow$ pred = -1 (real = +1) $\times$
+    \item Obs 10: $X_3 = 2 \leq 2.1$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+\end{itemize}
+
+Error del clasificador: $\varepsilon_1 = \sum_{i: \text{error}} w_i = 0.1 \times 4 = 0.4$
+
+\vspace{1em}
+
+Peso del clasificador: $\alpha_1 = \frac{1}{2} \ln\left(\frac{1-\varepsilon_1}{\varepsilon_1}\right) = \frac{1}{2} \ln\left(\frac{0.6}{0.4}\right) = \frac{1}{2} \ln(1.5) \approx 0.2027$
+
+\vspace{1em}
+
+Actualizacion de pesos:
+\begin{itemize}
+    \item Para observaciones correctas: $w_{new} = w_{old} \cdot e^{-\alpha_1} = 0.1 \cdot e^{-0.2027} \approx 0.0817$
+    \item Para observaciones incorrectas: $w_{new} = w_{old} \cdot e^{\alpha_1} = 0.1 \cdot e^{0.2027} \approx 0.1225$
+\end{itemize}
+
+Normalizando: $Z_1 = 6 \cdot 0.0817 + 4 \cdot 0.1225 = 0.9802$
+
+\subsubsection*{\underline{Iteracion 2}}
+
+El stump divide segun $X_2 \leq 1.15$ usando los nuevos pesos.
+
+\begin{itemize}
+    \item Obs 1: $X_2 = 1.2 > 1.15$ $\rightarrow$ pred = +1 (real = +1) \checkmark
+    \item Obs 2: $X_2 = 0.5 \leq 1.15$ $\rightarrow$ pred = -1 (real = +1) $\times$
+    \item Obs 3: $X_2 = 1 \leq 1.15$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+    \item Obs 4: $X_2 = 1.5 > 1.15$ $\rightarrow$ pred = +1 (real = -1) $\times$
+    \item Obs 5: $X_2 = 2 > 1.15$ $\rightarrow$ pred = +1 (real = +1) \checkmark
+    \item Obs 6: $X_2 = 0.3 \leq 1.15$ $\rightarrow$ pred = -1 (real = +1) $\times$
+    \item Obs 7: $X_2 = 1.8 > 1.15$ $\rightarrow$ pred = +1 (real = -1) $\times$
+    \item Obs 8: $X_2 = 1.1 \leq 1.15$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+    \item Obs 9: $X_2 = 1.4 > 1.15$ $\rightarrow$ pred = +1 (real = +1) \checkmark
+    \item Obs 10: $X_2 = 0.9 \leq 1.15$ $\rightarrow$ pred = -1 (real = -1) \checkmark
+\end{itemize}
+
+Error: $\varepsilon_2 = 0.0833 + 0.0833 + 0.1250 + 0.1250 = 0.4167$
+
+\vspace{1em}
+
+$\alpha_2 = \frac{1}{2} \ln\left(\frac{0.5833}{0.4167}\right) \approx 0.1682$
+
+\vspace{1em}
+
+La tabla completa seria:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    X\_1 & X\_2 & X\_3 & Y & $w_0$ & pred 1 & $w_1$ & pred 2 & $w_2$ \\
+    \hline
+    0.1 & 1.2 & 3.1 & 1  & 0.1 & +1 & 0.0833 & +1 & 0.0714 \\
+    \hline
+    1   & 0.5 & 2.3 & 1  & 0.1 & +1 & 0.0833 & -1 & 0.1001 \\
+    \hline
+    0.3 & 1   & 1.8 & -1 & 0.1 & -1 & 0.0833 & -1 & 0.0714 \\
+    \hline
+    2   & 1.5 & 0.7 & -1 & 0.1 & -1 & 0.0833 & +1 & 0.1001 \\
+    \hline
+    1.5 & 2   & 1   & 1  & 0.1 & -1 & 0.1250 & +1 & 0.1071 \\
+    \hline
+    2.3 & 0.3 & 1.1 & 1  & 0.1 & -1 & 0.1250 & -1 & 0.1501 \\
+    \hline
+    1.8 & 1.8 & 2.2 & -1 & 0.1 & +1 & 0.1250 & +1 & 0.1501 \\
+    \hline
+    0.5 & 1.1 & 0.9 & -1 & 0.1 & -1 & 0.0833 & -1 & 0.0714 \\
+    \hline
+    2.2 & 1.4 & 1.5 & 1  & 0.1 & -1 & 0.1250 & +1 & 0.1071 \\
+    \hline
+    0.6 & 0.9 & 2   & -1 & 0.1 & -1 & 0.0833 & -1 & 0.0714 \\
+    \hline
+\end{tabular}
+\end{center}
+
+\subsection{Ejercicio 3}
+
+Para clasificar usamos la formula: $H(x) = \text{sign}\left(\sum_{t=1}^{3} \alpha_t h_t(x)\right)$
+
+\vspace{0.5em}
+
+\textbf{Observacion 1: } $X_1 = 1, X_2 = 1.8, X_3 = 3$
+
+\begin{itemize}
+    \item $h_1$: $X_2 = 1.8 > 1.15$ $\rightarrow$ pred = +1
+    \item $h_2$: $X_3 = 3 > 2.1$ $\rightarrow$ pred = +1
+    \item $h_3$: $X_1 = 1 \leq 2.25$ $\rightarrow$ pred = +1
+\end{itemize}
+
+$f(x_1) = 1.0986(1) + 1.0397(1) + 1.1343(1) = 3.2726 > 0 \rightarrow$ Clase +1
+
+\vspace{1em}
+
+\textbf{Observacion 2: } $X_1 = 0.9, X_2 = 0.7, X_3 = 1.9$
+
+\begin{itemize}
+    \item $h_1$: $X_2 = 0.7 \leq 1.15$ $\rightarrow$ pred = -1
+    \item $h_2$: $X_3 = 1.9 \leq 2.1$ $\rightarrow$ pred = -1
+    \item $h_3$: $X_1 = 0.9 \leq 2.25$ $\rightarrow$ pred = +1
+\end{itemize}
+
+$f(x_2) = 1.0986(-1) + 1.0397(-1) + 1.1343(1) = -1.0040 < 0 \rightarrow$ Clase -1
+
+\vspace{1em}
+
+\textbf{Observacion 3: } $X_1 = 1.5, X_2 = 1.2, X_3 = 1.1$
+
+\begin{itemize}
+    \item $h_1$: $X_2 = 1.2 > 1.15$ $\rightarrow$ pred = +1
+    \item $h_2$: $X_3 = 1.1 \leq 2.1$ $\rightarrow$ pred = -1
+    \item $h_3$: $X_1 = 1.5 \leq 2.25$ $\rightarrow$ pred = +1
+\end{itemize}
+
+$f(x_3) = 1.0986(1) + 1.0397(-1) + 1.1343(1) = 1.1932 > 0 \rightarrow$ Clase +1
+
+\vspace{1em}
+
+Es importante que las etiquetas sean -1 y 1 (y no 0 y 1) porque AdaBoost utiliza el producto entre la prediccion y el valor real para determinar si hubo error y para actualizar los pesos. Con etiquetas -1 y +1, cuando $y_i \cdot h(x_i) < 0$ hay error, y cuando $y_i \cdot h(x_i) > 0$ la clasificacion es correcta. Esto simplifica las formulas matematicas del algoritmo.
+
+\subsection{Ejercicio 4}
+
+El learning rate (o factor de reduccion) $\nu$ en AdaBoost multiplica a cada $\alpha_t$, reduciendo la influencia de cada clasificador individual en el modelo final. Esto hace que el modelo aprenda mas lentamente, requiriendo mas iteraciones para alcanzar el mismo nivel de performance. Un learning rate menor ayuda a reducir el overfitting ya que cada clasificador tiene menos peso, pero requiere entrenar mas clasificadores para lograr buena performance. La formula queda: 
+
+\[ H(x) = \text{sign}\left(\sum_{t=1}^{T} \nu \cdot \alpha_t h_t(x)\right) \]
+
+\subsection{Ejercicio 5}
+
+En XGBoost, las predicciones se obtienen sumando los valores de las hojas de todos los arboles. Partimos de una prediccion inicial de 0 y vamos acumulando.
+
+\vspace{0.5em}
+
+\textbf{Observacion A: } $f0 = 0.3, f1 = -0.1, f2 = 0.9, f3 = -0.7, f4 = 0.2$
+
+\vspace{0.5em}
+
+Arbol 1:
+\begin{itemize}
+    \item $f0 = 0.3 \geq -0.0626790971$ (False) $\rightarrow$ rama derecha
+    \item $f2 = 0.9 < 1.35387242$ (True) $\rightarrow$ leaf = 1.47733867
+\end{itemize}
+
+Arbol 2:
+\begin{itemize}
+    \item $f0 = 0.3 \geq 0.250492841$ (False) $\rightarrow$ rama derecha
+    \item $f1 = -0.1 \geq -0.857157528$ (False) $\rightarrow$ leaf = 1.12084329
+\end{itemize}
+
+Arbol 3:
+\begin{itemize}
+    \item $f2 = 0.9 \geq 0.00524369953$ (False) $\rightarrow$ rama derecha
+    \item $f2 = 0.9 \geq 0.473832935$ (False) $\rightarrow$ leaf = 0.120746091
+\end{itemize}
+
+Prediccion: $y_A = 0 + 1.47733867 + 1.12084329 + 0.120746091 = 2.7189$
+
+\vspace{1em}
+
+Probabilidad: $p_A = \frac{1}{1 + e^{-2.7189}} = 0.938$
+
+\vspace{1em}
+
+\textbf{Clasificacion A: } Positiva (ya que $y_A > 0$ o $p_A > 0.5$)
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{1em}
+
+\textbf{Observacion B: } $f0 = -1, f1 = -0.5, f2 = 1, f3 = 0, f4 = 0.3$
+
+\vspace{0.5em}
+
+Arbol 1:
+\begin{itemize}
+    \item $f0 = -1 < -0.0626790971$ (True) $\rightarrow$ rama izquierda
+    \item $f1 = -0.5 < 0.955142319$ (True) $\rightarrow$ leaf = -1.6915288
+\end{itemize}
+
+Arbol 2:
+\begin{itemize}
+    \item $f0 = -1 < 0.250492841$ (True) $\rightarrow$ rama izquierda
+    \item $f1 = -0.5 < 0.955142319$ (True) $\rightarrow$ leaf = -1.08458626
+\end{itemize}
+
+Arbol 3:
+\begin{itemize}
+    \item $f2 = 1 \geq 0.00524369953$ (False) $\rightarrow$ rama derecha
+    \item $f2 = 1 \geq 0.473832935$ (False) $\rightarrow$ leaf = 0.120746091
+\end{itemize}
+
+Prediccion: $y_B = 0 + (-1.6915288) + (-1.08458626) + 0.120746091 = -2.6553$
+
+\vspace{1em}
+
+Probabilidad: $p_B = \frac{1}{1 + e^{2.6553}} = 0.065$
+
+\vspace{1em}
+
+\textbf{Clasificacion B: } Negativa
+
+\vspace{1em}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\vspace{1em}
+
+\textbf{Observacion C: } $f0 = 2, f1 = 1.5, f2 = -1, f3 = 0.3, f4 = -0.7$
+
+\vspace{0.5em}
+
+Arbol 1:
+\begin{itemize}
+    \item $f0 = 2 \geq -0.0626790971$ (False) $\rightarrow$ rama derecha
+    \item $f2 = -1 < 1.35387242$ (True) $\rightarrow$ leaf = 1.47733867
+\end{itemize}
+
+Arbol 2:
+\begin{itemize}
+    \item $f0 = 2 \geq 0.250492841$ (False) $\rightarrow$ rama derecha
+    \item $f1 = 1.5 \geq -0.857157528$ (False) $\rightarrow$ leaf = 1.12084329
+\end{itemize}
+
+Arbol 3:
+\begin{itemize}
+    \item $f2 = -1 < 0.00524369953$ (True) $\rightarrow$ rama izquierda
+    \item $f1 = 1.5 \geq -0.0720101222$ (False) $\rightarrow$ leaf = 0.814428747
+\end{itemize}
+
+Prediccion: $y_C = 0 + 1.47733867 + 1.12084329 + 0.814428747 = 3.4126$
+
+\vspace{1em}
+
+Probabilidad: $p_C = \frac{1}{1 + e^{-3.4126}} = 0.968$
+
+\vspace{1em}
+
+\textbf{Clasificacion C: } Positiva
+
+\subsection{Ejercicio 6}
+
+La cantidad de arboles en modelos de boosting se elige mediante validacion cruzada o usando un conjunto de validacion, monitoreando la metrica de interes (accuracy, AUC, etc.) en datos no vistos. El proceso se detiene cuando el modelo deja de mejorar o comienza a deteriorarse por overfitting (early stopping). Esta cantidad depende principalmente del learning rate: un learning rate bajo requiere mas arboles para alcanzar el mismo nivel de performance, mientras que un learning rate alto necesita menos arboles pero puede hacer que el modelo sea mas propenso al overfitting.
+
+\subsection{Ejercicio 7}
+
+...
+
+\end{document}
