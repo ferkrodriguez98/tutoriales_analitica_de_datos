@@ -91,7 +91,48 @@ Antes de aplicar un modelo Naive Bayes, es importante conocer las variantes que 
     \item \textbf{GaussianNB:} Asume que las características siguen una distribución normal (gaussiana) continua, siendo útil cuando las variables son continuas y tienen una forma aproximadamente normal.
 \end{itemize}
 
-\section{Ejemplo Práctico}
+\section{Variables Continuas: Gaussian Naive Bayes}
+Hasta ahora vimos cómo trabajar con variables categóricas, donde simplemente contamos frecuencias. Pero, ¿qué pasa cuando tenemos variables continuas como edad, peso, altura, temperatura, etc.?
+
+\subsection{Diferencia entre Variables Categóricas y Continuas}
+\begin{itemize}
+    \item \textbf{Variables categóricas:} Tienen valores discretos (Bajo, Medio, Alto). Podemos contar cuántas veces aparece cada valor.
+    \item \textbf{Variables continuas:} Pueden tomar cualquier valor real (25.3, 70.5, 1.78). No podemos contar frecuencias porque cada valor puede ser único.
+\end{itemize}
+
+\subsection{Solución: Asumir Distribución Normal}
+Para variables continuas, Gaussian Naive Bayes asume que los valores siguen una distribución normal (gaussiana). En lugar de contar frecuencias, calculamos dos parámetros para cada característica en cada clase:
+
+\begin{itemize}
+    \item \textbf{Media ($\mu$):} Promedio de los valores
+    \item \textbf{Desviación estándar ($\sigma$):} Dispersión de los valores
+\end{itemize}
+
+\subsection{Fórmula de la Distribución Normal}
+La probabilidad de un valor $x$ dado una clase se calcula con la función de densidad de probabilidad gaussiana:
+
+\[
+P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+\]
+
+donde:
+\begin{itemize}
+    \item $x$ es el valor de la característica que queremos evaluar
+    \item $\mu$ es la media de esa característica para la clase $y$
+    \item $\sigma$ es la desviación estándar de esa característica para la clase $y$
+    \item $\pi \approx 3.14159$
+    \item $e \approx 2.71828$ (base del logaritmo natural)
+\end{itemize}
+
+\textbf{Procedimiento para clasificar con Gaussian NB:}
+\begin{enumerate}
+    \item Para cada característica y cada clase, calcular $\mu$ y $\sigma$
+    \item Para un nuevo dato, aplicar la fórmula gaussiana usando los parámetros de cada clase
+    \item Multiplicar las probabilidades de todas las características (asumiendo independencia)
+    \item Elegir la clase con mayor probabilidad posterior
+\end{enumerate}
+
+\section{Ejercicio 1: Clasificación de Estudiantes}
 Para entender el funcionamiento del clasificador bayesiano ingenuo, usemos un caso de ejemplo: queremos construir un clasificador que prediga si un estudiante va a aprobar un examen, dado:
 
 \begin{itemize}
@@ -207,6 +248,399 @@ P(\text{Desaprobó}|X) &= P(\text{Desaprobó}) \times P(\text{Alto}|\text{Desapr
 \end{align*}
 
 Como $0.13 > 0.006$, el clasificador predice que el estudiante aprobará el examen.
+
+\section{Ejercicio 2: Clasificación de Riesgo Crediticio}
+Ahora vamos a trabajar con un ejemplo un poco más complejo que incluye tres clases y el problema de probabilidad cero que requiere suavizado de Laplace.
+
+\subsection{Planteamiento del Problema}
+Un banco quiere clasificar a sus clientes en tres categorías de riesgo crediticio: \textbf{Bajo}, \textbf{Medio} y \textbf{Alto}. Para esto, utiliza las siguientes características:
+
+\begin{itemize}
+    \item \textbf{Nivel de Ingreso:} Bajo, Medio, Alto
+    \item \textbf{Historial Crediticio:} Malo, Regular, Bueno
+    \item \textbf{Tipo de Empleo:} Temporal, Permanente
+    \item \textbf{Nivel de Deudas:} Bajo, Alto
+\end{itemize}
+
+\subsection{Datos de Entrenamiento}
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{ccccc}
+        \toprule
+        Ingreso & Historial & Empleo & Deudas & Riesgo \\
+        \midrule
+        Alto & Bueno & Permanente & Bajo & Bajo \\
+        Alto & Bueno & Permanente & Bajo & Bajo \\
+        Medio & Bueno & Permanente & Bajo & Bajo \\
+        Alto & Regular & Permanente & Bajo & Bajo \\
+        Medio & Bueno & Temporal & Bajo & Medio \\
+        Medio & Regular & Permanente & Alto & Medio \\
+        Bajo & Regular & Temporal & Alto & Medio \\
+        Medio & Regular & Temporal & Bajo & Medio \\
+        Bajo & Malo & Temporal & Alto & Alto \\
+        Bajo & Malo & Temporal & Alto & Alto \\
+        Bajo & Regular & Temporal & Alto & Alto \\
+        Medio & Malo & Temporal & Alto & Alto \\
+        Bajo & Malo & Permanente & Alto & Alto \\
+        Alto & Malo & Temporal & Alto & Medio \\
+        Medio & Bueno & Permanente & Alto & Medio \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Tablas de Frecuencia}
+
+\textbf{Nivel de Ingreso:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        Ingreso & Riesgo Bajo & Riesgo Medio & Riesgo Alto & Total \\
+        \midrule
+        Alto & 3 & 1 & 0 & 4 \\
+        Medio & 1 & 4 & 1 & 6 \\
+        Bajo & 0 & 1 & 4 & 5 \\
+        \midrule
+        Total & 4 & 6 & 5 & 15 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Historial Crediticio:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        Historial & Riesgo Bajo & Riesgo Medio & Riesgo Alto & Total \\
+        \midrule
+        Bueno & 3 & 2 & 0 & 5 \\
+        Regular & 1 & 2 & 1 & 4 \\
+        Malo & 0 & 2 & 4 & 6 \\
+        \midrule
+        Total & 4 & 6 & 5 & 15 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Tipo de Empleo:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        Empleo & Riesgo Bajo & Riesgo Medio & Riesgo Alto & Total \\
+        \midrule
+        Permanente & 4 & 2 & 1 & 7 \\
+        Temporal & 0 & 4 & 4 & 8 \\
+        \midrule
+        Total & 4 & 6 & 5 & 15 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Nivel de Deudas:}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        Deudas & Riesgo Bajo & Riesgo Medio & Riesgo Alto & Total \\
+        \midrule
+        Bajo & 4 & 2 & 0 & 6 \\
+        Alto & 0 & 4 & 5 & 9 \\
+        \midrule
+        Total & 4 & 6 & 5 & 15 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Clasificación de un Nuevo Cliente}
+Queremos clasificar un nuevo cliente con las siguientes características:
+\begin{itemize}
+    \item Ingreso: Medio
+    \item Historial: Bueno
+    \item Empleo: Temporal
+    \item Deudas: Bajo
+\end{itemize}
+
+\textbf{Probabilidades a priori:}
+\begin{align*}
+P(\text{Riesgo Bajo}) &= \frac{4}{15} \approx 0.267 \\
+P(\text{Riesgo Medio}) &= \frac{6}{15} = 0.4 \\
+P(\text{Riesgo Alto}) &= \frac{5}{15} \approx 0.333
+\end{align*}
+
+\textbf{Cálculo para Riesgo Bajo (sin suavizado):}
+\begin{align*}
+P(\text{Bajo}|X) &= P(\text{Bajo}) \times P(\text{Medio}|\text{Bajo}) \times P(\text{Bueno}|\text{Bajo}) \\
+&\quad \times P(\text{Temporal}|\text{Bajo}) \times P(\text{Bajo deudas}|\text{Bajo}) \\
+&= \frac{4}{15} \times \frac{1}{4} \times \frac{3}{4} \times \frac{0}{4} \times \frac{4}{4} \\
+&= \frac{4}{15} \times \frac{1}{4} \times \frac{3}{4} \times 0 \times 1 = 0
+\end{align*}
+
+\textbf{¡Problema!} La probabilidad es cero porque ningún cliente de Riesgo Bajo tiene empleo Temporal en nuestros datos de entrenamiento. Esto hace que toda la multiplicación sea cero, lo cual no es razonable.
+
+\subsection{Solución: Suavizado de Laplace}
+Para evitar probabilidades cero, aplicamos suavizado de Laplace con $\alpha = 1$:
+
+\[
+P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha \times n}
+\]
+
+donde $n$ es el número de valores posibles para esa característica.
+
+\subsubsection{Recalculando con Laplace ($\alpha = 1$):}
+
+Para la característica Empleo (que tiene 2 valores posibles: Permanente y Temporal):
+\begin{align*}
+P(\text{Temporal}|\text{Bajo}) &= \frac{0 + 1}{4 + 1 \times 2} = \frac{1}{6} \approx 0.167
+\end{align*}
+
+Ahora recalculamos todas las probabilidades con suavizado:
+
+\vspace{0.5cm}
+
+\textbf{Riesgo Bajo:}
+\begin{align*}
+P(\text{Medio}|\text{Bajo}) &= \frac{1 + 1}{4 + 1 \times 3} = \frac{2}{7} \approx 0.286 \\
+P(\text{Bueno}|\text{Bajo}) &= \frac{3 + 1}{4 + 1 \times 3} = \frac{4}{7} \approx 0.571 \\
+P(\text{Temporal}|\text{Bajo}) &= \frac{0 + 1}{4 + 1 \times 2} = \frac{1}{6} \approx 0.167 \\
+P(\text{Bajo deudas}|\text{Bajo}) &= \frac{4 + 1}{4 + 1 \times 2} = \frac{5}{6} \approx 0.833
+\end{align*}
+
+\begin{align*}
+P(\text{Bajo}|X) &= 0.267 \times 0.286 \times 0.571 \times 0.167 \times 0.833 \\
+&\approx 0.00303
+\end{align*}
+
+\textbf{Riesgo Medio:}
+\begin{align*}
+P(\text{Medio}|\text{Medio}) &= \frac{4 + 1}{6 + 1 \times 3} = \frac{5}{9} \approx 0.556 \\
+P(\text{Bueno}|\text{Medio}) &= \frac{2 + 1}{6 + 1 \times 3} = \frac{3}{9} \approx 0.333 \\
+P(\text{Temporal}|\text{Medio}) &= \frac{4 + 1}{6 + 1 \times 2} = \frac{5}{8} = 0.625 \\
+P(\text{Bajo deudas}|\text{Medio}) &= \frac{2 + 1}{6 + 1 \times 2} = \frac{3}{8} = 0.375
+\end{align*}
+
+\begin{align*}
+P(\text{Medio}|X) &= 0.4 \times 0.556 \times 0.333 \times 0.625 \times 0.375 \\
+&\approx 0.01736
+\end{align*}
+
+\textbf{Riesgo Alto:}
+\begin{align*}
+P(\text{Medio}|\text{Alto}) &= \frac{1 + 1}{5 + 1 \times 3} = \frac{2}{8} = 0.25 \\
+P(\text{Bueno}|\text{Alto}) &= \frac{0 + 1}{5 + 1 \times 3} = \frac{1}{8} = 0.125 \\
+P(\text{Temporal}|\text{Alto}) &= \frac{4 + 1}{5 + 1 \times 2} = \frac{5}{7} \approx 0.714 \\
+P(\text{Bajo deudas}|\text{Alto}) &= \frac{0 + 1}{5 + 1 \times 2} = \frac{1}{7} \approx 0.143
+\end{align*}
+
+\begin{align*}
+P(\text{Alto}|X) &= 0.333 \times 0.25 \times 0.125 \times 0.714 \times 0.143 \\
+&\approx 0.00106
+\end{align*}
+
+\subsection{Decisión Final}
+Comparando las probabilidades posteriores:
+\begin{itemize}
+    \item $P(\text{Riesgo Bajo}|X) \approx 0.00303$
+    \item $P(\text{Riesgo Medio}|X) \approx 0.01736$ \textbf{← Mayor probabilidad}
+    \item $P(\text{Riesgo Alto}|X) \approx 0.00106$
+\end{itemize}
+
+\textbf{Conclusión:} El cliente se clasifica como \textbf{Riesgo Medio}.
+
+\vspace{0.5em}
+
+\textbf{Nota importante:} Sin el suavizado de Laplace, habríamos obtenido probabilidad cero para Riesgo Bajo, lo cual habría sido un resultado erróneo. El suavizado nos permite manejar combinaciones de características que no aparecieron en los datos de entrenamiento.
+
+\section{Ejercicio 3: Gaussian Naive Bayes - Clasificación de Actividad Física}
+Ahora vamos a trabajar con un ejemplo que utiliza variables continuas, donde aplicaremos Gaussian Naive Bayes.
+
+\subsection{Planteamiento del Problema}
+Un centro de salud quiere predecir si una persona realiza actividad física regular basándose en características físicas y de estilo de vida. La variable objetivo es binaria: \textbf{Hace Ejercicio} (Sí/No).
+
+Las características medidas son:
+\begin{itemize}
+    \item \textbf{Edad} (años)
+    \item \textbf{Peso} (kg)
+    \item \textbf{Horas de sueño} (horas por día)
+\end{itemize}
+
+\subsection{Datos de Entrenamiento}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Edad & Peso & Horas de sueño & Hace Ejercicio \\
+        \midrule
+        22 & 65 & 7.5 & Sí \\
+        25 & 70 & 8.0 & Sí \\
+        23 & 68 & 7.0 & Sí \\
+        28 & 72 & 7.5 & Sí \\
+        24 & 66 & 8.5 & Sí \\
+        26 & 69 & 7.8 & Sí \\
+        45 & 85 & 6.0 & No \\
+        50 & 90 & 5.5 & No \\
+        48 & 88 & 6.2 & No \\
+        52 & 92 & 5.8 & No \\
+        49 & 87 & 6.5 & No \\
+        47 & 86 & 5.9 & No \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Cálculo de Parámetros (Media y Desviación Estándar)}
+Para cada característica y cada clase, necesitamos calcular la media ($\mu$) y la desviación estándar ($\sigma$).
+
+\subsubsection{Clase: Hace Ejercicio = Sí (6 muestras)}
+
+\textit{Edad:}
+\begin{align*}
+\mu_{\text{edad, Sí}} &= \frac{22 + 25 + 23 + 28 + 24 + 26}{6} = \frac{148}{6} \approx 24.67 \text{ años} \\
+\sigma_{\text{edad, Sí}} &= \sqrt{\frac{\sum (x_i - \mu)^2}{n}} \\
+&= \sqrt{\frac{(22-24.67)^2 + (25-24.67)^2 + ... + (26-24.67)^2}{6}} \\
+&= \sqrt{\frac{7.11 + 0.11 + 2.78 + 11.11 + 0.44 + 1.78}{6}} \\
+&= \sqrt{\frac{23.33}{6}} \approx 1.97 \text{ años}
+\end{align*}
+
+\textit{Peso:}
+\begin{align*}
+\mu_{\text{peso, Sí}} &= \frac{65 + 70 + 68 + 72 + 66 + 69}{6} = \frac{410}{6} \approx 68.33 \text{ kg} \\
+\sigma_{\text{peso, Sí}} &= \sqrt{\frac{11.11 + 2.78 + 0.11 + 13.44 + 5.44 + 0.44}{6}} \\
+&= \sqrt{\frac{33.33}{6}} \approx 2.36 \text{ kg}
+\end{align*}
+
+\textit{Horas de sueño:}
+\begin{align*}
+\mu_{\text{sueño, Sí}} &= \frac{7.5 + 8.0 + 7.0 + 7.5 + 8.5 + 7.8}{6} = \frac{46.3}{6} \approx 7.72 \text{ horas} \\
+\sigma_{\text{sueño, Sí}} &= \sqrt{\frac{0.048 + 0.078 + 0.518 + 0.048 + 0.608 + 0.006}{6}} \\
+&= \sqrt{\frac{1.306}{6}} \approx 0.47 \text{ horas}
+\end{align*}
+
+\subsubsection{Clase: Hace Ejercicio = No (6 muestras)}
+
+\textit{Edad:}
+\begin{align*}
+\mu_{\text{edad, No}} &= \frac{45 + 50 + 48 + 52 + 49 + 47}{6} = \frac{291}{6} = 48.5 \text{ años} \\
+\sigma_{\text{edad, No}} &= \sqrt{\frac{12.25 + 2.25 + 0.25 + 12.25 + 0.25 + 2.25}{6}} \\
+&= \sqrt{\frac{29.5}{6}} \approx 2.22 \text{ años}
+\end{align*}
+
+\textit{Peso:}
+\begin{align*}
+\mu_{\text{peso, No}} &= \frac{85 + 90 + 88 + 92 + 87 + 86}{6} = \frac{528}{6} = 88 \text{ kg} \\
+\sigma_{\text{peso, No}} &= \sqrt{\frac{9 + 4 + 0 + 16 + 1 + 4}{6}} \\
+&= \sqrt{\frac{34}{6}} \approx 2.38 \text{ kg}
+\end{align*}
+
+\textit{Horas de sueño:}
+\begin{align*}
+\mu_{\text{sueño, No}} &= \frac{6.0 + 5.5 + 6.2 + 5.8 + 6.5 + 5.9}{6} = \frac{35.9}{6} \approx 5.98 \text{ horas} \\
+\sigma_{\text{sueño, No}} &= \sqrt{\frac{0.0004 + 0.2304 + 0.0484 + 0.0324 + 0.2704 + 0.0064}{6}} \\
+&= \sqrt{\frac{0.5884}{6}} \approx 0.31 \text{ horas}
+\end{align*}
+
+\subsection{Resumen de Parámetros}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llcc}
+        \toprule
+        \textbf{Característica} & \textbf{Clase} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ \\
+        \midrule
+        Edad & Sí & 24.67 & 1.97 \\
+        Edad & No & 48.5 & 2.22 \\
+        \midrule
+        Peso & Sí & 68.33 & 2.36 \\
+        Peso & No & 88.0 & 2.38 \\
+        \midrule
+        Horas de sueño & Sí & 7.72 & 0.47 \\
+        Horas de sueño & No & 5.98 & 0.31 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Clasificación de una Nueva Persona}
+Queremos clasificar una nueva persona con las siguientes características:
+\begin{itemize}
+    \item Edad: 30 años
+    \item Peso: 75 kg
+    \item Horas de sueño: 7 horas
+\end{itemize}
+
+\textbf{Probabilidades a priori:}
+\begin{align*}
+P(\text{Sí}) &= \frac{6}{12} = 0.5 \\
+P(\text{No}) &= \frac{6}{12} = 0.5
+\end{align*}
+
+\textbf{Aplicando la fórmula gaussiana:}
+
+Recordemos que:
+\[
+P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+\]
+
+\subsubsection{Para la clase ``Hace Ejercicio = Sí'':}
+
+\textit{Probabilidad de Edad = 30:}
+\begin{align*}
+P(30|\text{Sí}) &= \frac{1}{\sqrt{2\pi(1.97)^2}} \exp\left(-\frac{(30-24.67)^2}{2(1.97)^2}\right) \\
+&= \frac{1}{\sqrt{24.37}} \exp\left(-\frac{28.39}{7.76}\right) \\
+&= \frac{1}{4.94} \exp(-3.66) \\
+&= 0.202 \times 0.026 \approx 0.0053
+\end{align*}
+
+\textit{Probabilidad de Peso = 75:}
+\begin{align*}
+P(75|\text{Sí}) &= \frac{1}{\sqrt{2\pi(2.36)^2}} \exp\left(-\frac{(75-68.33)^2}{2(2.36)^2}\right) \\
+&= \frac{1}{\sqrt{35.03}} \exp\left(-\frac{44.49}{11.14}\right) \\
+&= \frac{1}{5.92} \exp(-3.99) \\
+&= 0.169 \times 0.018 \approx 0.0031
+\end{align*}
+
+\textit{Probabilidad de Sueño = 7:}
+\begin{align*}
+P(7|\text{Sí}) &= \frac{1}{\sqrt{2\pi(0.47)^2}} \exp\left(-\frac{(7-7.72)^2}{2(0.47)^2}\right) \\
+&= \frac{1}{\sqrt{1.39}} \exp\left(-\frac{0.52}{0.44}\right) \\
+&= \frac{1}{1.18} \exp(-1.18) \\
+&= 0.847 \times 0.308 \approx 0.261
+\end{align*}
+
+\subsubsection{Probabilidad posterior para ``Sí'':}
+\begin{align*}
+P(\text{Sí}|X) &= P(\text{Sí}) \times P(30|\text{Sí}) \times P(75|\text{Sí}) \times P(7|\text{Sí}) \\
+&= 0.5 \times 0.0053 \times 0.0031 \times 0.261 \\
+&\approx 0.0000021
+\end{align*}
+
+\subsubsection{Para la clase ``Hace Ejercicio = No'':}
+
+\textit{Probabilidad de Edad = 30:}
+\begin{align*}
+P(30|\text{No}) &= \frac{1}{\sqrt{2\pi(2.22)^2}} \exp\left(-\frac{(30-48.5)^2}{2(2.22)^2}\right) \\
+&= \frac{1}{\sqrt{30.98}} \exp\left(-\frac{342.25}{9.86}\right) \\
+&= \frac{1}{5.57} \exp(-34.71) \\
+&= 0.180 \times 1.25 \times 10^{-15} \approx 2.25 \times 10^{-16}
+\end{align*}
+
+Dado que $P(30|\text{No})$ es extremadamente pequeño (la persona de 30 años está muy lejos de la media de edad de quienes no hacen ejercicio, que es 48.5 años), la probabilidad posterior para ``No'' será prácticamente cero.
+
+\subsection{Decisión Final}
+Aunque ambas probabilidades son pequeñas en valor absoluto, lo importante es compararlas:
+
+\begin{itemize}
+    \item $P(\text{Sí}|X) \approx 0.0000021$ \textbf{← Mucho mayor}
+    \item $P(\text{No}|X) \approx 2.25 \times 10^{-16}$
+\end{itemize}
+
+\textbf{Conclusión:} La persona se clasifica como que \textbf{SÍ hace ejercicio}.
+
+\vspace{0.5em}
+
+\textbf{Interpretación:} Una persona de 30 años con 75 kg y 7 horas de sueño está mucho más cerca del perfil de las personas que hacen ejercicio en nuestros datos (jóvenes, peso moderado, buen sueño) que del perfil de quienes no hacen ejercicio (mayor edad, mayor peso, menos sueño).
+
+\vspace{0.5em}
+
+\textbf{Nota importante:} En Gaussian Naive Bayes, no necesitamos normalizar por $P(X)$ porque solo nos interesa comparar las probabilidades relativas. La clase con mayor probabilidad posterior no normalizada será siempre la misma que con normalización.
 
 \section{Ventajas y Desventajas}
 \underline{Ventajas}

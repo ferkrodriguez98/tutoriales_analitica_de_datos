@@ -135,7 +135,81 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Ejemplo Práctico: Predicción de Aprobación}
+\begin{frame}{Variables Categóricas vs Continuas}
+    \begin{center}
+        \textbf{¿Cuál es la diferencia?}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Variables Categóricas}
+            \begin{itemize}
+                \item Valores discretos
+                \item Ej: Bajo, Medio, Alto
+                \item Método: Contar frecuencias
+                \item Fórmula simple: $\frac{count}{total}$
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Variables Continuas}
+            \begin{itemize}
+                \item Valores reales
+                \item Ej: 25.3, 70.5, 1.78
+                \item Método: Calcular $\mu$ y $\sigma$
+                \item Fórmula: Dist. Normal
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Gaussian Naive Bayes}
+    \textbf{Para variables continuas:}
+
+    En lugar de contar frecuencias, calculamos dos parámetros por característica y clase:
+
+    \vspace{0.5cm}
+
+    \begin{itemize}
+        \item \textbf{Media ($\mu$):} Promedio de los valores
+        \item \textbf{Desviación estándar ($\sigma$):} Dispersión de los valores
+    \end{itemize}
+
+    \vspace{0.8cm}
+
+    \textbf{Función de densidad de probabilidad gaussiana:}
+
+    \[
+    P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+    \]
+\end{frame}
+
+\begin{frame}{Gaussian NB: Procedimiento}
+    \begin{center}
+        \textbf{Pasos para clasificar:}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    \begin{enumerate}
+        \item Para cada característica y cada clase, calcular $\mu$ y $\sigma$
+
+        \vspace{0.3cm}
+
+        \item Para un nuevo dato, aplicar la fórmula gaussiana usando los parámetros de cada clase
+
+        \vspace{0.3cm}
+
+        \item Multiplicar las probabilidades de todas las características
+
+        \vspace{0.3cm}
+
+        \item Elegir la clase con mayor probabilidad posterior
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Ejercicio 1: Clasificación de Estudiantes}
     \begin{center}
         \textbf{¿Va a aprobar el estudiante el examen?}
         
@@ -239,6 +313,368 @@
     \end{center}
 \end{frame}
 
+\begin{frame}{Suavizado de Laplace}
+    \begin{center}
+        \textbf{Problema:} Probabilidades condicionales cero
+
+        \textbf{Solución:} Suavizado de Laplace
+
+        \[
+        P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha \times n}
+        \]
+    \end{center}
+
+    \textbf{Ejemplo:}
+    \begin{itemize}
+        \item $\alpha = 1$ (suavizado de Laplace)
+        \item $count(x_i, y) = 0$ (palabra nunca apareció)
+        \item $count(y) = 10$ (total documentos en clase)
+        \item $n = 1000$ (cantidad características)
+    \end{itemize}
+
+    \[
+    P(x_i|y) = \frac{0 + 1}{10 + 1 \times 1000} = \frac{1}{1010} \approx 0.001
+    \]
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Clasificación de Riesgo Crediticio}
+    \begin{center}
+        \textbf{Problema: Clasificar clientes en 3 categorías de riesgo}
+
+        \vspace{0.3cm}
+
+        \textbf{Riesgo:} Bajo, Medio, Alto
+    \end{center}
+
+    \textbf{Características:}
+    \begin{itemize}
+        \item Nivel de Ingreso: Bajo, Medio, Alto
+        \item Historial Crediticio: Malo, Regular, Bueno
+        \item Tipo de Empleo: Temporal, Permanente
+        \item Nivel de Deudas: Bajo, Alto
+    \end{itemize}
+
+    \textbf{Datos:} 15 clientes
+    \begin{itemize}
+        \item 4 con Riesgo Bajo
+        \item 6 con Riesgo Medio
+        \item 5 con Riesgo Alto
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Datos de Entrenamiento}
+    \begin{center}
+        \textbf{Tabla completa de datos (15 clientes):}
+
+        \vspace{0.3cm}
+
+        \tiny
+        \begin{tabular}{ccccc}
+            \toprule
+            Ingreso & Historial & Empleo & Deudas & Riesgo \\
+            \midrule
+            Alto & Bueno & Permanente & Bajo & Bajo \\
+            Alto & Bueno & Permanente & Bajo & Bajo \\
+            Medio & Bueno & Permanente & Bajo & Bajo \\
+            Alto & Regular & Permanente & Bajo & Bajo \\
+            Medio & Bueno & Temporal & Bajo & Medio \\
+            Medio & Regular & Permanente & Alto & Medio \\
+            Bajo & Regular & Temporal & Alto & Medio \\
+            Medio & Regular & Temporal & Bajo & Medio \\
+            Bajo & Malo & Temporal & Alto & Alto \\
+            Bajo & Malo & Temporal & Alto & Alto \\
+            Bajo & Regular & Temporal & Alto & Alto \\
+            Medio & Malo & Temporal & Alto & Alto \\
+            Bajo & Malo & Permanente & Alto & Alto \\
+            Alto & Malo & Temporal & Alto & Medio \\
+            Medio & Bueno & Permanente & Alto & Medio \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Tablas de Frecuencia}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \tiny
+            \textbf{Nivel de Ingreso:}
+            \begin{tabular}{ccccc}
+                \toprule
+                Ingreso & Bajo & Medio & Alto & Total \\
+                \midrule
+                Alto & 3 & 1 & 0 & 4 \\
+                Medio & 1 & 4 & 1 & 6 \\
+                Bajo & 0 & 1 & 4 & 5 \\
+                \midrule
+                Total & 4 & 6 & 5 & 15 \\
+                \bottomrule
+            \end{tabular}
+
+            \vspace{0.3cm}
+
+            \textbf{Historial Crediticio:}
+            \begin{tabular}{ccccc}
+                \toprule
+                Historial & Bajo & Medio & Alto & Total \\
+                \midrule
+                Bueno & 3 & 2 & 0 & 5 \\
+                Regular & 1 & 2 & 1 & 4 \\
+                Malo & 0 & 2 & 4 & 6 \\
+                \midrule
+                Total & 4 & 6 & 5 & 15 \\
+                \bottomrule
+            \end{tabular}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \tiny
+            \textbf{Tipo de Empleo:}
+            \begin{tabular}{ccccc}
+                \toprule
+                Empleo & Bajo & Medio & Alto & Total \\
+                \midrule
+                Permanente & 4 & 2 & 1 & 7 \\
+                Temporal & 0 & 4 & 4 & 8 \\
+                \midrule
+                Total & 4 & 6 & 5 & 15 \\
+                \bottomrule
+            \end{tabular}
+
+            \vspace{0.3cm}
+
+            \textbf{Nivel de Deudas:}
+            \begin{tabular}{ccccc}
+                \toprule
+                Deudas & Bajo & Medio & Alto & Total \\
+                \midrule
+                Bajo & 4 & 2 & 0 & 6 \\
+                Alto & 0 & 4 & 5 & 9 \\
+                \midrule
+                Total & 4 & 6 & 5 & 15 \\
+                \bottomrule
+            \end{tabular}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Nuevo Cliente a Clasificar}
+    \textbf{Clasificar un cliente con:}
+
+    \begin{itemize}
+        \item Ingreso: Medio
+        \item Historial: Bueno
+        \item Empleo: Temporal
+        \item Deudas: Bajo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Probabilidades a Priori}
+    \begin{center}
+        \textbf{Probabilidades a priori:}
+        \begin{align*}
+        P(\text{Riesgo Bajo}) &= \frac{4}{15} \approx 0.267 \\
+        P(\text{Riesgo Medio}) &= \frac{6}{15} = 0.4 \\
+        P(\text{Riesgo Alto}) &= \frac{5}{15} \approx 0.333
+        \end{align*}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: ¡Problema con Probabilidad Cero!}
+    \begin{center}
+        \textbf{Calculando para Riesgo Bajo (sin suavizado):}
+    \end{center}
+
+    \begin{align*}
+    P(\text{Bajo}|X) &= P(\text{Bajo}) \times P(\text{Medio}|\text{Bajo}) \\
+    &\quad \times P(\text{Bueno}|\text{Bajo}) \times P(\text{Temporal}|\text{Bajo}) \\
+    &\quad \times P(\text{Bajo deudas}|\text{Bajo}) \\
+    &= \frac{4}{15} \times \frac{1}{4} \times \frac{3}{4} \times \frac{0}{4} \times \frac{4}{4} \\
+    &= 0
+    \end{align*}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \textcolor{accent}{\textbf{¡La probabilidad es cero!}}
+
+        Ningún cliente de Riesgo Bajo tiene empleo Temporal
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Solución con Laplace Smoothing}
+    \textbf{Aplicamos suavizado de Laplace ($\alpha = 1$):}
+
+    \[
+    P(x_i|y) = \frac{count(x_i, y) + 1}{count(y) + n}
+    \]
+
+    \vspace{0.3cm}
+
+    \textbf{Recalculando probabilidades para Riesgo Bajo:}
+    \begin{align*}
+    P(\text{Medio}|\text{Bajo}) &= \frac{1 + 1}{4 + 3} = \frac{2}{7} \approx 0.286 \\
+    P(\text{Bueno}|\text{Bajo}) &= \frac{3 + 1}{4 + 3} = \frac{4}{7} \approx 0.571 \\
+    P(\text{Temporal}|\text{Bajo}) &= \frac{0 + 1}{4 + 2} = \frac{1}{6} \approx 0.167 \\
+    P(\text{Bajo deudas}|\text{Bajo}) &= \frac{4 + 1}{4 + 2} = \frac{5}{6} \approx 0.833
+    \end{align*}
+
+    \begin{center}
+        $P(\text{Bajo}|X) \approx 0.00303$ (ya no es cero!)
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 2: Resultado Final}
+    \begin{center}
+        \textbf{Comparando las tres clases (con Laplace):}
+
+        \vspace{0.8cm}
+
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Clase} & \textbf{Probabilidad Posterior} \\
+            \midrule
+            Riesgo Bajo & 0.00303 \\
+            \textcolor{primary}{\textbf{Riesgo Medio}} & \textcolor{primary}{\textbf{0.01736}} $\leftarrow$ \textbf{Mayor} \\
+            Riesgo Alto & 0.00106 \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.8cm}
+
+        \Large{\textbf{Clasificación: Riesgo Medio}}
+
+        \vspace{0.5cm}
+
+        \normalsize{\textit{Sin Laplace smoothing habríamos tenido un error!}}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 3: Gaussian NB - Actividad Física}
+    \begin{center}
+        \textbf{Problema: ¿Hace ejercicio regularmente?}
+
+        \vspace{0.3cm}
+
+        \textbf{Clase:} Sí / No
+    \end{center}
+
+    \textbf{Variables continuas:}
+    \begin{itemize}
+        \item Edad (años)
+        \item Peso (kg)
+        \item Horas de sueño (horas/día)
+    \end{itemize}
+
+    \textbf{Datos:} 12 personas
+    \begin{itemize}
+        \item 6 que hacen ejercicio
+        \item 6 que no hacen ejercicio
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejercicio 3: Datos de Entrenamiento}
+    \begin{center}
+        \textbf{Tabla completa de datos (12 personas):}
+
+        \begin{tabular}{cccc}
+            \toprule
+            Edad & Peso & Horas de sueño & Hace Ejercicio \\
+            \midrule
+            22 & 65 & 7.5 & Sí \\
+            25 & 70 & 8.0 & Sí \\
+            23 & 68 & 7.0 & Sí \\
+            28 & 72 & 7.5 & Sí \\
+            24 & 66 & 8.5 & Sí \\
+            26 & 69 & 7.8 & Sí \\
+            45 & 85 & 6.0 & No \\
+            50 & 90 & 5.5 & No \\
+            48 & 88 & 6.2 & No \\
+            52 & 92 & 5.8 & No \\
+            49 & 87 & 6.5 & No \\
+            47 & 86 & 5.9 & No \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 3: Parámetros Calculados}
+    \textbf{Para cada clase, calculamos $\mu$ y $\sigma$ de cada variable:}
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \small
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Característica} & \textbf{Clase} & $\boldsymbol{\mu}$ & $\boldsymbol{\sigma}$ \\
+            \midrule
+            Edad   & Sí & 24.67 & 1.97 \\
+            Edad   & No & 48.5  & 2.22 \\
+            \midrule
+            Peso   & Sí & 68.33 & 2.36 \\
+            Peso   & No & 88.0  & 2.38 \\
+            \midrule
+            Sueño  & Sí & 7.72  & 0.47 \\
+            Sueño  & No & 5.98  & 0.31 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+
+    \vspace{0.5cm}
+
+    Estos parámetros se usan en la fórmula gaussiana para calcular probabilidades
+\end{frame}
+
+\begin{frame}{Ejercicio 3: Clasificar Nueva Persona}
+    \begin{center}
+        \textbf{Persona con:}
+
+        Edad: 30 años, Peso: 75 kg, Sueño: 7 horas
+
+        \textbf{Aplicando la fórmula gaussiana:}
+
+        \[
+        P(x|y) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+        \]
+
+        \begin{tabular}{lc}
+            \toprule
+            \textbf{Probabilidad} & \textbf{Valor} \\
+            \midrule
+            $P(30|\text{Sí})$ & 0.0053 \\
+            $P(75|\text{Sí})$ & 0.0031 \\
+            $P(7|\text{Sí})$ & 0.261 \\
+            \midrule
+            $P(\text{Sí}|X)$ & 0.0000021 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio 3: Resultado Final}
+    \begin{center}
+        \textbf{Comparando ambas clases:}
+
+        \vspace{0.8cm}
+
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Clase} & \textbf{Probabilidad Posterior} \\
+            \midrule
+            \textcolor{primary}{\textbf{Hace ejercicio: Sí}} & \textcolor{primary}{\textbf{0.0000021}} $\leftarrow$ \textbf{Mayor} \\
+            Hace ejercicio: No & $2.25 \times 10^{-16}$ \\
+            \bottomrule
+        \end{tabular}
+
+        \vspace{0.8cm}
+
+        \Large{\textbf{Clasificación: SÍ hace ejercicio}}
+
+        \vspace{0.5cm}
+
+        \normalsize{\textit{Persona de 30 años está mucho más cerca del perfil de quienes hacen ejercicio (jóvenes) que de quienes no (mayores de 45)}}
+    \end{center}
+\end{frame}
+
 \begin{frame}{Ventajas y Desventajas}
     \begin{columns}
         \begin{column}{0.45\textwidth}
@@ -271,30 +707,6 @@
         \item Detección de fraude.
         \item Clasificación de malware.
     \end{itemize}
-\end{frame}
-
-\begin{frame}{Suavizado de Laplace}
-    \begin{center}
-        \textbf{Problema:} Probabilidades condicionales cero
-        
-        \textbf{Solución:} Suavizado de Laplace
-        
-        \[
-        P(x_i|y) = \frac{count(x_i, y) + \alpha}{count(y) + \alpha \times n}
-        \]
-    \end{center}
-
-    \textbf{Ejemplo:}
-    \begin{itemize}
-        \item $\alpha = 1$ (suavizado de Laplace)
-        \item $count(x_i, y) = 0$ (palabra nunca apareció)
-        \item $count(y) = 10$ (total documentos en clase)
-        \item $n = 1000$ (cantidad características)
-    \end{itemize}
-    
-    \[
-    P(x_i|y) = \frac{0 + 1}{10 + 1 \times 1000} = \frac{1}{1010} \approx 0.001
-    \]
 \end{frame}
 
 \begin{frame}[fragile]{Implementación en Python}
