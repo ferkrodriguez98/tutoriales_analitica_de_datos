@@ -1,0 +1,1178 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+
+\usetikzlibrary{positioning,shapes.multipart,calc,arrows,shapes.geometric}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{Series Temporales}}
+\author{Analítica de Datos}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{¿Qué es una Serie Temporal?}
+    \textbf{Definición:}
+    \begin{itemize}
+        \item Secuencia de observaciones de una variable medidas a lo largo del tiempo
+        \item Intervalos regulares (día, semana, mes, año)
+        \item El orden de las observaciones importa
+        \item Existe dependencia temporal entre ellas
+    \end{itemize}
+    
+    \vspace{0.5cm}
+    
+    \textbf{Diferencia clave:}
+    \begin{itemize}
+        \item En datos tradicionales: cada observación es independiente
+        \item En series temporales: el valor en $t$ depende de valores anteriores
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplos de Series Temporales}
+    \begin{itemize}
+        \item \textbf{Finanzas:} Precio de acciones, tipo de cambio, índices bursátiles
+        \item \textbf{Economía:} PBI trimestral, tasa de desempleo, inflación mensual
+        \item \textbf{Retail:} Ventas diarias de productos, demanda de servicios
+        \item \textbf{Clima:} Temperatura diaria, precipitaciones mensuales
+        \item \textbf{Tecnología:} Tráfico web, uso de CPU, número de usuarios activos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Características Principales}
+    \begin{enumerate}
+        \item \textbf{Dependencia temporal:} El valor en el tiempo $t$ puede depender de valores en tiempos anteriores $t-1, t-2, \ldots$
+        
+        \vspace{0.3cm}
+        
+        \item \textbf{Autocorrelación:} La correlación de una variable consigo misma en diferentes momentos del tiempo
+        
+        \vspace{0.3cm}
+        
+        \item \textbf{Orden:} El orden de las observaciones no puede alterarse sin perder información
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Análisis Descriptivo vs Predictivo}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Análisis Descriptivo:}
+            \begin{itemize}
+                \item Entender patrones históricos
+                \item Identificar estacionalidades
+                \item Detectar anomalías
+                \item Descomponer la serie
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Análisis Predictivo:}
+            \begin{itemize}
+                \item Predecir valores futuros
+                \item Estimar demanda futura
+                \item Proyectar tendencias
+                \item Generar intervalos de confianza
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{center}
+        Ambos enfoques son complementarios
+    \end{center}
+\end{frame}
+
+\begin{frame}{Componentes de una Serie Temporal}
+    Una serie temporal $Y_t$ se puede descomponer en cuatro componentes:
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item \textbf{Tendencia ($T_t$):} Comportamiento de largo plazo (crecimiento o decrecimiento sostenido)
+        \item \textbf{Ciclo ($C_t$):} Fluctuaciones de mediano plazo sin frecuencia fija
+        \item \textbf{Estacionalidad ($S_t$):} Patrones que se repiten con periodicidad fija
+        \item \textbf{Ruido ($\epsilon_t$):} Componente aleatoria impredecible
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Modelos de Descomposición}
+    \textbf{Modelo Aditivo:}
+    \[
+    Y_t = T_t + S_t + \epsilon_t
+    \]
+    
+    Variaciones estacionales constantes a lo largo del tiempo
+    
+    \vspace{0.3cm}
+    
+    \small{Ejemplo: Si las ventas aumentan siempre en 1000 unidades en diciembre, independientemente de si el nivel base es 5000 o 50000 unidades}
+    
+    \vspace{0.5cm}
+    
+    \textbf{Modelo Multiplicativo:}
+    \[
+    Y_t = T_t \times S_t \times \epsilon_t
+    \]
+    
+    Variaciones estacionales proporcionales al nivel de la serie
+    
+    \vspace{0.3cm}
+    
+    \small{Ejemplo: Si las ventas aumentan un 20\% en diciembre, la cantidad absoluta depende del nivel base: 1000 unidades extra si el nivel es 5000, pero 10000 unidades extra si el nivel es 50000}
+\end{frame}
+
+\begin{frame}{Media Móvil Simple (SMA)}
+    \begin{center}
+        \Large{\textbf{Fórmula:}}
+        
+        \vspace{0.5cm}
+        
+        \[
+        \text{SMA}_k(t) = \frac{1}{k} \sum_{i=0}^{k-1} Y_{t-i} = \frac{Y_t + Y_{t-1} + \cdots + Y_{t-k+1}}{k}
+        \]
+        
+        \vspace{0.8cm}
+        
+        \textbf{Predicción:}
+        \[
+        \hat{Y}_{t+1} = \text{SMA}_k(t)
+        \]
+    \end{center}
+\end{frame}
+
+\begin{frame}{Limitación de la Media Móvil Simple}
+    \textbf{Importante:} Para predecir más de un paso adelante, todas las predicciones usan el mismo valor:
+    
+    \[
+    \hat{Y}_{t+h} = \text{SMA}_k(t) \quad \text{para cualquier } h \geq 1
+    \]
+    
+    \vspace{0.5cm}
+    
+    \begin{itemize}
+        \item Solo útil para predicciones a muy corto plazo (1-2 pasos)
+        \item No captura tendencia ni estacionalidad en predicciones futuras
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Elección de $k$}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{$k$ pequeño (3-5):}
+            \begin{itemize}
+                \item Responde rápido a cambios
+                \item Más sensible al ruido
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{$k$ grande (10-20):}
+            \begin{itemize}
+                \item Suaviza más
+                \item Responde lento a cambios reales
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Ejercicio: Cálculo Manual de Media Móvil}
+    \begin{center}
+        \textbf{Ventas diarias (en unidades):}
+        
+        \vspace{0.3cm}
+        
+        \begin{tabular}{c*{10}{c}}
+            \toprule
+            Día & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+            \midrule
+            Ventas & 23 & 27 & 24 & 30 & 28 & 26 & 31 & 29 & 27 & 33 \\
+            \bottomrule
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        Calcular media móvil de orden $k=3$
+    \end{center}
+\end{frame}
+
+\begin{frame}{Ejercicio: Cálculos}
+    \begin{itemize}
+        \item \textbf{Día 3:} $\text{SMA}_3(3) = \frac{23 + 27 + 24}{3} = 24.67$
+        \item \textbf{Día 4:} $\text{SMA}_3(4) = \frac{27 + 24 + 30}{3} = 27.00$
+        \item \textbf{Día 5:} $\text{SMA}_3(5) = \frac{24 + 30 + 28}{3} = 27.33$
+        \item \textbf{Día 6:} $\text{SMA}_3(6) = \frac{30 + 28 + 26}{3} = 28.00$
+        \item \textbf{Día 7:} $\text{SMA}_3(7) = \frac{28 + 26 + 31}{3} = 28.33$
+        \item \textbf{Día 8:} $\text{SMA}_3(8) = \frac{26 + 31 + 29}{3} = 28.67$
+        \item \textbf{Día 9:} $\text{SMA}_3(9) = \frac{31 + 29 + 27}{3} = 29.00$
+        \item \textbf{Día 10:} $\text{SMA}_3(10) = \frac{29 + 27 + 33}{3} = 29.67$
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Predicción día 11:} $\hat{Y}_{11} = 29.67 \approx 30$ unidades
+\end{frame}
+
+\begin{frame}{Media Móvil Ponderada (WMA)}
+    \begin{center}
+        \Large{\textbf{Fórmula:}}
+        
+        \vspace{0.5cm}
+        
+        \[
+        \text{WMA}_k(t) = \sum_{i=0}^{k-1} w_i \cdot Y_{t-i}
+        \]
+        
+        donde $\sum w_i = 1$ y típicamente $w_0 > w_1 > \cdots > w_{k-1}$
+        
+        \vspace{0.8cm}
+        
+        \textbf{Ejemplo para $k=3$:} $w_0 = 0.5, w_1 = 0.3, w_2 = 0.2$
+        
+        \[
+        \text{WMA}_3(10) = 0.5 \times 33 + 0.3 \times 27 + 0.2 \times 29 = 30.4
+        \]
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Imports y Datos}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos del ejemplo
+ventas = [23, 27, 24, 30, 28, 26, 31, 29, 27, 33]
+dias = list(range(1, 11))
+
+# Crear serie temporal
+ts = pd.Series(ventas, index=dias)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Cálculo y Predicción}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Media movil simple de orden 3
+sma_3 = ts.rolling(window=3).mean()
+
+# Media movil simple de orden 5
+sma_5 = ts.rolling(window=5).mean()
+
+# Prediccion para el proximo periodo
+prediccion = sma_3.iloc[-1]
+print(f"Prediccion para dia 11: {prediccion:.2f}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Visualización}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Visualizacion
+plt.figure(figsize=(10, 5))
+plt.plot(dias, ventas, 'o-', label='Ventas Reales', linewidth=2)
+plt.plot(dias, sma_3, 's--', label='SMA(3)', linewidth=2)
+plt.plot(dias, sma_5, '^--', label='SMA(5)', linewidth=2)
+plt.xlabel('Dia')
+plt.ylabel('Ventas')
+plt.title('Ventas con Medias Moviles')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Ejercicio: Descomposición Manual}
+    \begin{center}
+        \textbf{Ventas trimestrales (en miles de unidades) durante 3 años:}
+        
+        \vspace{0.3cm}
+        
+        \begin{tabular}{ccccc}
+            \toprule
+            Año & Q1 & Q2 & Q3 & Q4 \\
+            \midrule
+            2021 & 10 & 12 & 11 & 15 \\
+            2022 & 11 & 13 & 12 & 16 \\
+            2023 & 12 & 14 & 13 & 17 \\
+            \bottomrule
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        Descomponer usando modelo aditivo
+    \end{center}
+\end{frame}
+
+\begin{frame}{Paso 1: Calcular la Tendencia}
+    \begin{center}
+        \small
+        \begin{tabular}{ccc}
+            \toprule
+            Trimestre & Cálculo & Tendencia $T_t$ \\
+            \midrule
+            2021-Q1 & - & - \\
+            2021-Q2 & $\frac{10 + 12 + 11 + 15}{4}$ & 12.0 \\
+            2021-Q3 & $\frac{12 + 11 + 15 + 11}{4}$ & 12.25 \\
+            2021-Q4 & $\frac{11 + 15 + 11 + 13}{4}$ & 12.25 \\
+            2022-Q1 & $\frac{15 + 11 + 13 + 12}{4}$ & 12.5 \\
+            2022-Q2 & $\frac{11 + 13 + 12 + 16}{4}$ & 13.0 \\
+            2022-Q3 & $\frac{13 + 12 + 16 + 12}{4}$ & 13.25 \\
+            2022-Q4 & $\frac{12 + 16 + 12 + 14}{4}$ & 13.5 \\
+            2023-Q1 & $\frac{16 + 12 + 14 + 13}{4}$ & 13.75 \\
+            2023-Q2 & $\frac{12 + 14 + 13 + 17}{4}$ & 14.0 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    Media móvil centrada de 4 períodos (1 año completo)
+\end{frame}
+
+\begin{frame}{Paso 2: Componente Estacional + Ruido}
+    \begin{center}
+        \small
+        \begin{tabular}{cccc}
+            \toprule
+            Trimestre & Ventas & Tendencia $T_t$ & $Y_t - T_t$ \\
+            \midrule
+            2021-Q2 & 12 & 12.0 & 0.0 \\
+            2021-Q3 & 11 & 12.25 & -1.25 \\
+            2021-Q4 & 15 & 12.25 & 2.75 \\
+            2022-Q1 & 11 & 12.5 & -1.5 \\
+            2022-Q2 & 13 & 13.0 & 0.0 \\
+            2022-Q3 & 12 & 13.25 & -1.25 \\
+            2022-Q4 & 16 & 13.5 & 2.5 \\
+            2023-Q1 & 12 & 13.75 & -1.75 \\
+            2023-Q2 & 14 & 14.0 & 0.0 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    Restamos la tendencia de los valores observados
+\end{frame}
+
+\begin{frame}{Paso 3: Índices Estacionales}
+    \begin{center}
+        \begin{tabular}{cc}
+            \toprule
+            Trimestre & Índice Estacional $S_t$ \\
+            \midrule
+            Q1 & $\frac{-1.5 + (-1.75)}{2} = -1.625$ \\
+            Q2 & $\frac{0.0 + 0.0 + 0.0}{3} = 0.0$ \\
+            Q3 & $\frac{-1.25 + (-1.25)}{2} = -1.25$ \\
+            Q4 & $\frac{2.75 + 2.5}{2} = 2.625$ \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+    
+    \vspace{0.5cm}
+    
+    Promediamos las diferencias para cada trimestre
+\end{frame}
+
+\begin{frame}{Interpretación de la Descomposición}
+    \begin{itemize}
+        \item \textbf{Tendencia:} Crecimiento sostenido de aproximadamente 0.25 mil unidades por trimestre
+        \item \textbf{Q1 y Q3:} Temporadas bajas (ventas por debajo de la tendencia)
+        \item \textbf{Q4:} Temporada alta con aproximadamente 2.6 mil unidades adicionales
+        \item \textbf{Q2:} Se mantiene cerca de la tendencia
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Suavizamiento Exponencial Simple}
+    \begin{center}
+        \Large{\textbf{Fórmula:}}
+        
+        \[
+        \hat{Y}_{t+1} = \alpha Y_t + (1-\alpha) \hat{Y}_t
+        \]
+        
+        donde $\alpha \in [0,1]$ es el parámetro de suavizamiento
+        
+        \vspace{0.5cm}
+        
+        \begin{itemize}
+            \item $\alpha$ cercano a 1: más peso a observaciones recientes
+            \item $\alpha$ cercano a 0: más peso a valores históricos
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Método de Holt (Tendencia Lineal)}
+    \textbf{Componentes:}
+    \begin{itemize}
+        \item \textbf{Nivel ($L_t$):} Valor base estimado de la serie
+        \item \textbf{Tendencia ($T_t$):} Cambio (pendiente) del nivel
+    \end{itemize}
+    
+    \vspace{0.5cm}
+    
+    \textbf{Ecuaciones:}
+    \begin{align*}
+    L_t &= \alpha Y_t + (1-\alpha)(L_{t-1} + T_{t-1}) \\
+    T_t &= \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1} \\
+    \hat{Y}_{t+h} &= L_t + h \cdot T_t
+    \end{align*}
+    
+    donde $\alpha$ controla el nivel y $\beta$ controla la tendencia
+\end{frame}
+
+\begin{frame}{Holt-Winters: Modelo Aditivo}
+    \begin{center}
+        \textbf{Cuando la estacionalidad es constante:}
+        
+        \vspace{0.3cm}
+        
+        \small
+        \begin{align*}
+        L_t &= \alpha (Y_t - S_{t-s}) + (1-\alpha)(L_{t-1} + T_{t-1}) \\
+        T_t &= \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1} \\
+        S_t &= \gamma(Y_t - L_t) + (1-\gamma)S_{t-s} \\
+        \hat{Y}_{t+h} &= L_t + h \cdot T_t + S_{t+h-s}
+        \end{align*}
+        
+        \vspace{0.3cm}
+        
+        donde $s$ es la longitud del período estacional (ej: 12 para datos mensuales)
+    \end{center}
+\end{frame}
+
+\begin{frame}{Holt-Winters: Modelo Multiplicativo}
+    \begin{center}
+        \textbf{Cuando la estacionalidad crece con el nivel:}
+        
+        \vspace{0.3cm}
+        
+        \small
+        \begin{align*}
+        L_t &= \alpha \frac{Y_t}{S_{t-s}} + (1-\alpha)(L_{t-1} + T_{t-1}) \\
+        T_t &= \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1} \\
+        S_t &= \gamma\frac{Y_t}{L_t} + (1-\gamma)S_{t-s} \\
+        \hat{Y}_{t+h} &= (L_t + h \cdot T_t) \times S_{t+h-s}
+        \end{align*}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Interpretación de los Parámetros}
+    \textbf{¿De dónde salen $\alpha$, $\beta$ y $\gamma$?}
+    
+    Se calculan automáticamente al ajustar el modelo. El software (por ejemplo, statsmodels en Python) encuentra los valores que minimizan el error de predicción en los datos históricos.
+    
+    \textbf{Interpretación:}
+    \begin{itemize}
+        \item \textbf{$\alpha$ (nivel):} Qué tan rápido se adapta al valor actual. Valores altos (0.7-0.9) reaccionan rápido a cambios
+        \item \textbf{$\beta$ (tendencia):} Qué tan rápido se adapta a cambios en la tendencia. Valores bajos (0.1-0.3) evitan fluctuaciones
+        \item \textbf{$\gamma$ (estacionalidad):} Qué tan rápido se adapta a cambios en patrones estacionales. Valores bajos (0.1-0.2) mantienen patrones estables
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Holt-Winters: Imports y Datos}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos mensuales con estacionalidad (24 meses)
+ventas = [112, 118, 132, 129, 121, 135, 148, 148, 136, 119,
+          104, 118, 115, 126, 141, 135, 125, 149, 170, 170,
+          158, 133, 114, 140]
+fechas = pd.date_range('2022-01', periods=24, freq='MS')
+ts = pd.Series(ventas, index=fechas)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Holt-Winters: Ajuste del Modelo}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Ajustar modelo Holt-Winters
+# seasonal_periods=12 indica estacionalidad anual
+# trend='add': tendencia aditiva
+# seasonal='add': estacionalidad aditiva
+modelo = ExponentialSmoothing(
+    ts,
+    seasonal_periods=12,
+    trend='add',
+    seasonal='add'
+)
+
+# Entrenar el modelo
+fit = modelo.fit()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Holt-Winters: Predicciones y Parámetros}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Hacer predicciones para los proximos 6 meses
+predicciones = fit.forecast(steps=6)
+
+print("Parametros estimados:")
+print(f"Alpha (nivel): {fit.params['smoothing_level']:.3f}")
+print(f"Beta (tendencia): {fit.params['smoothing_trend']:.3f}")
+print(f"Gamma (estacionalidad): {fit.params['smoothing_seasonal']:.3f}")
+
+print("\nPredicciones para los proximos 6 meses:")
+print(predicciones)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Holt-Winters: Visualización}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Visualizacion
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos', marker='o')
+plt.plot(fit.fittedvalues, label='Ajuste del Modelo',
+         linestyle='--', linewidth=2)
+plt.plot(predicciones, label='Predicciones',
+         marker='s', linestyle='--', linewidth=2)
+plt.xlabel('Fecha')
+plt.ylabel('Ventas')
+plt.title('Modelo Holt-Winters')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Cuándo usar Holt-Winters}
+    \begin{itemize}
+        \item Series con tendencia y estacionalidad bien definidas
+        \item Datos mensuales, trimestrales o semanales con patrones repetitivos
+        \item Pronósticos a corto o mediano plazo (hasta uno o dos ciclos estacionales)
+        \item Sectores como retail, turismo o energía con patrones estacionales marcados
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitaciones de Holt-Winters}
+    \begin{itemize}
+        \item Supone que los patrones del pasado se mantendrán en el futuro
+        \item No considera el impacto de variables externas (promociones, cambios económicos)
+        \item La incertidumbre de las predicciones aumenta rápidamente con el horizonte
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{ARIMA}
+    \begin{center}
+        \Large{\textbf{AutoRegressive Integrated Moving Average}}
+        
+        \vspace{0.8cm}
+        
+        Familia de modelos estadísticos para análisis y predicción de series temporales
+        
+        \vspace{0.5cm}
+        
+        Más sofisticado que métodos anteriores
+        
+        \vspace{0.5cm}
+        
+        Puede capturar una mayor variedad de patrones
+    \end{center}
+\end{frame}
+
+\begin{frame}{Estacionaridad}
+    \textbf{Definición:} Una serie es estacionaria cuando sus propiedades estadísticas (media, varianza) no cambian con el tiempo
+    
+    \vspace{0.5cm}
+    
+    \textbf{Señales de no estacionaridad:}
+    \begin{itemize}
+        \item Tendencia clara (creciente o decreciente)
+        \item Varianza que cambia con el tiempo
+        \item Estacionalidad fuerte
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Diferenciación}
+    \begin{center}
+        \textbf{Primera diferencia:}
+        \[
+        \Delta Y_t = Y_t - Y_{t-1}
+        \]
+        
+        \textbf{Segunda diferencia:}
+        \[
+        \Delta^2 Y_t = \Delta Y_t - \Delta Y_{t-1} = (Y_t - Y_{t-1}) - (Y_{t-1} - Y_{t-2})
+        \]
+    \end{center}
+    
+    \vspace{0.3cm}
+    
+    \textbf{¿Cuántas diferencias usar?}
+    \begin{itemize}
+        \item $d=1$: cuando la serie tiene tendencia lineal
+        \item $d=2$: cuando después de la primera diferencia todavía hay tendencia
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{AR(p) - AutoRegresivo}
+    \begin{center}
+        \Large{\textbf{Componente Autoregresivo}}
+        
+        \[
+        Y_t = c + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \cdots + \phi_p Y_{t-p} + \epsilon_t
+        \]
+        
+        El valor actual depende de los últimos $p$ valores pasados
+        
+        \vspace{0.3cm}
+        
+        Los coeficientes $\phi_1, \ldots, \phi_p$ se calculan automáticamente al ajustar el modelo
+    \end{center}
+\end{frame}
+
+\begin{frame}{I(d) - Integrado}
+    \begin{center}
+        \Large{\textbf{Componente de Integración}}
+        
+        Indica cuántas veces diferenciamos la serie para hacerla estacionaria:
+        
+        
+        \begin{itemize}
+            \item $d=0$: La serie ya es estacionaria
+            \item $d=1$: Aplicamos primera diferencia
+            \item $d=2$: Aplicamos segunda diferencia (raro en la práctica)
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}{MA(q) - Media Móvil}
+    \begin{center}
+        \Large{\textbf{Componente de Media Móvil}}
+        
+        \[
+        Y_t = \mu + \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2} + \cdots + \theta_q \epsilon_{t-q}
+        \]
+        
+        El valor actual depende de shocks o errores aleatorios de los últimos $q$ períodos
+        
+        \vspace{0.3cm}
+        
+        Los coeficientes $\theta_1, \ldots, \theta_q$ se calculan automáticamente
+    \end{center}
+\end{frame}
+
+\begin{frame}{Modelo ARIMA(p,d,q) Completo}
+    \begin{center}
+        \Large{\textbf{Combinando todo:}}
+        
+        \[
+        \Delta^d Y_t = c + \sum_{i=1}^{p} \phi_i \Delta^d Y_{t-i} + \sum_{j=1}^{q} \theta_j \epsilon_{t-j} + \epsilon_t
+        \]
+        
+        \vspace{0.8cm}
+        
+        Definido sobre la serie diferenciada $d$ veces
+    \end{center}
+\end{frame}
+
+\begin{frame}{Determinar $d$ (diferenciación)}
+    \begin{itemize}
+        \item \textbf{Visualizar la serie:} Si tiene tendencia, probablemente necesite $d=1$ o $d=2$
+        \item \textbf{Pruebas estadísticas:} Tests como ADF (Augmented Dickey-Fuller) o KPSS indican si la serie es estacionaria
+        \item \textbf{Regla práctica:} Empezar con $d=1$ y verificar si la serie diferenciada parece estacionaria
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{ACF y PACF}
+    \textbf{¿Qué son?}
+    
+    Son métricas que miden la dependencia temporal de una serie. Nos ayudan a entender cómo se relaciona cada valor con sus valores pasados.
+    
+    \textbf{ACF (Autocorrelation Function):}
+    \begin{itemize}
+        \item Muestra la correlación entre $Y_t$ y $Y_{t-k}$ para diferentes lags $k$
+        \item Si decae lentamente, sugiere diferenciación o términos MA
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{PACF (Partial Autocorrelation Function):}
+    \begin{itemize}
+        \item Muestra la correlación directa entre $Y_t$ y $Y_{t-k}$ controlando por valores intermedios
+        \item Picos significativos sugieren términos AR
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Criterios de Información}
+    \textbf{¿Qué son?}
+    
+    Son métricas que nos permiten comparar diferentes modelos ARIMA. Balancean el ajuste del modelo (qué tan bien explica los datos) con su complejidad (número de parámetros). Nos ayudan a elegir el mejor modelo entre varias opciones.
+    
+    \vspace{0.3cm}
+    
+    \textbf{AIC (Akaike Information Criterion):}
+    \begin{itemize}
+        \item Penaliza modelos complejos pero menos que BIC
+        \item Útil para comparar modelos con diferentes números de parámetros
+        \item Menor AIC indica mejor modelo
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    
+    \textbf{BIC (Bayesian Information Criterion):}
+    \begin{itemize}
+        \item Penaliza más la complejidad que AIC
+        \item Favorece modelos más simples
+        \item También menor es mejor
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Auto ARIMA}
+    \begin{itemize}
+        \item Implementado en Python con \texttt{pmdarima}
+        \item Prueba automáticamente diferentes combinaciones de $p$, $d$ y $q$
+        \item Selecciona el modelo con mejor AIC
+        \item Muy útil cuando no estamos seguros de los valores
+        \item Es importante entender qué está haciendo para interpretar los resultados
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{ARIMA: Imports y Datos}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos de ejemplo: ventas mensuales
+ventas = [200, 205, 210, 215, 218, 220, 225, 230, 232, 235,
+          240, 245, 242, 248, 253, 258, 260, 265, 270, 275,
+          278, 280, 285, 290]
+fechas = pd.date_range('2022-01', periods=24, freq='MS')
+ts = pd.Series(ventas, index=fechas)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ARIMA: Visualizar ACF y PACF}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Visualizar ACF y PACF para diagnostico
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+plot_acf(ts, ax=axes[0], lags=10)
+plot_pacf(ts, ax=axes[1], lags=10)
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ARIMA: Ajustar Modelo}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Ajustar modelo ARIMA(1,1,1)
+# p=1: un termino autoregresivo
+# d=1: una diferenciacion
+# q=1: un termino de media movil
+modelo = ARIMA(ts, order=(1, 1, 1))
+fit = modelo.fit()
+
+# Resumen del modelo
+print(fit.summary())
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ARIMA: Predicciones}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Hacer predicciones para los proximos 6 meses
+predicciones = fit.forecast(steps=6)
+print("\nPredicciones:")
+print(predicciones)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ARIMA: Visualización}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Visualizacion
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos', marker='o')
+plt.plot(fit.fittedvalues, label='Ajuste ARIMA',
+         linestyle='--', linewidth=2)
+plt.plot(predicciones, label='Predicciones',
+         marker='s', linestyle='--', linewidth=2)
+plt.xlabel('Fecha')
+plt.ylabel('Ventas')
+plt.title('Modelo ARIMA(1,1,1)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Auto ARIMA}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from pmdarima import auto_arima
+
+# Buscar el mejor modelo automaticamente
+modelo_auto = auto_arima(
+    ts,
+    start_p=0, max_p=3,
+    start_q=0, max_q=3,
+    d=None,  # Se determina automaticamente
+    seasonal=False,
+    trace=True,  # Muestra el proceso de busqueda
+    error_action='ignore',
+    suppress_warnings=True,
+    stepwise=True
+)
+
+print(modelo_auto.summary())
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Auto ARIMA: Predicciones}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Predicciones
+predicciones_auto = modelo_auto.predict(n_periods=6)
+print("\nPredicciones con Auto ARIMA:")
+print(predicciones_auto)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Train-Test Split Temporal}
+    \begin{center}
+        \Large{\textbf{¡IMPORTANTE!}}
+        
+        \vspace{0.8cm}
+        
+        En series temporales \textbf{NO podemos mezclar los datos}
+        
+        \vspace{0.5cm}
+        
+        Debemos respetar el orden temporal
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Train-Test Split: Correcto vs Incorrecto}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# CORRECTO para series temporales
+train_size = int(len(ts) * 0.8)
+train = ts[:train_size]
+test = ts[train_size:]
+
+# INCORRECTO (no hacer esto)
+# from sklearn.model_selection import train_test_split
+# train, test = train_test_split(ts, test_size=0.2)  # NO!
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Métricas de Evaluación}
+    \begin{itemize}
+        \item \textbf{MAE (Mean Absolute Error):}
+        \[
+        \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |Y_i - \hat{Y}_i|
+        \]
+        \item \textbf{MSE (Mean Squared Error):}
+        \[
+        \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2
+        \]
+        \item \textbf{RMSE (Root Mean Squared Error):}
+        \[
+        \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2}
+        \]
+        \item \textbf{MAPE (Mean Absolute Percentage Error):}
+        \[
+        \text{MAPE} = \frac{100\%}{n} \sum_{i=1}^{n} \left|\frac{Y_i - \hat{Y}_i}{Y_i}\right|
+        \]
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Validation para Series Temporales}
+    \begin{center}
+        \Large{\textbf{¡IMPORTANTE!}}
+        
+        \vspace{0.8cm}
+        
+        \textbf{NO podemos usar cross-validation tradicional}
+        
+        \vspace{0.5cm}
+        
+        Mezclar los datos violaría la dependencia temporal. Estamos con información del futuro alimentando al pasado.
+        
+        \vspace{0.5cm}
+        
+        Usamos \textbf{Time Series Cross-Validation}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Rolling Window (Ventana Móvil)}
+    \begin{center}
+        \textbf{El tamaño del train se mantiene constante}
+        
+        En cada fold, ``deslizamos'' la ventana hacia adelante
+        
+        \vspace{0.5cm}
+        
+        \begin{itemize}
+            \item \textbf{Fold 1:} Entrenar con meses 1-6, probar con meses 7-8
+            \item \textbf{Fold 2:} Entrenar con meses 3-8, probar con meses 9-10
+            \item \textbf{Fold 3:} Entrenar con meses 5-10, probar con meses 11-12
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        El tamaño del entrenamiento siempre es 6 meses
+    \end{center}
+\end{frame}
+
+\begin{frame}{Expanding Window (Ventana Expansiva)}
+    \begin{center}
+        \textbf{El tamaño del train crece en cada fold}
+        
+        El inicio se mantiene fijo y solo avanzamos el final
+        
+        \vspace{0.5cm}
+        
+        \begin{itemize}
+            \item \textbf{Fold 1:} Entrenar con meses 1-4, probar con meses 5-6
+            \item \textbf{Fold 2:} Entrenar con meses 1-6, probar con meses 7-8
+            \item \textbf{Fold 3:} Entrenar con meses 1-8, probar con meses 9-10
+            \item \textbf{Fold 4:} Entrenar con meses 1-10, probar con meses 11-12
+        \end{itemize}
+        
+        \vspace{0.5cm}
+        
+        Siempre empezamos desde el mes 1
+    \end{center}
+\end{frame}
+
+\begin{frame}{¿Cuándo usar cada una?}
+    \begin{itemize}
+        \item \textbf{Rolling Window:} Útil cuando queremos evaluar el desempeño con una cantidad fija de datos históricos. Simula mejor el escenario real donde tenemos una ventana de tiempo limitada
+        \item \textbf{Expanding Window:} Útil cuando queremos aprovechar toda la información histórica disponible. Simula mejor el caso donde acumulamos datos a lo largo del tiempo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{TimeSeriesSplit: Setup}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+# Configurar cross-validation temporal
+# n_splits=5 crea 5 folds
+tscv = TimeSeriesSplit(n_splits=5)
+
+mae_scores = []
+rmse_scores = []
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{TimeSeriesSplit: Loop}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+for fold, (train_index, test_index) in enumerate(tscv.split(ts)):
+    train = ts.iloc[train_index]
+    test = ts.iloc[test_index]
+    
+    print(f"Fold {fold+1}: Train size={len(train)}, Test size={len(test)}")
+
+    # Entrenar modelo (ejemplo con ARIMA)
+    modelo = ARIMA(train, order=(1,1,1))
+    fit = modelo.fit()
+
+    # Predecir
+    predicciones = fit.forecast(steps=len(test))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{TimeSeriesSplit: Métricas}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+    # Calcular metricas
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mean_squared_error(test, predicciones))
+
+    mae_scores.append(mae)
+    rmse_scores.append(rmse)
+    print(f"  MAE: {mae:.2f}, RMSE: {rmse:.2f}")
+
+print(f"\nMAE promedio: {np.mean(mae_scores):.2f} (+/- {np.std(mae_scores):.2f})")
+print(f"RMSE promedio: {np.mean(rmse_scores):.2f} (+/- {np.std(rmse_scores):.2f})")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Expanding Window: Implementación Manual}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Expanding window: el train crece en cada iteracion
+train_size_initial = int(len(ts) * 0.3)  # Empezar con 30% de los datos
+n_folds = 5
+
+mae_scores = []
+rmse_scores = []
+
+for i in range(n_folds):
+    # El train crece en cada iteracion
+    train_end = train_size_initial + i * (len(ts) - train_size_initial) // n_folds
+    test_start = train_end
+    test_end = train_end + (len(ts) - train_size_initial) // n_folds
+    
+    train = ts[:train_end]
+    test = ts[test_start:test_end]
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Expanding Window: Evaluación}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+    # Entrenar y evaluar modelo
+    modelo = ARIMA(train, order=(1,1,1))
+    fit = modelo.fit()
+    predicciones = fit.forecast(steps=len(test))
+    
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mean_squared_error(test, predicciones))
+    
+    mae_scores.append(mae)
+    rmse_scores.append(rmse)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Comparación de Modelos: Setup}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+# Dividir datos
+train = ts[:18]
+test = ts[18:]
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Comparación de Modelos: Modelo 1 - Media Móvil}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Modelo 1: Media Movil Simple
+sma_pred = train.rolling(window=3).mean().iloc[-1]
+sma_pred = [sma_pred] * len(test)  # Prediccion constante
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Comparación de Modelos: Modelo 2 - Holt-Winters}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Modelo 2: Holt-Winters
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+hw_model = ExponentialSmoothing(train, trend='add', seasonal='add',
+                                 seasonal_periods=12).fit()
+hw_pred = hw_model.forecast(steps=len(test))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Comparación de Modelos: Modelo 3 - ARIMA}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Modelo 3: ARIMA
+arima_model = ARIMA(train, order=(1,1,1)).fit()
+arima_pred = arima_model.forecast(steps=len(test))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Comparación de Modelos: Calcular Métricas}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# Calcular metricas
+resultados = {
+    'Modelo': ['Media Movil', 'Holt-Winters', 'ARIMA'],
+    'MAE': [
+        mean_absolute_error(test, sma_pred),
+        mean_absolute_error(test, hw_pred),
+        mean_absolute_error(test, arima_pred)
+    ],
+    'RMSE': [
+        np.sqrt(mean_squared_error(test, sma_pred)),
+        np.sqrt(mean_squared_error(test, hw_pred)),
+        np.sqrt(mean_squared_error(test, arima_pred))
+    ]
+}
+
+df_resultados = pd.DataFrame(resultados)
+print(df_resultados)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Intervalos de Confianza}
+    \begin{itemize}
+        \item Los modelos estadísticos como ARIMA y Holt-Winters proporcionan intervalos de confianza
+        \item Útiles para cuantificar la incertidumbre de las predicciones
+        \item Típicamente se usan intervalos del 95\%
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Intervalos de Confianza: ARIMA}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+# ARIMA con intervalos de confianza
+predicciones_arima = fit.get_forecast(steps=6)
+pred_mean = predicciones_arima.predicted_mean
+pred_ci = predicciones_arima.conf_int(alpha=0.05)  # 95% confianza
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Intervalos de Confianza: Visualización}
+    \begin{lstlisting}[numbers=left, numbersep=5pt]
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos')
+plt.plot(pred_mean, label='Prediccion', color='red')
+plt.fill_between(pred_ci.index,
+                 pred_ci.iloc[:, 0],
+                 pred_ci.iloc[:, 1],
+                 color='red', alpha=0.3,
+                 label='Intervalo 95%')
+plt.legend()
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}
+

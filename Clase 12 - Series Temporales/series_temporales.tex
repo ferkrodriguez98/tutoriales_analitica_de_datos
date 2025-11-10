@@ -1,0 +1,981 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}  
+\usepackage[T1]{fontenc}     
+\usepackage{lmodern}         
+
+\begin{document}
+
+% Título y materia
+\begin{center}
+  {\LARGE \textbf{Series Temporales}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{Introducción a Series Temporales}
+
+Una \textbf{serie temporal} (o serie de tiempo) es una secuencia de observaciones de una variable medidas a lo largo del tiempo en intervalos regulares. A diferencia de los datos que venimos viendo en clases anteriores (donde cada observación es independiente), en las series temporales el orden de las observaciones importa y existe una dependencia temporal entre ellas.
+
+\subsection{Ejemplos de Series Temporales}
+
+Las series temporales aparecen en múltiples dominios:
+
+\begin{itemize}
+    \item \textbf{Finanzas:} Precio de acciones, tipo de cambio, índices bursátiles.
+    \item \textbf{Economía:} PBI trimestral, tasa de desempleo, inflación mensual.
+    \item \textbf{Retail:} Ventas diarias de productos, demanda de servicios
+    \item \textbf{Clima:} Temperatura diaria, precipitaciones mensuales.
+    \item \textbf{Tecnología:} Tráfico web, uso de CPU, número de usuarios activos.
+\end{itemize}
+
+\subsection{Características Principales}
+
+Las series temporales tienen tres características fundamentales que las distinguen de otros tipos de datos:
+
+\begin{enumerate}
+    \item \textbf{Dependencia temporal:} El valor en el tiempo $t$ puede depender de valores en tiempos anteriores $t-1, t-2, \ldots$
+
+    \item \textbf{Autocorrelación:} La correlación de una variable consigo misma en diferentes momentos del tiempo. Por ejemplo, si hace calor hoy, es probable que mañana también haga calor.
+
+    \item \textbf{Orden:} El orden de las observaciones no puede alterarse sin perder información. No podemos mezclar las observaciones como haríamos con un dataset tradicional.
+\end{enumerate}
+
+\subsection{Análisis Descriptivo vs Predictivo}
+
+Cuando trabajamos con series temporales, los objetivos principales suelen encuadrarse en dos enfoques: el análisis descriptivo y el análisis predictivo. El análisis descriptivo se orienta a entender los patrones históricos y tendencias de la serie, identificar estacionalidades y ciclos, detectar anomalías o valores atípicos y descomponer la serie en sus diferentes componentes. Por su parte, el análisis predictivo (o forecasting) tiene como propósito predecir valores futuros de la serie, estimar la demanda futura para fines de planificación, proyectar tendencias tanto a corto como a largo plazo, y generar intervalos de confianza para las predicciones.
+
+\vspace{0.5em}
+
+Ambos enfoques son complementarios: comprender la estructura de la serie mediante el análisis descriptivo resulta fundamental para construir mejores modelos de predicción en el análisis predictivo.
+
+\section{Componentes de una Serie Temporal}
+
+Una serie temporal $Y_t$ se puede descomponer en cuatro componentes principales:
+
+\begin{itemize}
+    \item \textbf{Tendencia ($T_t$):} Es el comportamiento de largo plazo de la serie. Representa el crecimiento o decrecimiento sostenido a lo largo del tiempo. Por ejemplo, el aumento poblacional o el crecimiento de ventas de una empresa.
+
+    \item \textbf{Ciclo ($C_t$):} Son fluctuaciones de mediano plazo que no tienen una frecuencia fija. En economía, los ciclos de expansión y recesión suelen durar varios años. A menudo se combina con la tendencia en un componente $T_t \cdot C_t$.
+
+    \item \textbf{Estacionalidad ($S_t$):} Son patrones que se repiten con periodicidad fija (mensual, trimestral, anual). Por ejemplo, mayores ventas en diciembre, más consumo eléctrico en verano/invierno, o picos de tráfico web los fines de semana.
+
+    \item \textbf{Ruido ($\epsilon_t$):} Es la componente aleatoria o irregular que no puede explicarse por las otras componentes. Representa variaciones impredecibles debidas a eventos aleatorios.
+\end{itemize}
+
+\section{Media Móvil}
+
+La \textbf{media móvil} (moving average) es uno de los métodos más simples para suavizar una serie temporal y hacer predicciones. La idea es promediar las últimas $k$ observaciones para eliminar el ruido y capturar la tendencia.
+
+\subsection{Media Móvil Simple (SMA)}
+
+La media móvil simple de orden $k$ en el tiempo $t$ se calcula como:
+
+\[
+\text{SMA}_k(t) = \frac{1}{k} \sum_{i=0}^{k-1} Y_{t-i} = \frac{Y_t + Y_{t-1} + \cdots + Y_{t-k+1}}{k}
+\]
+
+Para predecir el valor en $t+1$, usamos:
+
+\[
+\hat{Y}_{t+1} = \text{SMA}_k(t)
+\]
+
+\textbf{Importante:} Para predecir más de un paso adelante (por ejemplo, $t+2$, $t+3$, etc.), la media móvil simple siempre usa el mismo valor: $\hat{Y}_{t+h} = \text{SMA}_k(t)$ para cualquier $h \geq 1$. Esto significa que todas las predicciones futuras serán iguales al último promedio calculado, lo cual es una limitación importante del método. Solo es útil para predicciones a muy corto plazo (1-2 pasos adelante).
+
+\subsubsection{Elección de $k$:}
+\begin{itemize}
+    \item $k$ pequeño (3-5): Responde rápido a cambios, pero más sensible al ruido
+    \item $k$ grande (10-20): Suaviza más, pero responde lento a cambios reales
+\end{itemize}
+
+\subsection{Ejercicio: Cálculo Manual de Media Móvil}
+
+Consideremos las siguientes ventas diarias de un producto (en unidades):
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Día} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+\hline
+\textbf{Ventas} & 23 & 27 & 24 & 30 & 28 & 26 & 31 & 29 & 27 & 33 \\
+\hline
+\end{tabular}
+\end{center}
+
+Calculemos la media móvil de orden $k=3$:
+
+\begin{itemize}
+    \item \textbf{Día 3:} $\text{SMA}_3(3) = \frac{23 + 27 + 24}{3} = \frac{74}{3} = 24.67$
+
+    \item \textbf{Día 4:} $\text{SMA}_3(4) = \frac{27 + 24 + 30}{3} = \frac{81}{3} = 27.00$
+
+    \item \textbf{Día 5:} $\text{SMA}_3(5) = \frac{24 + 30 + 28}{3} = \frac{82}{3} = 27.33$
+
+    \item \textbf{Día 6:} $\text{SMA}_3(6) = \frac{30 + 28 + 26}{3} = \frac{84}{3} = 28.00$
+
+    \item \textbf{Día 7:} $\text{SMA}_3(7) = \frac{28 + 26 + 31}{3} = \frac{85}{3} = 28.33$
+
+    \item \textbf{Día 8:} $\text{SMA}_3(8) = \frac{26 + 31 + 29}{3} = \frac{86}{3} = 28.67$
+
+    \item \textbf{Día 9:} $\text{SMA}_3(9) = \frac{31 + 29 + 27}{3} = \frac{87}{3} = 29.00$
+
+    \item \textbf{Día 10:} $\text{SMA}_3(10) = \frac{29 + 27 + 33}{3} = \frac{89}{3} = 29.67$
+\end{itemize}
+
+\vspace{0.5em}
+
+\textbf{Predicción para el día 11:} $\hat{Y}_{11} = \text{SMA}_3(10) = 29.67 \approx 30$ unidades
+
+\vspace{0.5em}
+
+\textbf{Predicciones para días futuros:} Como no tenemos datos reales del día 11 en adelante, todas las predicciones futuras usan el mismo valor:
+\begin{itemize}
+    \item Día 11: $\hat{Y}_{11} = \text{SMA}_3(10) = 29.67$
+    \item Día 12: $\hat{Y}_{12} = \text{SMA}_3(10) = 29.67$ (mismo valor)
+    \item Día 13: $\hat{Y}_{13} = \text{SMA}_3(10) = 29.67$ (mismo valor)
+    \item Día 14: $\hat{Y}_{14} = \text{SMA}_3(10) = 29.67$ (mismo valor)
+\end{itemize}
+
+Por eso la media móvil simple solo es útil para predicciones a muy corto plazo. Para predicciones más lejanas, necesitamos métodos más sofisticados que puedan modelar tendencias y estacionalidad.
+
+\subsection{Media Móvil Ponderada (WMA)}
+
+En algunos casos queremos dar más peso a las observaciones recientes:
+
+\[
+\text{WMA}_k(t) = \sum_{i=0}^{k-1} w_i \cdot Y_{t-i}
+\]
+
+donde $w_i$ son los pesos (con $\sum w_i = 1$) y típicamente $w_0 > w_1 > \cdots > w_{k-1}$.
+
+Por ejemplo, para $k=3$ podríamos usar $w_0 = 0.5, w_1 = 0.3, w_2 = 0.2$:
+
+\[
+\text{WMA}_3(10) = 0.5 \times 33 + 0.3 \times 27 + 0.2 \times 29 = 16.5 + 8.1 + 5.8 = 30.4
+\]
+
+\subsection{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos del ejemplo
+ventas = [23, 27, 24, 30, 28, 26, 31, 29, 27, 33]
+dias = list(range(1, 11))
+
+# Crear serie temporal
+ts = pd.Series(ventas, index=dias)
+
+# Media movil simple de orden 3
+sma_3 = ts.rolling(window=3).mean()
+
+# Media movil simple de orden 5
+sma_5 = ts.rolling(window=5).mean()
+
+# Prediccion para el proximo periodo
+prediccion = sma_3.iloc[-1]
+print(f"Prediccion para dia 11: {prediccion:.2f}")
+
+# Visualizacion
+plt.figure(figsize=(10, 5))
+plt.plot(dias, ventas, 'o-', label='Ventas Reales', linewidth=2)
+plt.plot(dias, sma_3, 's--', label='SMA(3)', linewidth=2)
+plt.plot(dias, sma_5, '^--', label='SMA(5)', linewidth=2)
+plt.xlabel('Dia')
+plt.ylabel('Ventas')
+plt.title('Ventas con Medias Moviles')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+\end{lstlisting}
+
+\subsection{Modelos de Descomposición}
+
+Los componentes principales de una serie temporal dijimos que son:
+
+\begin{itemize}
+    \item \textbf{Tendencia} ($T_t$): el comportamiento a largo plazo o dirección general de la serie.
+    \item \textbf{Estacionalidad} ($S_t$): patrones que se repiten de forma regular en períodos específicos.
+    \item \textbf{Ruido o componente aleatorio} ($\epsilon_t$): las fluctuaciones impredecibles o residuales.
+\end{itemize}
+
+Existen dos formas principales de combinar estos componentes:
+
+\vspace{0.5em}
+
+\textbf{Modelo Aditivo:}
+\[
+Y_t = T_t + S_t + \epsilon_t
+\]
+
+Este modelo es apropiado cuando la magnitud de las variaciones estacionales es constante a lo largo del tiempo. Por ejemplo, si las ventas aumentan siempre en 1000 unidades en diciembre, independientemente del nivel base de ventas.
+
+\vspace{0.5em}
+
+\textbf{Modelo Multiplicativo:}
+\[
+Y_t = T_t \times S_t \times \epsilon_t
+\]
+
+Este modelo es apropiado cuando las variaciones estacionales son proporcionales al nivel de la serie. Por ejemplo, si las ventas aumentan un 20\% en diciembre, la cantidad absoluta dependerá del nivel de ventas base.
+
+\subsection{Ejercicio: Descomposición Manual de una Serie}
+
+Consideremos las siguientes ventas trimestrales (en miles de unidades) durante 3 años:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Año} & \textbf{Q1} & \textbf{Q2} & \textbf{Q3} & \textbf{Q4} \\
+\hline
+2021 & 10 & 12 & 11 & 15 \\
+2022 & 11 & 13 & 12 & 16 \\
+2023 & 12 & 14 & 13 & 17 \\
+\hline
+\end{tabular}
+\end{center}
+
+Vamos a descomponer esta serie usando un modelo aditivo.
+
+\subsubsection{Paso 1: Calcular la Tendencia}
+
+Usamos una media móvil centrada de 4 períodos (1 año completo). Para eliminar la estacionalidad anual, usamos una ventana que se desliza de 4 trimestres consecutivos. Como el orden es par, debemos elegir cómo balancear la ventana: podemos usar 2 trimestres anteriores + actual + 1 siguiente, o 1 anterior + actual + 2 siguientes. Elegimos la segunda opción (1 anterior + actual + 2 siguientes) porque así podemos empezar a calcular desde Q2 del primer año, sin necesidad de datos del año anterior. Ambas opciones cubren un año completo y eliminan la estacionalidad:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Trimestre} & \textbf{Ventas} & \textbf{Cálculo} & \textbf{Tendencia $T_t$} \\
+\hline
+2021-Q1 & 10 & - & - \\
+2021-Q2 & 12 & $\frac{10 + 12 + 11 + 15}{4}$ & 12.0 \\
+2021-Q3 & 11 & $\frac{12 + 11 + 15 + 11}{4}$ & 12.25 \\
+2021-Q4 & 15 & $\frac{11 + 15 + 11 + 13}{4}$ & 12.25 \\
+2022-Q1 & 11 & $\frac{15 + 11 + 13 + 12}{4}$ & 12.5 \\
+2022-Q2 & 13 & $\frac{11 + 13 + 12 + 16}{4}$ & 13.0 \\
+2022-Q3 & 12 & $\frac{13 + 12 + 16 + 12}{4}$ & 13.25 \\
+2022-Q4 & 16 & $\frac{12 + 16 + 12 + 14}{4}$ & 13.5 \\
+2023-Q1 & 12 & $\frac{16 + 12 + 14 + 13}{4}$ & 13.75 \\
+2023-Q2 & 14 & $\frac{12 + 14 + 13 + 17}{4}$ & 14.0 \\
+2023-Q3 & 13 & - & - \\
+2023-Q4 & 17 & - & - \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Paso 2: Calcular la Componente Estacional + Ruido}
+
+Restamos la tendencia de los valores observados: $Y_t - T_t$
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Trimestre} & \textbf{Ventas} & \textbf{Tendencia} & \textbf{$Y_t - T_t$} \\
+\hline
+2021-Q2 & 12 & 12.0 & 0.0 \\
+2021-Q3 & 11 & 12.25 & -1.25 \\
+2021-Q4 & 15 & 12.25 & 2.75 \\
+2022-Q1 & 11 & 12.5 & -1.5 \\
+2022-Q2 & 13 & 13.0 & 0.0 \\
+2022-Q3 & 12 & 13.25 & -1.25 \\
+2022-Q4 & 16 & 13.5 & 2.5 \\
+2023-Q1 & 12 & 13.75 & -1.75 \\
+2023-Q2 & 14 & 14.0 & 0.0 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Paso 3: Calcular Índices Estacionales}
+
+Promediamos las diferencias para cada trimestre:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Trimestre} & \textbf{Índice Estacional $S_t$} \\
+\hline
+Q1 & $\frac{-1.5 + (-1.75)}{2} = -1.625$ \\
+Q2 & $\frac{0.0 + 0.0 + 0.0}{3} = 0.0$ \\
+Q3 & $\frac{-1.25 + (-1.25)}{2} = -1.25$ \\
+Q4 & $\frac{2.75 + 2.5}{2} = 2.625$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Interpretación:}
+\begin{itemize}
+    \item La tendencia muestra un crecimiento sostenido de aproximadamente 0.25 mil unidades por trimestre
+    \item Q1 y Q3 tienen ventas por debajo de la tendencia (temporadas bajas)
+    \item Q4 es la temporada alta con aproximadamente 2.6 mil unidades adicionales
+    \item Q2 se mantiene cerca de la tendencia
+\end{itemize}
+
+\section{Holt-Winters}
+
+El método de Holt-Winters (también llamado \textbf{suavizamiento exponencial triple}) es una extensión del suavizamiento exponencial que permite modelar series con tendencia y estacionalidad simultáneamente. Vamos a construirlo paso a paso.
+
+\subsection{Suavizamiento Exponencial Simple}
+
+El suavizamiento exponencial simple es útil para series sin tendencia ni estacionalidad. La idea es dar más peso a las observaciones recientes:
+
+\[
+\hat{Y}_{t+1} = \alpha Y_t + (1-\alpha) \hat{Y}_t
+\]
+
+donde $\alpha \in [0,1]$ es el \textbf{parámetro de suavizamiento}:
+\begin{itemize}
+    \item $\alpha$ cercano a 1: más peso a observaciones recientes (reacciona rápido)
+    \item $\alpha$ cercano a 0: más peso a valores históricos (suaviza más)
+\end{itemize}
+
+Esta fórmula se puede reescribir como:
+\[
+\hat{Y}_{t+1} = \hat{Y}_t + \alpha(Y_t - \hat{Y}_t)
+\]
+
+Es decir, ajustamos la predicción anterior según el error cometido.
+
+\subsection{Método de Holt (Tendencia Lineal)}
+
+Holt extendió el método anterior para series con tendencia, proponiendo una versión doblemente suavizada del modelo. Esta versión agrega una ecuación adicional para modelar explícitamente la tendencia en la serie temporal. En el método de Holt, se tienen dos componentes principales que se actualizan recursivamente en cada periodo usando parámetros de suavizamiento independientes:
+
+\begin{itemize}
+    \item \textbf{Nivel ($L_t$):} representa el valor base estimado de la serie en el tiempo $t$.
+    \item \textbf{Tendencia ($T_t$):} estima el cambio (pendiente) del nivel a través del tiempo.
+\end{itemize}
+
+\textbf{Ecuación del nivel:}
+\[
+L_t = \alpha Y_t + (1-\alpha)(L_{t-1} + T_{t-1})
+\]
+
+\textbf{Ecuación de la tendencia:}
+\[
+T_t = \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1}
+\]
+
+\textbf{Predicción:}
+\[
+\hat{Y}_{t+h} = L_t + h \cdot T_t
+\]
+
+donde:
+\begin{itemize}
+    \item $L_t$ es el nivel (componente base) en el tiempo $t$
+    \item $T_t$ es la tendencia en el tiempo $t$
+    \item $\alpha$ controla el suavizamiento del nivel
+    \item $\beta$ controla el suavizamiento de la tendencia
+    \item $h$ es el horizonte de predicción (cuántos pasos adelante)
+\end{itemize}
+
+\subsection{Holt-Winters (Tendencia + Estacionalidad)}
+
+Pasa que después vino el amigo Winters y quiso sumarle un poco más de data y agrego una tercera ecuación para la estacionalidad. Recordemos primero que el nivel ($L_t$) es el valor que representa el promedio de la serie en el tiempo $t$ descontando la tendencia y la estacionalidad. Existen dos variantes dependiendo de si la estacionalidad es constante o si crece con el nivel:
+
+\vspace{0.5em}
+
+\textbf{Modelo Aditivo} (cuando la estacionalidad es constante):
+
+\begin{align*}
+L_t &= \alpha (Y_t - S_{t-s}) + (1-\alpha)(L_{t-1} + T_{t-1}) \\
+T_t &= \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1} \\
+S_t &= \gamma(Y_t - L_t) + (1-\gamma)S_{t-s} \\
+\hat{Y}_{t+h} &= L_t + h \cdot T_t + S_{t+h-s}
+\end{align*}
+
+\textbf{Modelo Multiplicativo} (cuando la estacionalidad crece con el nivel):
+
+\begin{align*}
+L_t &= \alpha \frac{Y_t}{S_{t-s}} + (1-\alpha)(L_{t-1} + T_{t-1}) \\
+T_t &= \beta(L_t - L_{t-1}) + (1-\beta)T_{t-1} \\
+S_t &= \gamma\frac{Y_t}{L_t} + (1-\gamma)S_{t-s} \\
+\hat{Y}_{t+h} &= (L_t + h \cdot T_t) \times S_{t+h-s}
+\end{align*}
+
+donde:
+\begin{itemize}
+    \item $s$ es la longitud del período estacional (ej: 12 para datos mensuales con estacionalidad anual)
+    \item $\gamma \in [0,1]$ controla el suavizamiento de la estacionalidad
+    \item $S_t$ es el índice estacional en el tiempo $t$
+\end{itemize}
+
+\subsection{Interpretación de los Parámetros}
+
+\begin{itemize}
+    \item \textbf{$\alpha$ (nivel):} Qué tan rápido se adapta al valor actual. Valores altos (0.7-0.9) hacen que el modelo reaccione rápido a cambios en el nivel.
+
+    \item \textbf{$\beta$ (tendencia):} Qué tan rápido se adapta a cambios en la tendencia. Valores bajos (0.1-0.3) evitan que la tendencia fluctúe mucho.
+
+    \item \textbf{$\gamma$ (estacionalidad):} Qué tan rápido se adapta a cambios en los patrones estacionales. Valores bajos (0.1-0.2) mantienen patrones estacionales estables.
+\end{itemize}
+
+\subsection{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos mensuales con estacionalidad (24 meses)
+ventas = [112, 118, 132, 129, 121, 135, 148, 148, 136, 119,
+          104, 118, 115, 126, 141, 135, 125, 149, 170, 170,
+          158, 133, 114, 140]
+fechas = pd.date_range('2022-01', periods=24, freq='MS')
+ts = pd.Series(ventas, index=fechas)
+
+# Ajustar modelo Holt-Winters
+# seasonal_periods=12 indica estacionalidad anual
+# trend='add': tendencia aditiva
+# seasonal='add': estacionalidad aditiva
+modelo = ExponentialSmoothing(
+    ts,
+    seasonal_periods=12,
+    trend='add',
+    seasonal='add'
+)
+
+# Entrenar el modelo
+fit = modelo.fit()
+
+# Hacer predicciones para los proximos 6 meses
+predicciones = fit.forecast(steps=6)
+
+print("Parametros estimados:")
+print(f"Alpha (nivel): {fit.params['smoothing_level']:.3f}")
+print(f"Beta (tendencia): {fit.params['smoothing_trend']:.3f}")
+print(f"Gamma (estacionalidad): {fit.params['smoothing_seasonal']:.3f}")
+
+print("\nPredicciones para los proximos 6 meses:")
+print(predicciones)
+
+# Visualizacion
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos', marker='o')
+plt.plot(fit.fittedvalues, label='Ajuste del Modelo',
+         linestyle='--', linewidth=2)
+plt.plot(predicciones, label='Predicciones',
+         marker='s', linestyle='--', linewidth=2)
+plt.xlabel('Fecha')
+plt.ylabel('Ventas')
+plt.title('Modelo Holt-Winters')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+\end{lstlisting}
+
+\subsection{Cuándo usar Holt-Winters}
+
+El método de Holt-Winters es especialmente útil para series temporales que presentan tendencia y estacionalidad bien definidas, como datos mensuales, trimestrales o semanales con patrones repetitivos. Es comúnmente empleado en contextos donde se requieren pronósticos a corto o mediano plazo (hasta uno o dos ciclos estacionales completos), por ejemplo en sectores como retail, turismo o energía, en los que los patrones estacionales son muy marcados.
+
+\subsection{Limitaciones}
+
+Holt-Winters tiene limitaciones importantes: supone que los patrones observados en el pasado se mantendrán en el futuro y no considera el impacto de variables externas (como promociones, cambios económicos u otros factores). Además, la incertidumbre de las predicciones tiende a incrementarse rápidamente a medida que se pronostican períodos más alejados.
+
+\section{ARIMA}
+
+ARIMA (AutoRegressive Integrated Moving Average) es una familia de modelos estadísticos muy utilizada para análisis y predicción de series temporales. Es más sofisticado que los métodos anteriores y puede capturar una mayor variedad de patrones.
+
+\subsection{Estacionaridad}
+
+Antes de usar ARIMA, necesitamos entender el concepto de \textbf{estacionaridad}. Una serie es estacionaria cuando sus propiedades estadísticas (media, varianza) no cambian con el tiempo.
+
+\vspace{0.5em}
+
+\textbf{Señales de no estacionaridad:}
+\begin{itemize}
+    \item Tendencia clara (creciente o decreciente)
+    \item Varianza que cambia con el tiempo
+    \item Estacionalidad fuerte
+\end{itemize}
+
+Para hacer estacionaria una serie, usamos \textbf{diferenciación}: restamos cada observación de la anterior.
+
+\vspace{0.5em}
+
+\textbf{Primera diferencia:}
+\[
+\Delta Y_t = Y_t - Y_{t-1}
+\]
+
+\textbf{Segunda diferencia:}
+\[
+\Delta^2 Y_t = \Delta Y_t - \Delta Y_{t-1} = (Y_t - Y_{t-1}) - (Y_{t-1} - Y_{t-2})
+\]
+
+Donde $\Delta^2 Y_t$ es la diferencia de las diferencias, es decir, aplicamos el operador diferencia dos veces consecutivas.
+
+\vspace{0.5em}
+
+\textbf{¿Cuántas diferencias usar?} Usamos primera diferencia ($d=1$) cuando la serie tiene tendencia lineal. Usamos segunda diferencia ($d=2$) cuando después de la primera diferencia todavía hay tendencia (tendencia no lineal o acelerada). En la práctica, raramente se necesitan más de dos diferencias, ya que aplicar demasiadas puede eliminar información útil e introducir ruido artificial. Para determinar $d$, podemos visualizar la serie diferenciada (debe parecer estacionaria, sin tendencia clara) o usar pruebas estadísticas como ADF o KPSS.
+
+\subsection{Componentes de ARIMA}
+
+ARIMA tiene tres componentes, denotados como ARIMA(p, d, q):
+
+\subsubsection{AR(p) - AutoRegresivo}
+
+El componente autoregresivo predice el valor actual como una combinación lineal de $p$ valores pasados:
+
+\[
+Y_t = c + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \cdots + \phi_p Y_{t-p} + \epsilon_t
+\]
+
+donde $\phi_1, \ldots, \phi_p$ son los coeficientes y $\epsilon_t$ es ruido blanco.
+
+\vspace{0.5em}
+
+\textbf{¿De dónde salen los coeficientes y el ruido blanco?} Cuando ajustamos un modelo ARIMA a nuestros datos, el software (por ejemplo, Python con statsmodels) \textbf{calcula automáticamente} los valores de los coeficientes $\phi_1, \ldots, \phi_p$ que mejor explican los datos históricos. Es similar a una regresión lineal: los coeficientes se encuentran minimizando el error entre los valores reales y los predichos. El ruido blanco $\epsilon_t$ se agrega a la ecuación para que ``dé'', es decir, para que el lado izquierdo ($Y_t$) sea igual al lado derecho (la combinación lineal de valores pasados). Sin el ruido blanco, la ecuación no se cumpliría exactamente porque siempre hay una diferencia entre el valor real y lo que predice el modelo usando solo los valores pasados. Esta diferencia es aleatoria e impredecible, por eso se llama ``ruido''.
+
+\vspace{0.5em}
+
+\textbf{Intuición:} El valor de hoy depende de los valores de los últimos $p$ días. Por ejemplo, si AR(1) con $\phi_1 = 0.7$, entonces el 70\% del valor de hoy se explica por el valor de ayer.
+
+\subsubsection{I(d) - Integrado}
+
+El componente de integración indica cuántas veces diferenciamos la serie para hacerla estacionaria:
+
+\begin{itemize}
+    \item $d=0$: La serie ya es estacionaria
+    \item $d=1$: Aplicamos primera diferencia
+    \item $d=2$: Aplicamos segunda diferencia (raro en la práctica)
+\end{itemize}
+
+\subsubsection{MA(q) - Media Móvil}
+
+El componente de media móvil modela el valor actual como una combinación lineal de $q$ errores pasados:
+
+\[
+Y_t = \mu + \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2} + \cdots + \theta_q \epsilon_{t-q}
+\]
+
+donde $\theta_1, \ldots, \theta_q$ son los coeficientes y $\epsilon_t$ son los errores (ruido blanco, igual que en AR).
+
+\vspace{0.5em}
+
+\textbf{¿De dónde salen los coeficientes?} Al igual que en AR, los coeficientes $\theta_1, \ldots, \theta_q$ se calculan automáticamente cuando ajustamos el modelo, encontrando los valores que mejor explican los datos históricos.
+
+\vspace{0.5em}
+
+\textbf{Intuición:} El valor de hoy depende de shocks o errores aleatorios de los últimos $q$ períodos.
+
+\subsection{Modelo ARIMA(p,d,q) Completo}
+
+Combinando todo, un modelo ARIMA(p,d,q) se define sobre la serie diferenciada $d$ veces:
+
+\[
+\Delta^d Y_t = c + \sum_{i=1}^{p} \phi_i \Delta^d Y_{t-i} + \sum_{j=1}^{q} \theta_j \epsilon_{t-j} + \epsilon_t
+\]
+
+\subsection{Selección de Parámetros}
+
+Elegir los valores correctos de $p$, $d$ y $q$ es crucial para tener un buen modelo ARIMA. Existen varias estrategias:
+
+\subsubsection{Determinar $d$ (diferenciación)}
+
+Como vimos antes, $d$ se determina según la estacionaridad de la serie:
+\begin{itemize}
+    \item Visualizar la serie: si tiene tendencia, probablemente necesite $d=1$ o $d=2$
+    \item Pruebas estadísticas: tests como ADF (Augmented Dickey-Fuller) o KPSS indican si la serie es estacionaria
+    \item Regla práctica: empezar con $d=1$ y verificar si la serie diferenciada parece estacionaria
+\end{itemize}
+
+\subsubsection{Determinar $p$ y $q$ usando ACF y PACF}
+
+Los gráficos de autocorrelación (ACF) y autocorrelación parcial (PACF) ayudan a identificar $p$ y $q$:
+
+\textbf{ACF (Autocorrelation Function):} Muestra la correlación entre $Y_t$ y $Y_{t-k}$ para diferentes lags $k$. Si el ACF decae lentamente (muchos lags significativos), sugiere que necesitamos diferenciación o términos MA.
+
+\textbf{PACF (Partial Autocorrelation Function):} Muestra la correlación directa entre $Y_t$ y $Y_{t-k}$ controlando por los valores intermedios. Los picos significativos en el PACF sugieren términos AR.
+
+\textbf{Reglas prácticas:}
+\begin{itemize}
+    \item Si el PACF tiene un ``corte'' después del lag $p$ (valores no significativos después), entonces $p$ es el número de lags significativos
+    \item Si el ACF tiene un ``corte'' después del lag $q$, entonces $q$ es el número de lags significativos
+    \item Si ambos decaen gradualmente, puede ser necesario más diferenciación o un modelo más complejo
+\end{itemize}
+
+\subsubsection{Criterios de Información (AIC/BIC)}
+
+Una vez que tenemos candidatos de modelos, comparamos su calidad usando criterios de información:
+
+\vspace{0.5em}
+
+\textbf{AIC (Akaike Information Criterion):} Penaliza modelos complejos pero menos que BIC. Útil para comparar modelos con diferentes números de parámetros. Menor AIC indica mejor modelo.
+
+\vspace{0.5em}
+
+\textbf{BIC (Bayesian Information Criterion):} Penaliza más la complejidad que AIC, favoreciendo modelos más simples. También menor es mejor.
+
+\vspace{0.5em}
+
+\textbf{Regla práctica:} Probar varios modelos con diferentes valores de $p$ y $q$, calcular AIC/BIC, y elegir el modelo con menor valor. BIC suele preferirse cuando queremos modelos más parsimoniosos (simples).
+
+\subsubsection{Auto ARIMA}
+
+Auto ARIMA (implementado en Python con \texttt{pmdarima}) prueba automáticamente diferentes combinaciones de $p$, $d$ y $q$ y selecciona el modelo con mejor AIC. Es muy útil cuando no estamos seguros de los valores, pero es importante entender qué está haciendo para interpretar los resultados correctamente.
+
+\subsection{Implementación en Python}
+
+\begin{lstlisting}[language=Python]
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Datos de ejemplo: ventas mensuales
+ventas = [200, 205, 210, 215, 218, 220, 225, 230, 232, 235,
+          240, 245, 242, 248, 253, 258, 260, 265, 270, 275,
+          278, 280, 285, 290]
+fechas = pd.date_range('2022-01', periods=24, freq='MS')
+ts = pd.Series(ventas, index=fechas)
+
+# Visualizar ACF y PACF para diagnostico
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+plot_acf(ts, ax=axes[0], lags=10)
+plot_pacf(ts, ax=axes[1], lags=10)
+plt.show()
+
+# Ajustar modelo ARIMA(1,1,1)
+# p=1: un termino autoregresivo
+# d=1: una diferenciacion
+# q=1: un termino de media movil
+modelo = ARIMA(ts, order=(1, 1, 1))
+fit = modelo.fit()
+
+# Resumen del modelo
+print(fit.summary())
+
+# Hacer predicciones para los proximos 6 meses
+predicciones = fit.forecast(steps=6)
+print("\nPredicciones:")
+print(predicciones)
+
+# Visualizacion
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos', marker='o')
+plt.plot(fit.fittedvalues, label='Ajuste ARIMA',
+         linestyle='--', linewidth=2)
+plt.plot(predicciones, label='Predicciones',
+         marker='s', linestyle='--', linewidth=2)
+plt.xlabel('Fecha')
+plt.ylabel('Ventas')
+plt.title('Modelo ARIMA(1,1,1)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# Diagnosticos del modelo
+fit.plot_diagnostics(figsize=(12, 8))
+plt.show()
+\end{lstlisting}
+
+\subsection{Auto ARIMA}
+
+Para encontrar automáticamente los mejores parámetros:
+
+\begin{lstlisting}[language=Python]
+from pmdarima import auto_arima
+
+# Buscar el mejor modelo automaticamente
+modelo_auto = auto_arima(
+    ts,
+    start_p=0, max_p=3,
+    start_q=0, max_q=3,
+    d=None,  # Se determina automaticamente
+    seasonal=False,
+    trace=True,  # Muestra el proceso de busqueda
+    error_action='ignore',
+    suppress_warnings=True,
+    stepwise=True
+)
+
+print(modelo_auto.summary())
+
+# Predicciones
+predicciones_auto = modelo_auto.predict(n_periods=6)
+print("\nPredicciones con Auto ARIMA:")
+print(predicciones_auto)
+\end{lstlisting}
+
+\section{Evaluación de Modelos}
+
+Una vez que tenemos varios modelos (Media Móvil, Holt-Winters, ARIMA), necesitamos compararlos y evaluar su desempeño.
+
+\subsection{Train-Test Split Temporal}
+
+A diferencia de otros problemas de machine learning, en series temporales \textbf{NO podemos mezclar los datos}. Debemos respetar el orden temporal:
+
+\begin{lstlisting}[language=Python]
+# CORRECTO para series temporales
+train_size = int(len(ts) * 0.8)
+train = ts[:train_size]
+test = ts[train_size:]
+
+# INCORRECTO (no hacer esto)
+# from sklearn.model_selection import train_test_split
+# train, test = train_test_split(ts, test_size=0.2)  # NO!
+\end{lstlisting}
+
+\subsection{Métricas de Evaluación}
+
+\subsubsection{MAE (Mean Absolute Error):}
+\[
+\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |Y_i - \hat{Y}_i|
+\]
+
+Promedio de errores en valor absoluto. Fácil de interpretar (mismas unidades que $Y$).
+
+\subsubsection{MSE (Mean Squared Error):}
+\[
+\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2
+\]
+
+Penaliza más los errores grandes. Útil para optimización pero difícil de interpretar.
+
+\subsubsection{RMSE (Root Mean Squared Error):}
+\[
+\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2}
+\]
+
+Similar a MAE pero penaliza errores grandes. Mismas unidades que $Y$.
+
+\subsubsection{MAPE (Mean Absolute Percentage Error):}
+\[
+\text{MAPE} = \frac{100\%}{n} \sum_{i=1}^{n} \left|\frac{Y_i - \hat{Y}_i}{Y_i}\right|
+\]
+
+Error porcentual promedio. Útil para comparar series de diferentes escalas. Problema: indefinido si $Y_i = 0$.
+
+\subsection{Cross-Validation para Series Temporales}
+
+A diferencia de otros problemas de machine learning, en series temporales \textbf{NO podemos usar cross-validation tradicional} (mezclar los datos aleatoriamente) porque violaría la dependencia temporal. En su lugar, usamos \textbf{Time Series Cross-Validation}, que respeta el orden temporal de los datos.
+
+\subsubsection{¿Por qué no podemos mezclar los datos?}
+
+Si mezcláramos los datos aleatoriamente, estaríamos usando información del futuro para predecir el pasado, lo cual no tiene sentido en la práctica. Además, romperíamos las dependencias temporales que son fundamentales en las series temporales.
+
+\subsubsection{Estrategias de Cross-Validation Temporal}
+
+Existen dos estrategias principales. Para entenderlas mejor, imaginemos que tenemos datos de 12 meses (enero a diciembre):
+
+\vspace{0.5em}
+
+\textbf{1. Rolling Window (Ventana Móvil):} El tamaño del conjunto de entrenamiento se mantiene constante. En cada fold, ``deslizamos'' la ventana hacia adelante.
+
+\begin{itemize}
+    \item \textbf{Fold 1:} Entrenar con meses 1-6, probar con meses 7-8
+    \item \textbf{Fold 2:} Entrenar con meses 3-8, probar con meses 9-10
+    \item \textbf{Fold 3:} Entrenar con meses 5-10, probar con meses 11-12
+\end{itemize}
+
+Notar que el tamaño del entrenamiento siempre es 6 meses, pero la ventana se ``desliza'' hacia adelante.
+
+\vspace{0.5em}
+
+\textbf{2. Expanding Window (Ventana Expansiva):} El tamaño del conjunto de entrenamiento crece en cada fold. El inicio se mantiene fijo y solo avanzamos el final.
+
+\begin{itemize}
+    \item \textbf{Fold 1:} Entrenar con meses 1-4, probar con meses 5-6
+    \item \textbf{Fold 2:} Entrenar con meses 1-6, probar con meses 7-8
+    \item \textbf{Fold 3:} Entrenar con meses 1-8, probar con meses 9-10
+    \item \textbf{Fold 4:} Entrenar con meses 1-10, probar con meses 11-12
+\end{itemize}
+
+Notar que siempre empezamos desde el mes 1, pero el entrenamiento ``se expande'' incluyendo más datos históricos en cada fold.
+
+\vspace{0.5em}
+
+\textbf{¿Cuándo usar cada una?}
+\begin{itemize}
+    \item \textbf{Rolling Window:} Útil cuando queremos evaluar el desempeño del modelo con una cantidad fija de datos históricos. Simula mejor el escenario real donde tenemos una ventana de tiempo limitada (por ejemplo, siempre usamos los últimos 6 meses para predecir).
+    \item \textbf{Expanding Window:} Útil cuando queremos aprovechar toda la información histórica disponible. Simula mejor el caso donde acumulamos datos a lo largo del tiempo y siempre usamos todo el historial disponible.
+\end{itemize}
+
+\subsubsection{Implementación con TimeSeriesSplit}
+
+\texttt{TimeSeriesSplit} de scikit-learn implementa rolling window por defecto:
+
+\begin{lstlisting}[language=Python]
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+# Configurar cross-validation temporal
+# n_splits=5 crea 5 folds
+# test_size: tamanio de cada conjunto de prueba (opcional)
+# gap: gap entre train y test (opcional, para evitar data leakage)
+tscv = TimeSeriesSplit(n_splits=5)
+
+mae_scores = []
+rmse_scores = []
+
+for fold, (train_index, test_index) in enumerate(tscv.split(ts)):
+    train = ts.iloc[train_index]
+    test = ts.iloc[test_index]
+    
+    print(f"Fold {fold+1}: Train size={len(train)}, Test size={len(test)}")
+
+    # Entrenar modelo (ejemplo con ARIMA)
+    modelo = ARIMA(train, order=(1,1,1))
+    fit = modelo.fit()
+
+    # Predecir
+    predicciones = fit.forecast(steps=len(test))
+
+    # Calcular metricas
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mean_squared_error(test, predicciones))
+
+    mae_scores.append(mae)
+    rmse_scores.append(rmse)
+    print(f"  MAE: {mae:.2f}, RMSE: {rmse:.2f}")
+
+print(f"\nMAE promedio: {np.mean(mae_scores):.2f} (+/- {np.std(mae_scores):.2f})")
+print(f"RMSE promedio: {np.mean(rmse_scores):.2f} (+/- {np.std(rmse_scores):.2f})")
+\end{lstlisting}
+
+\subsubsection{Implementación Manual de Expanding Window}
+
+Si queremos usar expanding window, podemos implementarlo manualmente:
+
+\begin{lstlisting}[language=Python]
+# Expanding window: el train crece en cada iteracion
+train_size_initial = int(len(ts) * 0.3)  # Empezar con 30% de los datos
+n_folds = 5
+
+mae_scores = []
+rmse_scores = []
+
+for i in range(n_folds):
+    # El train crece en cada iteracion
+    train_end = train_size_initial + i * (len(ts) - train_size_initial) // n_folds
+    test_start = train_end
+    test_end = train_end + (len(ts) - train_size_initial) // n_folds
+    
+    train = ts[:train_end]
+    test = ts[test_start:test_end]
+    
+    # Entrenar y evaluar modelo
+    modelo = ARIMA(train, order=(1,1,1))
+    fit = modelo.fit()
+    predicciones = fit.forecast(steps=len(test))
+    
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mean_squared_error(test, predicciones))
+    
+    mae_scores.append(mae)
+    rmse_scores.append(rmse)
+\end{lstlisting}
+
+\subsection{Comparación de Modelos}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import numpy as np
+
+# Dividir datos
+train = ts[:18]
+test = ts[18:]
+
+# Modelo 1: Media Movil Simple
+sma_pred = train.rolling(window=3).mean().iloc[-1]
+sma_pred = [sma_pred] * len(test)  # Prediccion constante
+
+# Modelo 2: Holt-Winters
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+hw_model = ExponentialSmoothing(train, trend='add', seasonal='add',
+                                 seasonal_periods=12).fit()
+hw_pred = hw_model.forecast(steps=len(test))
+
+# Modelo 3: ARIMA
+arima_model = ARIMA(train, order=(1,1,1)).fit()
+arima_pred = arima_model.forecast(steps=len(test))
+
+# Calcular metricas
+resultados = {
+    'Modelo': ['Media Movil', 'Holt-Winters', 'ARIMA'],
+    'MAE': [
+        mean_absolute_error(test, sma_pred),
+        mean_absolute_error(test, hw_pred),
+        mean_absolute_error(test, arima_pred)
+    ],
+    'RMSE': [
+        np.sqrt(mean_squared_error(test, sma_pred)),
+        np.sqrt(mean_squared_error(test, hw_pred)),
+        np.sqrt(mean_squared_error(test, arima_pred))
+    ]
+}
+
+df_resultados = pd.DataFrame(resultados)
+print(df_resultados)
+\end{lstlisting}
+
+\subsection{Intervalos de Confianza}
+
+Los modelos estadísticos como ARIMA y Holt-Winters proporcionan intervalos de confianza:
+
+\begin{lstlisting}[language=Python]
+# ARIMA con intervalos de confianza
+predicciones_arima = fit.get_forecast(steps=6)
+pred_mean = predicciones_arima.predicted_mean
+pred_ci = predicciones_arima.conf_int(alpha=0.05)  # 95% confianza
+
+plt.figure(figsize=(12, 6))
+plt.plot(ts, label='Datos Historicos')
+plt.plot(pred_mean, label='Prediccion', color='red')
+plt.fill_between(pred_ci.index,
+                 pred_ci.iloc[:, 0],
+                 pred_ci.iloc[:, 1],
+                 color='red', alpha=0.3,
+                 label='Intervalo 95%')
+plt.legend()
+plt.show()
+\end{lstlisting}
+
+\end{document}
