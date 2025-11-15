@@ -1,0 +1,435 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+
+\usetikzlibrary{positioning,shapes.multipart,calc,arrows,shapes.geometric}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{Clustering con K-Means}}
+\subtitle{Segmentación de Datos}
+\author{Analítica de Datos, Universidad de San Andrés}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{¿Por qué Clustering?}
+    \textbf{Caso de uso: E-commerce con miles de clientes}
+    \begin{itemize}
+        \item No todos los clientes son iguales
+        \item Algunos compran seguido pero poco, otros compran mucho de una vez
+        \item \textbf{Pregunta clave:} ¿Podemos agrupar automáticamente a clientes con comportamientos similares?
+        \item \textbf{Beneficios:}
+        \begin{itemize}
+            \item Personalizar campañas de marketing
+            \item Entender mejor qué tipo de clientes tenemos
+            \item Asignar recursos eficientemente
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Qué es Clustering?}
+    \begin{itemize}
+        \item Técnica de \textbf{aprendizaje no supervisado}
+        \item Divide datos en grupos (clusters) donde:
+        \begin{itemize}
+            \item Observaciones dentro del mismo cluster son \textbf{similares}
+            \item Observaciones de diferentes clusters son \textbf{diferentes}
+        \end{itemize}
+        \item No necesitamos etiquetas previas
+        \item Encontramos estructura oculta en los datos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Aplicaciones Comunes}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item \textbf{Marketing:} Segmentación de clientes
+                \item \textbf{Biología:} Clasificar genes o especies
+                \item \textbf{Detección de fraude:} Identificar transacciones anómalas
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item \textbf{Compresión:} Agrupar colores en imágenes
+                \item \textbf{Recomendaciones:} Usuarios con gustos similares
+                \item \textbf{Documentos:} Organizar noticias por tema
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{K-Means: La Idea Intuitiva}
+    \begin{itemize}
+        \item<1-> Elegís cuántos grupos querés (el famoso ``K'')
+        \item<2-> El algoritmo coloca K puntos al azar (centroides iniciales)
+        \item<3-> Cada observación se asigna al centroide más cercano
+        \item<4-> Se recalcula cada centroide como el promedio de sus puntos
+        \item<5-> Se repite hasta que los centroides dejen de moverse
+        \item<6-> \textbf{Analogía:} K imanes que atraen puntos y se reposicionan
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{K-Means: Algoritmo Paso a Paso}
+    \textbf{Proceso iterativo:}
+    \begin{enumerate}
+        \item<1-> \textbf{Inicialización:} Elegir K centroides iniciales al azar
+        \item<2-> \textbf{Asignación:} Para cada observación $x_i$, asignarla al cluster cuyo centroide esté más cerca
+        \[
+        c_i = \arg\min_{j} \|x_i - \mu_j\|^2
+        \]
+        \item<3-> \textbf{Actualización:} Recalcular cada centroide como el promedio de sus observaciones
+        \[
+        \mu_j = \frac{1}{|C_j|} \sum_{i \in C_j} x_i
+        \]
+        \item<4-> \textbf{Repetir:} Pasos 2 y 3 hasta convergencia
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Ejemplo Paso a Paso: Datos}
+    \textbf{6 clientes con 2 features cada uno}
+
+    \vspace{0.5em}
+
+    \begin{table}
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            Cliente & Gasto Promedio & Frecuencia (veces/mes) \\
+            \midrule
+            A & \$20 & 2 \\
+            B & \$25 & 3 \\
+            C & \$100 & 8 \\
+            D & \$95 & 9 \\
+            E & \$22 & 2 \\
+            F & \$105 & 10 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.5em}
+
+    \textbf{Objetivo:} Dividir en K=2 clusters
+\end{frame}
+
+\begin{frame}{Ejemplo Paso a Paso: Inicialización}
+    \textbf{Paso 1: Elegir 2 centroides iniciales al azar}
+
+    \vspace{1em}
+
+    \begin{itemize}
+        \item Centroide 1 ($\mu_1$): Cliente A = (\$20, 2)
+        \item Centroide 2 ($\mu_2$): Cliente C = (\$100, 8)
+    \end{itemize}
+
+    \vspace{1em}
+
+    \visible<3->{
+    \textbf{Nota:} En la práctica, sklearn elige los centroides de forma más inteligente
+    }
+\end{frame}
+
+\begin{frame}{Ejemplo Paso a Paso: Asignación}
+    \textbf{Paso 2: Asignar cada cliente al centroide más cercano}
+
+    \vspace{0.5em}
+
+    \textbf{Cliente B} (\$25, 3):
+    \begin{itemize}
+        \item<1-> Distancia a $\mu_1$: $\sqrt{(25-20)^2 + (3-2)^2} = \sqrt{26} \approx 5.1$
+        \item<2-> Distancia a $\mu_2$: $\sqrt{(25-100)^2 + (3-8)^2} = \sqrt{5650} \approx 75.2$
+        \item<3-> B está más cerca de $\mu_1$ $\rightarrow$ \textbf{Cluster 1}
+    \end{itemize}
+
+    \vspace{0.5em}
+
+    \visible<4->{
+    \textbf{Haciendo esto para todos:}
+    \begin{itemize}
+        \item Cluster 1: A, B, E (bajo gasto, baja frecuencia)
+        \item Cluster 2: C, D, F (alto gasto, alta frecuencia)
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{Ejemplo Paso a Paso: Actualización}
+    \textbf{Paso 3: Recalcular centroides como promedio de cada cluster}
+
+    \vspace{1em}
+
+    \textbf{Cluster 1} (A, B, E):
+    \begin{align*}
+        \mu_1 &= \left( \frac{20+25+22}{3}, \frac{2+3+2}{3} \right) \\
+        &= (22.3, 2.3)
+    \end{align*}
+
+    \vspace{0.5em}
+
+    \textbf{Cluster 2} (C, D, F):
+    \begin{align*}
+        \mu_2 &= \left( \frac{100+95+105}{3}, \frac{8+9+10}{3} \right) \\
+        &= (100, 9)
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Ejemplo Paso a Paso: Convergencia}
+    \textbf{Paso 4: Repetir hasta que los centroides no cambien}
+
+    \vspace{1em}
+
+    \begin{itemize}
+        \item<1-> Volvemos al Paso 2 con los nuevos centroides
+        \item<2-> Calculamos distancias y reasignamos clientes
+        \item<3-> En este caso, las asignaciones no cambian
+        \item<4-> \textbf{¡Convergencia alcanzada!}
+    \end{itemize}
+
+    \vspace{1em}
+
+    \visible<5->{
+    \textbf{Resultado final:}
+    \begin{itemize}
+        \item Cluster 1: Clientes ocasionales (bajo gasto y frecuencia)
+        \item Cluster 2: Clientes VIP (alto gasto y frecuencia)
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{¿Cómo Elegir K?}
+    \textbf{Problema:} No sabemos de antemano cuántos clusters hay
+    \begin{itemize}
+        \item<1-> A diferencia del aprendizaje supervisado, no tenemos conjunto de test
+        \item<2-> Necesitamos métodos para determinar el K óptimo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Método del Codo (Elbow Method)}
+    \begin{itemize}
+        \item<1-> Probamos diferentes valores de K
+        \item<2-> Para cada K, calculamos la \textbf{inercia}:
+        \[
+        \text{Inercia} = \sum_{i=1}^{n} \|x_i - \mu_{c_i}\|^2
+        \]
+        \item<3-> Graficamos inercia vs K
+        \item<4-> Buscamos el ``codo'': donde agregar más clusters no reduce mucho la inercia
+        \item<5-> \textbf{Intuición:} Punto de rendimientos decrecientes
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Silhouette Score}
+    \textbf{Mide qué tan bien está cada observación asignada}
+    \begin{itemize}
+        \item<1-> Para cada observación $i$:
+        \begin{itemize}
+            \item $a_i$ = distancia promedio a puntos en su cluster
+            \item $b_i$ = distancia promedio al cluster más cercano
+        \end{itemize}
+        \item<2-> Silhouette Score:
+        \[
+        s_i = \frac{b_i - a_i}{\max(a_i, b_i)}
+        \]
+        \item<3-> Rango: -1 a 1
+        \begin{itemize}
+            \item Cercano a 1: bien asignado
+            \item Cercano a 0: en el borde
+            \item Negativo: probablemente mal asignado
+        \end{itemize}
+        \item<4-> Elegimos el K que maximice el Silhouette Score promedio
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: K-Means Básico}
+    \begin{lstlisting}
+from sklearn.cluster import KMeans
+
+# Crear el modelo con K=3
+kmeans = KMeans(n_clusters=3, random_state=42)
+
+# Entrenar y obtener las asignaciones
+clusters = kmeans.fit_predict(X)
+
+# Obtener los centroides
+centroides = kmeans.cluster_centers_
+
+# Agregar clusters al DataFrame
+df['cluster'] = clusters
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Método del Codo}
+    \begin{lstlisting}
+# Probar diferentes valores de K
+inercias = []
+K_range = range(1, 11)
+
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+    inercias.append(kmeans.inertia_)
+
+# Graficar
+plt.plot(K_range, inercias, marker='o')
+plt.xlabel('Numero de Clusters (K)')
+plt.ylabel('Inercia')
+plt.title('Metodo del Codo')
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Silhouette Score}
+    \begin{lstlisting}
+from sklearn.metrics import silhouette_score
+
+# Calcular Silhouette para diferentes K
+silhouette_scores = []
+K_range = range(2, 11)
+
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    clusters = kmeans.fit_predict(X)
+    score = silhouette_score(X, clusters)
+    silhouette_scores.append(score)
+
+# Graficar
+plt.plot(K_range, silhouette_scores, marker='o')
+plt.xlabel('Numero de Clusters (K)')
+plt.ylabel('Silhouette Score')
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Interpretación de Resultados}
+    \textbf{Analizar los centroides:}
+    \begin{itemize}
+        \item<1-> Los centroides representan el ``cliente típico'' de cada cluster
+        \item<2-> Ejemplo de interpretación:
+        \begin{itemize}
+            \item Cluster 0: \$25, 2 veces/mes $\rightarrow$ Ocasionales
+            \item Cluster 1: \$150, 10 veces/mes $\rightarrow$ VIP
+            \item Cluster 2: \$60, 5 veces/mes $\rightarrow$ Regulares
+        \end{itemize}
+        \item<3-> \textbf{Acción:} Diseñar campañas específicas por segmento
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ventajas de K-Means}
+    \begin{itemize}
+        \item<1-> \textbf{Simple y rápido:} Fácil de entender e implementar
+        \item<2-> \textbf{Escalable:} Funciona bien con datasets grandes
+        \item<3-> \textbf{Garantía de convergencia:} Siempre termina
+        \item<4-> \textbf{Interpretable:} Centroides fáciles de analizar
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitaciones de K-Means}
+    \begin{itemize}
+        \item<1-> \textbf{Elegir K:} No es obvio cuál es el mejor K
+        \item<2-> \textbf{Inicialización:} Resultados pueden variar según inicialización
+        \item<3-> \textbf{Clusters esféricos:} Asume clusters con forma esférica
+        \item<4-> \textbf{Outliers:} Sensible a valores extremos
+        \item<5-> \textbf{Tamaño similar:} Asume clusters de tamaño parecido
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Consideraciones Importantes}
+    \textbf{Normalización de Features}
+    \begin{itemize}
+        \item<1-> K-Means usa distancia euclidiana
+        \item<2-> Features con rangos grandes dominan el cálculo
+        \item<3-> \textbf{Solución:} Estandarizar antes de aplicar K-Means
+    \end{itemize}
+    \vspace{1em}
+    \begin{lstlisting}
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X_scaled)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{¿Cuándo NO Usar K-Means?}
+    \begin{itemize}
+        \item<1-> Clusters con formas no esféricas (ej: media luna)
+        \item<2-> Muchos outliers que distorsionarían los centroides
+        \item<3-> Necesitas detectar el número de clusters automáticamente
+        \item<4-> \textbf{Alternativas:} DBSCAN, Hierarchical Clustering, HDBSCAN
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Resumen}
+    \begin{itemize}
+        \item<1-> \textbf{Clustering:} Agrupar datos sin etiquetas previas
+        \item<2-> \textbf{K-Means:} Algoritmo iterativo simple y eficiente
+        \item<3-> \textbf{Elegir K:} Método del codo + Silhouette Score
+        \item<4-> \textbf{Normalización:} SIEMPRE estandarizar features
+        \item<5-> \textbf{Interpretación:} Analizar centroides para entender segmentos
+        \item<6-> \textbf{Aplicación:} Segmentación de clientes, detección de patrones, compresión
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}

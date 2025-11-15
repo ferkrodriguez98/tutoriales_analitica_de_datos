@@ -1,0 +1,436 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Clustering con K-Means}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+\vspace{1em}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{¿Por qué necesitamos Clustering?}
+
+Imaginá que tenés una empresa de e-commerce con miles de clientes. Todos compran en tu plataforma, pero claramente no todos son iguales: algunos compran seguido pero poco, otros compran mucho de una vez, otros compran productos caros, otros baratos, algunos solo en promociones, etc.
+
+\vspace{0.5em}
+
+La pregunta es: \textbf{¿podemos agrupar automáticamente a los clientes en grupos con comportamientos similares?} Esto nos permitiría:
+
+\begin{itemize}
+    \item Personalizar campañas de marketing para cada grupo
+    \item Entender mejor qué tipo de clientes tenemos
+    \item Ofrecer productos específicos a cada segmento
+    \item Asignar recursos de manera más eficiente
+\end{itemize}
+
+El problema es que no sabemos de antemano cuántos grupos hay ni qué características definen a cada grupo. No tenemos etiquetas como en clasificación supervisada. Acá entra el \textbf{Clustering}: una técnica de aprendizaje no supervisado que agrupa observaciones similares sin necesitar etiquetas previas.
+
+\section{¿Qué es Clustering?}
+
+Clustering es el proceso de dividir un conjunto de datos en grupos (llamados \textit{clusters}) de manera que:
+
+\begin{itemize}
+    \item Las observaciones \textbf{dentro de un mismo cluster} sean lo más similares posible entre sí
+    \item Las observaciones \textbf{de diferentes clusters} sean lo más diferentes posible entre sí
+\end{itemize}
+
+Es importante entender que clustering es \textbf{aprendizaje no supervisado}: no tenemos una variable objetivo que queremos predecir. Solo tenemos datos y queremos encontrar estructura o patrones ocultos en ellos.
+
+\subsection{Aplicaciones Comunes}
+
+El clustering se usa en muchísimos contextos:
+
+\begin{itemize}
+    \item \textbf{Marketing}: segmentación de clientes para campañas personalizadas
+    \item \textbf{Biología}: clasificar genes o especies con características similares
+    \item \textbf{Detección de anomalías}: identificar transacciones fraudulentas (quedan en clusters pequeños o aislados)
+    \item \textbf{Compresión de imágenes}: agrupar colores similares para reducir el tamaño de archivos
+    \item \textbf{Sistemas de recomendación}: agrupar usuarios con gustos similares
+    \item \textbf{Organización de documentos}: agrupar noticias o papers por temas
+\end{itemize}
+
+\section{K-Means}
+
+K-Means es probablemente el algoritmo de clustering más usado. Es simple, rápido, y funciona bien en muchos casos.
+
+\subsection{La Idea Intuitiva}
+
+La idea detrás de K-Means es la siguiente:
+
+\begin{enumerate}
+    \item Elegís cuántos grupos querés (el famoso ``K'')
+    \item El algoritmo coloca K puntos al azar en el espacio (estos son los \textit{centroides} iniciales)
+    \item Cada observación se asigna al centroide más cercano
+    \item Se recalcula la posición de cada centroide como el promedio de todas las observaciones asignadas a él
+    \item Se repiten los pasos 3 y 4 hasta que los centroides dejen de moverse (o se muevan muy poco)
+\end{enumerate}
+
+Es como si tuvieras K imanes que atraen puntos cercanos, y después se reposicionan en el centro de los puntos que atrajeron, y así sucesivamente hasta que todo se estabiliza.
+
+\subsection{El Algoritmo Paso a Paso}
+
+Veamos el algoritmo de manera más formal:
+
+\begin{enumerate}
+    \item \textbf{Inicialización}: Elegí K centroides iniciales $\mu_1, \mu_2, \ldots, \mu_K$ (generalmente al azar)
+
+    \item \textbf{Asignación}: Para cada observación $x_i$, asignala al cluster $j$ cuyo centroide esté más cerca:
+    \[
+    c_i = \arg\min_{j} \|x_i - \mu_j\|^2
+    \]
+    donde $c_i$ es el cluster asignado a la observación $i$, y $\|\cdot\|$ es la distancia euclidiana.
+
+    \item \textbf{Actualización}: Recalculá cada centroide como el promedio de todas las observaciones asignadas a ese cluster:
+    \[
+    \mu_j = \frac{1}{|C_j|} \sum_{i \in C_j} x_i
+    \]
+    donde $C_j$ es el conjunto de observaciones asignadas al cluster $j$.
+
+    \item \textbf{Repetición}: Repetí los pasos 2 y 3 hasta que los centroides no cambien (o cambien muy poco).
+\end{enumerate}
+
+\subsection{Ejemplo Manual Simplificado}
+
+Supongamos que tenemos 6 clientes con dos características: ``Gasto Promedio por Compra'' y ``Frecuencia de Compra al Mes'':
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+        \toprule
+        Cliente & Gasto Promedio (\$) & Frecuencia (veces/mes) \\
+        \midrule
+        A & 20 & 2 \\
+        B & 25 & 3 \\
+        C & 100 & 8 \\
+        D & 95 & 9 \\
+        E & 22 & 2 \\
+        F & 105 & 10 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Queremos dividirlos en K=2 clusters.
+
+\vspace{0.5em}
+
+\textbf{Paso 1 - Inicialización}: Elegimos centroides iniciales al azar, digamos:
+\begin{itemize}
+    \item $\mu_1 = (20, 2)$ (Cliente A)
+    \item $\mu_2 = (100, 8)$ (Cliente C)
+\end{itemize}
+
+\vspace{0.5em}
+
+\textbf{Paso 2 - Asignación}: Calculamos la distancia de cada cliente a cada centroide y asignamos al más cercano.
+
+Por ejemplo, para el Cliente B (25, 3):
+\begin{itemize}
+    \item Distancia a $\mu_1$: $\sqrt{(25-20)^2 + (3-2)^2} = \sqrt{26} \approx 5.1$
+    \item Distancia a $\mu_2$: $\sqrt{(25-100)^2 + (3-8)^2} = \sqrt{5650} \approx 75.2$
+\end{itemize}
+
+Cliente B está más cerca de $\mu_1$, entonces va al Cluster 1.
+
+Si hacemos esto para todos:
+\begin{itemize}
+    \item \textbf{Cluster 1}: A, B, E (clientes de bajo gasto y baja frecuencia)
+    \item \textbf{Cluster 2}: C, D, F (clientes de alto gasto y alta frecuencia)
+\end{itemize}
+
+\vspace{0.5em}
+
+\textbf{Paso 3 - Actualización}: Recalculamos los centroides:
+\begin{itemize}
+    \item $\mu_1 = \left(\frac{20+25+22}{3}, \frac{2+3+2}{3}\right) = (22.3, 2.3)$
+    \item $\mu_2 = \left(\frac{100+95+105}{3}, \frac{8+9+10}{3}\right) = (100, 9)$
+\end{itemize}
+
+\vspace{0.5em}
+
+\textbf{Paso 4 - Repetición}: Volvemos al paso 2 con los nuevos centroides. En este caso, las asignaciones probablemente no cambien, entonces el algoritmo converge.
+
+\section{¿Cómo Elegir K (el Número de Clusters)?}
+
+Esta es la pregunta del millón. A diferencia del aprendizaje supervisado, acá no tenemos un conjunto de test para validar. Entonces, ¿cómo sabemos cuántos clusters usar?
+
+\subsection{Método del Codo (Elbow Method)}
+
+La idea es probar diferentes valores de K y graficar la ``inercia'' (también llamada suma de distancias al cuadrado intra-cluster) para cada K. La \textbf{inercia} mide qué tan compactos son los clusters: es la suma de las distancias al cuadrado de cada punto a su centroide asignado.
+
+\[
+\text{Inercia} = \sum_{i=1}^{n} \|x_i - \mu_{c_i}\|^2
+\]
+
+Obviamente, a mayor K, menor inercia (en el extremo, si K = número de observaciones, la inercia es 0). Pero no queremos un K gigante porque pierde sentido. El truco es graficar la inercia vs K y buscar un ``codo'' en la curva: el punto donde agregar más clusters no reduce tanto la inercia.
+
+\vspace{0.5em}
+
+\textbf{Ejemplo visual}: Si K=1 tenés mucha inercia, K=2 reduce bastante, K=3 reduce un poco más, pero K=4 ya no reduce tanto. El ``codo'' estaría en K=3.
+
+\subsection{Coeficiente de Silueta (Silhouette Score)}
+
+Otra métrica popular es el \textbf{Silhouette Score}, que mide qué tan bien está cada observación asignada a su cluster. Para cada observación $i$:
+
+\begin{itemize}
+    \item $a_i$ = distancia promedio a todas las otras observaciones en su mismo cluster (qué tan cerca está de su grupo)
+    \item $b_i$ = distancia promedio al cluster más cercano que no es el suyo (qué tan lejos está del grupo más próximo)
+\end{itemize}
+
+El Silhouette Score de la observación $i$ es:
+\[
+s_i = \frac{b_i - a_i}{\max(a_i, b_i)}
+\]
+
+El score va de -1 a 1:
+\begin{itemize}
+    \item Cercano a 1: la observación está bien asignada (cerca de su cluster, lejos de otros)
+    \item Cercano a 0: está en el borde entre clusters
+    \item Negativo: probablemente está mal asignada
+\end{itemize}
+
+El Silhouette Score promedio de todos los puntos nos da una idea de qué tan buena es la segmentación para un K dado. Elegimos el K que maximice este score.
+
+\section{Implementación en Python}
+
+Veamos cómo usar K-Means en Python con \texttt{scikit-learn}. Es súper simple.
+
+\subsection{Imports Necesarios}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+\end{lstlisting}
+
+\subsection{Aplicar K-Means}
+
+\begin{lstlisting}[language=Python]
+# Supongamos que X es nuestro DataFrame con las features
+# Por ejemplo: X = df[['gasto_promedio', 'frecuencia_compra']]
+
+# Crear el modelo con K=3
+kmeans = KMeans(n_clusters=3, random_state=42)
+
+# Entrenar y obtener las asignaciones de clusters
+clusters = kmeans.fit_predict(X)
+
+# Obtener los centroides
+centroides = kmeans.cluster_centers_
+
+# Agregar los clusters al DataFrame original
+df['cluster'] = clusters
+\end{lstlisting}
+
+\subsection{Encontrar el K Óptimo: Método del Codo}
+
+\begin{lstlisting}[language=Python]
+# Probar diferentes valores de K
+inercias = []
+K_range = range(1, 11)
+
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+    inercias.append(kmeans.inertia_)
+
+# Graficar
+plt.figure(figsize=(10, 6))
+plt.plot(K_range, inercias, marker='o')
+plt.xlabel('Numero de Clusters (K)')
+plt.ylabel('Inercia')
+plt.title('Metodo del Codo')
+plt.grid(True)
+plt.show()
+\end{lstlisting}
+
+\subsection{Encontrar el K Óptimo: Silhouette Score}
+
+\begin{lstlisting}[language=Python]
+# Calcular Silhouette Score para diferentes K
+silhouette_scores = []
+K_range = range(2, 11)  # Minimo 2 clusters para Silhouette
+
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    clusters = kmeans.fit_predict(X)
+    score = silhouette_score(X, clusters)
+    silhouette_scores.append(score)
+
+# Graficar
+plt.figure(figsize=(10, 6))
+plt.plot(K_range, silhouette_scores, marker='o')
+plt.xlabel('Numero de Clusters (K)')
+plt.ylabel('Silhouette Score')
+plt.title('Silhouette Score por K')
+plt.grid(True)
+plt.show()
+\end{lstlisting}
+
+\section{Interpretación de Resultados}
+
+Una vez que tenés los clusters asignados, ¿qué hacés con eso?
+
+\subsection{Analizar los Centroides}
+
+Los centroides te dicen cuál es el ``cliente típico'' de cada cluster. Por ejemplo:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        Cluster & Gasto Promedio & Frecuencia & Interpretación \\
+        \midrule
+        0 & \$25 & 2 veces/mes & Clientes ocasionales, bajo gasto \\
+        1 & \$150 & 10 veces/mes & Clientes VIP, alto gasto y frecuencia \\
+        2 & \$60 & 5 veces/mes & Clientes regulares, gasto medio \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Con esta info podés:
+\begin{itemize}
+    \item Diseñar campañas específicas para cada segmento
+    \item Identificar oportunidades (ej: convertir Cluster 0 en Cluster 2)
+    \item Asignar recursos (ej: dar atención premium a Cluster 1)
+\end{itemize}
+
+\subsection{Visualizar los Clusters}
+
+Si tenés 2 o 3 dimensiones, podés graficar los clusters y ver visualmente cómo quedaron agrupados:
+
+\begin{lstlisting}[language=Python]
+plt.figure(figsize=(10, 6))
+plt.scatter(X[:, 0], X[:, 1], c=clusters, cmap='viridis',
+            alpha=0.6, edgecolors='k')
+plt.scatter(centroides[:, 0], centroides[:, 1],
+            marker='X', s=300, c='red', edgecolors='k',
+            label='Centroides')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('Clusters K-Means')
+plt.legend()
+plt.show()
+\end{lstlisting}
+
+Si tenés más de 2-3 dimensiones, podés usar técnicas de reducción de dimensionalidad como PCA (lo vemos en la próxima clase) para visualizar.
+
+\section{Ventajas y Limitaciones de K-Means}
+
+\subsection{Ventajas}
+
+\begin{itemize}
+    \item \textbf{Simple y rápido}: fácil de entender e implementar
+    \item \textbf{Escalable}: funciona bien con datasets grandes
+    \item \textbf{Garantía de convergencia}: siempre termina (aunque no siempre en el óptimo global)
+    \item \textbf{Interpretable}: los centroides son fáciles de analizar
+\end{itemize}
+
+\subsection{Limitaciones}
+
+\begin{itemize}
+    \item \textbf{Tenés que elegir K de antemano}: no es obvio cuál es el mejor K
+    \item \textbf{Sensible a la inicialización}: diferentes inicializaciones pueden dar diferentes resultados (por eso usamos \texttt{random\_state})
+    \item \textbf{Asume clusters esféricos}: no funciona bien si los clusters tienen formas raras o elongadas
+    \item \textbf{Sensible a outliers}: un punto muy alejado puede distorsionar un centroide
+    \item \textbf{Asume que todos los clusters tienen tamaño similar}: puede fallar si hay clusters muy desbalanceados
+\end{itemize}
+
+\subsection{¿Cuándo NO Usar K-Means?}
+
+No uses K-Means si:
+\begin{itemize}
+    \item Tus clusters tienen formas no esféricas (ej: clusters en forma de media luna). En ese caso, considerá algoritmos como DBSCAN.
+    \item Tenés muchos outliers que no querés que afecten los centroides.
+    \item Necesitás detectar el número de clusters automáticamente (K-Means requiere que vos lo especifiques).
+\end{itemize}
+
+\section{Consideraciones Importantes}
+
+\subsection{Normalización de Features}
+
+K-Means usa distancia euclidiana, entonces las features con rangos más grandes van a dominar el cálculo de distancia. Si tenés ``Gasto'' en miles de pesos (0-100,000) y ``Frecuencia'' en veces por mes (0-30), el gasto va a dominar completamente.
+
+\vspace{0.5em}
+
+\textbf{Solución}: Normalizar o estandarizar las features antes de aplicar K-Means.
+
+\begin{lstlisting}[language=Python]
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Ahora usar X_scaled en lugar de X
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X_scaled)
+\end{lstlisting}
+
+\subsection{Múltiples Inicializaciones}
+
+Para evitar caer en mínimos locales, K-Means generalmente se corre varias veces con diferentes inicializaciones y se queda con la mejor (la que minimiza la inercia).
+
+\vspace{0.5em}
+
+En \texttt{scikit-learn}, el parámetro \texttt{n\_init} controla esto (por defecto es 10).
+
+\begin{lstlisting}[language=Python]
+# Correr 20 inicializaciones diferentes y quedarse con la mejor
+kmeans = KMeans(n_clusters=3, n_init=20, random_state=42)
+\end{lstlisting}
+
+\section{Recursos Extra}
+
+\begin{itemize}
+    \item \textbf{StatQuest: K-means clustering}: \url{https://www.youtube.com/watch?v=4b5d3muPQmA}
+    \item \textbf{Documentación sklearn}: \url{https://scikit-learn.org/stable/modules/clustering.html#k-means}
+\end{itemize}
+
+\end{document}
