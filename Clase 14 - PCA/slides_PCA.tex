@@ -1,0 +1,376 @@
+\documentclass{beamer}
+\usetheme{metropolis}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{listings}
+
+% Definición de colores personalizados
+\definecolor{primary}{RGB}{46, 204, 113}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{background}{RGB}{236, 240, 241}
+\definecolor{gradient1}{RGB}{255, 107, 107}
+\definecolor{gradient2}{RGB}{255, 159, 67}
+
+% Configuración del tema
+\setbeamercolor{normal text}{fg=black,bg=background}
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{alerted text}{fg=accent}
+
+\definecolor{lightgray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{darkblue}\bfseries,
+  commentstyle=\color{darkgreen},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  language=Python,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\title{\Huge\textbf{PCA}}
+\subtitle{Principal Component Analysis}
+\author{Analítica de Datos}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west,inner sep=30pt] at (current page.south west) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{El Problema de la Alta Dimensionalidad}
+    \textbf{Caso: Análisis de vinos con 13 propiedades químicas}
+    \begin{itemize}
+        \item<1-> 13 features: acidez, pH, alcohol, azúcar, sulfatos, etc.
+        \item<2-> \textbf{Problemas:}
+        \begin{itemize}
+            \item Imposible de visualizar (no podemos graficar 13 dimensiones)
+            \item Muchas variables correlacionadas (acidez con pH, alcohol con densidad)
+            \item Costo computacional alto (entrenar modelos es más lento)
+            \item Riesgo de overfitting (muchas features para pocas observaciones)
+        \end{itemize}
+        \item<3-> \textbf{Pregunta:} ¿Podemos reducir features sin perder información?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Qué es PCA?}
+    \begin{itemize}
+        \item \textbf{Principal Component Analysis:} Técnica de reducción de dimensionalidad
+        \item Transforma features correlacionadas en componentes no correlacionados
+        \item Ordena componentes por la varianza que explican
+        \item Nos quedamos con los componentes más importantes
+        \item \textbf{Resultado:} Menos features, misma información (casi)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{La Idea Intuitiva}
+    \textbf{Ejemplo: Dataset de vinos}
+    \begin{itemize}
+        \item Features originales: acidez, pH, sulfatos, cloruros
+        \item Muchas están correlacionadas (acidez alta $\rightarrow$ pH bajo)
+        \item PCA crea nuevas variables (componentes principales):
+        \begin{itemize}
+            \item \textbf{PC1:} Captura ``composición ácida general'' (máxima variabilidad)
+            \item \textbf{PC2:} Captura ``balance químico'' (segunda mayor variabilidad)   
+        \end{itemize}
+        \item En lugar de 13 features, podemos usar 2-3 componentes principales
+        \item \textbf{Resultado:} Capturamos el 90\% de la información con menos variables
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Por Qué Usar PCA?}
+    \textbf{Motivaciones principales:}
+    \begin{enumerate}
+        \item \textbf{Visualización:} Reducir a 2D o 3D para graficar
+        \item \textbf{Performance:} Menos features = entrenamiento más rápido
+        \item \textbf{Preprocesamiento:} Eliminar multicolinealidad
+        \item \textbf{Eliminación de ruido:} Componentes con poca varianza son ruido
+        \item \textbf{Compresión:} Almacenar datos de forma eficiente
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{¿Cómo Funciona PCA?}
+    \textbf{Proceso simplificado:}
+    \begin{enumerate}
+        \item<1-> \textbf{Estandarizar:} Todas las features con media 0, varianza 1
+        \[
+        z = \frac{x - \mu}{\sigma}
+        \]
+        \item<2-> \textbf{Calcular matriz de covarianza:} Mide cómo varían las features juntas
+        \item<3-> \textbf{Eigenvectors y eigenvalues:} Direcciones de máxima varianza
+        \item<4-> \textbf{Proyectar datos:} Transformar a los nuevos ejes
+        \item<5-> \textbf{Seleccionar K componentes:} Quedarse con los más importantes
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Componentes Principales}
+    \begin{itemize}
+        \item<1-> Cada componente es una \textbf{combinación lineal} de las features originales:
+        \[
+        PC_1 = w_{1,1} \cdot x_1 + w_{1,2} \cdot x_2 + \ldots + w_{1,p} \cdot x_p
+        \]
+        \item<2-> Los componentes son \textbf{ortogonales} (no correlacionados)
+        \item<3-> \textbf{PC1} captura la mayor varianza
+        \item<4-> \textbf{PC2} captura la segunda mayor varianza (perpendicular a PC1)
+        \item<5-> Y así sucesivamente...
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Varianza Explicada}
+    \textbf{¿Con cuántos componentes nos quedamos?}
+    \begin{itemize}
+        \item<1-> Cada eigenvalue indica cuánta varianza captura ese componente
+        \item<2-> Proporción de varianza explicada:
+        \[
+        \text{Varianza}_i = \frac{\lambda_i}{\sum_{j=1}^{p} \lambda_j}
+        \]
+        \item<3-> \textbf{Regla práctica:} Quedarse con componentes que expliquen 80-95\% de la varianza
+        \item<4-> Graficar varianza acumulada para visualizar el trade-off
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplo de Varianza Explicada}
+    \textbf{Caso: 64 features originales}
+    \begin{itemize}
+        \item<1-> PC1 explica 50\% de la varianza
+        \item<2-> PC2 explica 25\%
+        \item<3-> PC3 explica 15\%
+        \item<4-> PC4-PC64 explican menos del 10\%
+        \item<5-> \textbf{Conclusión:} Con 3 componentes cubrimos 90\% de la varianza
+        \item<6-> Reducimos de 64 features a 3 componentes!
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: PCA Básico}
+    \begin{lstlisting}
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Paso 1: Estandarizar
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Paso 2: Aplicar PCA
+pca = PCA()
+X_pca = pca.fit_transform(X_scaled)
+
+# Ver varianza explicada
+print(pca.explained_variance_ratio_)
+print(np.cumsum(pca.explained_variance_ratio_))
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Reducir a K Componentes}
+    \begin{lstlisting}
+# Reducir a 2 componentes para visualizacion
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+print(f"Forma original: {X_scaled.shape}")
+print(f"Forma reducida: {X_pca.shape}")
+
+# Varianza total explicada
+var_total = pca.explained_variance_ratio_.sum()
+print(f"Varianza explicada: {var_total:.2%}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Visualización: Gráfico de Varianza}
+    \begin{lstlisting}
+# Grafico de varianza acumulada
+varianza_acum = np.cumsum(pca.explained_variance_ratio_)
+
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(varianza_acum) + 1),
+         varianza_acum, marker='o')
+plt.axhline(y=0.9, color='r', linestyle='--',
+            label='90% varianza')
+plt.xlabel('Numero de Componentes')
+plt.ylabel('Varianza Acumulada')
+plt.legend()
+plt.grid(True)
+plt.show()
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Interpretación de Componentes}
+    \begin{itemize}
+        \item Los componentes son difíciles de interpretar (combinaciones de features)
+        \item Podemos ver qué features contribuyen más a cada componente
+        \item Los ``loadings'' (pesos) nos indican la contribución:
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{lstlisting}
+# Ver loadings del primer componente
+loadings = pca.components_[0]
+
+# Features que mas contribuyen a PC1
+top_features = np.argsort(np.abs(loadings))[-5:]
+print(f"Top 5 features en PC1: {top_features}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Reconstrucción de Datos}
+    \begin{itemize}
+        \item Podemos reconstruir una aproximación de los datos originales
+        \item Si K $<$ número de features, habrá pérdida de información
+        \item Útil para compresión de datos
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{lstlisting}
+# Reconstruir datos originales
+X_reconstructed = pca.inverse_transform(X_pca)
+
+# Error de reconstruccion
+mse = np.mean((X_scaled - X_reconstructed) ** 2)
+print(f"Error de reconstruccion (MSE): {mse:.4f}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{PCA en el Pipeline de ML}
+    \textbf{PCA como preprocesamiento:}
+    \begin{itemize}
+        \item Puede mejorar el performance de modelos supervisados
+        \item Reduce tiempo de entrenamiento
+        \item Mitiga overfitting (menos features)
+        \item Elimina multicolinealidad
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Implementación: Pipeline con PCA}
+    \begin{lstlisting}
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+
+# Pipeline: Scaler -> PCA -> Modelo
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('pca', PCA(n_components=10)),
+    ('classifier', LogisticRegression())
+])
+
+# Entrenar
+pipeline.fit(X_train, y_train)
+
+# Evaluar
+score = pipeline.score(X_test, y_test)
+print(f"Accuracy con PCA: {score:.3f}")
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Ventajas de PCA}
+    \begin{itemize}
+        \item \textbf{Reduce dimensionalidad} automáticamente
+        \item \textbf{Elimina multicolinealidad:} Componentes ortogonales
+        \item \textbf{Visualización:} Permite graficar datos en 2D/3D
+        \item \textbf{Eficiencia:} Reduce costo computacional
+        \item \textbf{Elimina ruido:} Descarta componentes con poca varianza
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitaciones de PCA}
+    \begin{itemize}
+        \item \textbf{Pérdida de interpretabilidad:} Componentes son combinaciones de features
+        \item \textbf{Asume linealidad:} Solo captura relaciones lineales
+        \item \textbf{Sensible a outliers:} Valores extremos distorsionan componentes
+        \item \textbf{Requiere estandarización:} SIEMPRE normalizar primero
+        \item \textbf{No supervisa:} No considera la variable objetivo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Cuándo Usar PCA?}
+    \textbf{Casos ideales:}
+    \begin{itemize}
+        \item Muchas features correlacionadas
+        \item Visualizar datos de alta dimensión
+        \item Entrenamiento muy lento por cantidad de features
+        \item Problemas de multicolinealidad
+        \item Compresión de datos (imágenes, audio)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{¿Cuándo NO Usar PCA?}
+    \begin{itemize}
+        \item Features no correlacionadas (PCA no reduce mucho)
+        \item Interpretabilidad es crítica
+        \item Relaciones no lineales (usar kernel PCA o autoencoders)
+        \item Muy pocas features (no tiene sentido)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{PCA vs Otras Técnicas}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{PCA:}
+            \begin{itemize}
+                \item Lineal, rápido
+                \item Bueno para ML
+            \end{itemize}
+            \vspace{1em}
+            \textbf{t-SNE:}
+            \begin{itemize}
+                \item No lineal
+                \item Solo visualización
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Feature Selection:}
+            \begin{itemize}
+                \item Más interpretable
+                \item No combina features
+            \end{itemize}
+            \vspace{1em}
+            \textbf{Autoencoders:}
+            \begin{itemize}
+                \item Redes neuronales
+                \item Captura no linealidad
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Consideraciones Importantes}
+    \begin{itemize}
+        \item \textbf{SIEMPRE estandarizar} antes de PCA
+        \item Elegir K basado en varianza acumulada (80-95\%)
+        \item Trade-off: menos componentes = menos info pero más eficiencia
+        \item Comparar performance con y sin PCA
+        \item Usar gráfico de varianza acumulada para decidir K
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Terminamos}
+    \begin{center}
+        \Large{\textbf{¿Dudas?\\¿Consultas?}}
+    \end{center}
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south,inner sep=30pt] at (current page.south) {
+            \includegraphics[height=1cm]{../misc/UdeSA.png}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}

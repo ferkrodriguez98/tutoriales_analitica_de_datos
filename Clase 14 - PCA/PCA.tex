@@ -1,0 +1,449 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{PCA: Principal Component Analysis}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+\vspace{1em}
+
+Si encuentran algún error en el documento o hay alguna duda, mandenmé un mail a rodriguezf@udesa.edu.ar y lo revisamos.
+
+\section{El Problema de la Alta Dimensionalidad}
+
+Imaginá que estás trabajando con un dataset de vinos que tiene 13 propiedades químicas: acidez fija, acidez volátil, ácido cítrico, azúcar residual, cloruros, dióxido de azufre libre, dióxido de azufre total, densidad, pH, sulfatos, alcohol, etc. O peor: imaginá un dataset con cientos o miles de variables.
+
+\vspace{0.5em}
+
+Esto genera varios problemas:
+
+\begin{itemize}
+    \item \textbf{Imposible de visualizar}: no podés graficar 13 dimensiones en una pantalla 2D
+    \item \textbf{Multicolinealidad}: muchas de estas propiedades están correlacionadas (por ejemplo, acidez con pH, alcohol con densidad)
+    \item \textbf{Costo computacional alto}: entrenar modelos con muchas features es lento y consume mucha memoria
+    \item \textbf{Curse of dimensionality}: en espacios de alta dimensión, los datos se vuelven ``dispersos'' y las distancias pierden significado
+    \item \textbf{Overfitting}: más features = más riesgo de sobreajuste, especialmente si tenés pocas observaciones
+\end{itemize}
+
+La pregunta es: \textbf{¿Podemos reducir el número de features sin perder demasiada información?} Acá entra PCA.
+
+\section{¿Qué es PCA?}
+
+PCA (\textit{Principal Component Analysis} o Análisis de Componentes Principales) es una técnica de \textbf{reducción de dimensionalidad}. Su objetivo es transformar un conjunto de variables (posiblemente correlacionadas) en un conjunto más pequeño de variables no correlacionadas llamadas \textbf{componentes principales}.
+
+\subsection{La Idea Intuitiva}
+
+Pensalo así: tenés un montón de features que están correlacionadas. Por ejemplo, en nuestro dataset de vinos:
+
+\begin{itemize}
+    \item Acidez fija, acidez volátil, ácido cítrico, pH $\rightarrow$ todas relacionadas con la ``composición ácida''
+    \item Alcohol, densidad, azúcar residual $\rightarrow$ todas relacionadas con la ``composición alcohólica''
+    \item Sulfatos, dióxido de azufre libre/total $\rightarrow$ relacionadas con ``conservantes''
+\end{itemize}
+
+En lugar de tener todas estas variables, PCA crea nuevas variables (componentes principales) que capturen la mayor parte de la variabilidad:
+
+\begin{itemize}
+    \item \textbf{Componente Principal 1 (PC1)}: captura la dirección de máxima variabilidad en los datos (ej: ``balance ácido general del vino'')
+    \item \textbf{Componente Principal 2 (PC2)}: captura la segunda dirección de máxima variabilidad, \textbf{ortogonal a PC1} (ej: ``contenido alcohólico y dulzor'')
+    \item Y así sucesivamente...
+\end{itemize}
+
+La clave es que los primeros componentes principales suelen capturar la mayor parte de la información, entonces podés quedarte solo con ellos y descartar el resto.
+
+\subsection{¿Por Qué Usar PCA?}
+
+Las principales motivaciones para usar PCA son:
+
+\begin{enumerate}
+    \item \textbf{Visualización}: reducir a 2 o 3 dimensiones para poder graficar y explorar los datos visualmente
+    \item \textbf{Reducir costo computacional}: menos features = entrenamiento más rápido y menos memoria
+    \item \textbf{Preprocesamiento para otros modelos}: eliminar multicolinealidad antes de aplicar regresión lineal, por ejemplo
+    \item \textbf{Eliminación de ruido}: si las últimas componentes tienen poca varianza, probablemente sean ruido
+    \item \textbf{Compresión de datos}: almacenar datos de forma más eficiente
+\end{enumerate}
+
+\section{¿Cómo Funciona PCA?}
+
+Vamos a explicar la intuición sin meternos demasiado en el álgebra lineal.
+
+\subsection{Paso a Paso}
+
+\textbf{\underline{Paso 1: Estandarizar los datos}}
+
+\vspace{0.5em}
+
+PCA es sensible a la escala de las variables. Si una variable tiene un rango mucho mayor que otra, va a dominar la varianza. Por eso, primero estandarizamos todas las features para que tengan media 0 y varianza 1.
+
+\[
+z_i = \frac{x_i - \mu}{\sigma}
+\]
+
+\textbf{\underline{Paso 2: Calcular la matriz de covarianza}}
+
+\vspace{0.5em}
+
+La matriz de covarianza nos dice cómo varían las features entre sí. Si dos features tienen covarianza alta (positiva o negativa), significa que están correlacionadas.
+
+\vspace{0.5em}
+
+\textbf{\underline{Paso 3: Calcular los eigenvectors y eigenvalues}}
+
+\vspace{0.5em}
+
+Acá viene la magia del álgebra lineal. Los \textbf{eigenvectors} (autovectores) nos dan las \textbf{direcciones} de máxima varianza, y los \textbf{eigenvalues} (autovalores) nos dicen \textbf{cuánta varianza} hay en cada dirección.
+
+\begin{itemize}
+    \item El eigenvector con el eigenvalue más grande define la primera componente principal (PC1)
+    \item El segundo eigenvector define PC2, y así sucesivamente
+    \item Los eigenvectors son ortogonales entre sí (perpendiculares), lo que garantiza que los componentes principales no estén correlacionados
+\end{itemize}
+
+\textbf{\underline{Paso 4: Proyectar los datos}}
+
+\vspace{0.5em}
+
+Una vez que tenemos los eigenvectors, proyectamos los datos originales sobre estos nuevos ejes. Cada componente principal es una combinación lineal de las features originales:
+
+\[
+PC_1 = w_{1,1} \cdot x_1 + w_{1,2} \cdot x_2 + \ldots + w_{1,p} \cdot x_p
+\]
+
+donde $w_{1,j}$ son los pesos (componentes del eigenvector correspondiente).
+
+\vspace{0.5em}
+
+\textbf{\underline{Paso 5: Seleccionar los K primeros componentes}}
+
+\vspace{0.5em}
+
+Finalmente, nos quedamos solo con los primeros K componentes principales (los que tienen mayor varianza). Así reducimos de $p$ features originales a $K$ componentes, con $K \ll p$.
+
+\subsection{Ejemplo Simplificado}
+
+Supongamos que tenemos datos de estudiantes con dos features: ``Horas de Estudio'' y ``Nota en el Examen''. Estas variables están muy correlacionadas (quien estudia más, saca mejor nota). Si graficamos los datos en 2D, vamos a ver que los puntos están dispersos a lo largo de una diagonal. PCA encuentra esa diagonal como la primera componente principal (la dirección de máxima varianza). La segunda componente principal sería perpendicular a esa diagonal, capturando pequeñas variaciones (ej: estudiantes que estudian mucho pero les fue mal por nervios, o estudiantes que estudiaron poco pero tuvieron suerte). Si queremos reducir a 1 dimensión, nos quedamos solo con PC1 (la diagonal), que captura la mayor parte de la información.
+
+\section{Varianza Explicada}
+
+Una pregunta clave es: \textbf{¿Con cuántos componentes principales nos quedamos?} Para responder esto, miramos la \textbf{varianza explicada} por cada componente. Recordá que cada eigenvalue nos dice cuánta varianza captura ese componente.
+
+\vspace{0.5em}
+
+La proporción de varianza explicada por el componente $i$ es:
+
+\[
+\text{Varianza Explicada}_i = \frac{\lambda_i}{\sum_{j=1}^{p} \lambda_j}
+\]
+
+donde $\lambda_i$ es el eigenvalue del componente $i$, y $p$ es el número total de features.
+
+\subsection{Regla del 80-90\%}
+
+Una regla práctica es quedarse con los componentes que en total expliquen al menos el 80-90\% de la varianza total. Por ejemplo:
+
+\begin{itemize}
+    \item PC1 explica 50\% de la varianza
+    \item PC2 explica 25\%
+    \item PC3 explica 15\%
+    \item PC4 explica 5\%
+    \item PC5+ explican menos del 5\%
+\end{itemize}
+
+En este caso, con 3 componentes (PC1, PC2, PC3) ya cubrís el 90\% de la varianza, entonces podés descartar PC4 en adelante.
+
+\subsection{Gráfico de Varianza Acumulada}
+
+Una forma visual de decidir es graficar la \textbf{varianza acumulada}. Buscás el punto donde la curva se ``aplana'', similar al método del codo en K-Means.
+
+\section{Implementación en Python}
+
+Veamos cómo aplicar PCA en Python usando \texttt{scikit-learn}.
+
+\subsection{Imports Necesarios}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+\end{lstlisting}
+
+\subsection{Estandarizar y Aplicar PCA}
+
+\begin{lstlisting}[language=Python]
+# Supongamos que X es nuestro DataFrame con las features
+# Por ejemplo: X = df[['feature1', 'feature2', ..., 'feature64']]
+
+# Paso 1: Estandarizar
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Paso 2: Aplicar PCA (por ahora, con todos los componentes)
+pca = PCA()
+X_pca = pca.fit_transform(X_scaled)
+
+# Ver cuanta varianza explica cada componente
+print("Varianza explicada por cada componente:")
+print(pca.explained_variance_ratio_)
+
+# Varianza acumulada
+print("\nVarianza acumulada:")
+print(np.cumsum(pca.explained_variance_ratio_))
+\end{lstlisting}
+
+\subsection{Reducir a K Componentes}
+
+\begin{lstlisting}[language=Python]
+# Decidimos quedarnos con 2 componentes para visualizacion
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+print(f"Forma original: {X_scaled.shape}")
+print(f"Forma reducida: {X_pca.shape}")
+print(f"Varianza explicada: {pca.explained_variance_ratio_.sum():.2%}")
+\end{lstlisting}
+
+\subsection{Visualizar Varianza Explicada}
+
+\begin{lstlisting}[language=Python]
+# Grafico de varianza explicada por componente
+plt.figure(figsize=(10, 6))
+plt.bar(range(1, len(pca.explained_variance_ratio_) + 1),
+        pca.explained_variance_ratio_)
+plt.xlabel('Componente Principal')
+plt.ylabel('Varianza Explicada')
+plt.title('Varianza Explicada por Componente')
+plt.show()
+
+# Grafico de varianza acumulada
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(pca.explained_variance_ratio_) + 1),
+         np.cumsum(pca.explained_variance_ratio_), marker='o')
+plt.xlabel('Numero de Componentes')
+plt.ylabel('Varianza Acumulada')
+plt.title('Varianza Acumulada')
+plt.axhline(y=0.9, color='r', linestyle='--', label='90% varianza')
+plt.legend()
+plt.grid(True)
+plt.show()
+\end{lstlisting}
+
+\section{Interpretación de Componentes Principales}
+
+Los componentes principales son combinaciones lineales de las features originales. Podés ver qué features contribuyen más a cada componente mirando los ``loadings'' (pesos).
+
+\begin{lstlisting}[language=Python]
+# Ver los loadings del primer componente principal
+loadings = pca.components_[0]
+feature_names = X.columns  # Asumiendo que X es un DataFrame
+
+# Crear DataFrame de loadings
+loadings_df = pd.DataFrame({
+    'feature': feature_names,
+    'loading': loadings
+}).sort_values('loading', key=abs, ascending=False)
+
+print("Contribucion de cada feature a PC1:")
+print(loadings_df.head(10))
+\end{lstlisting}
+
+Por ejemplo, si estás trabajando con datos de vinos y ves que PC1 tiene loadings altos en ``acidez'', ``pH'', y ``contenido alcohólico'', podés interpretar PC1 como un eje de ``composición química''.
+
+\section{Reconstrucción de Datos}
+
+Una vez que aplicaste PCA y te quedaste con K componentes, podés \textbf{reconstruir} una aproximación de los datos originales. Obviamente, si K < número de features originales, va a haber pérdida de información.
+
+\begin{lstlisting}[language=Python]
+# Reconstruir datos originales desde componentes principales
+X_reconstructed = pca.inverse_transform(X_pca)
+
+# Calcular error de reconstruccion (MSE)
+mse = np.mean((X_scaled - X_reconstructed) ** 2)
+print(f"Error de reconstruccion (MSE): {mse:.4f}")
+\end{lstlisting}
+
+La reconstrucción es útil para compresión de datos (ej: compresión de imágenes).
+
+\section{PCA en el Pipeline de Machine Learning}
+
+PCA se puede usar como preprocesamiento antes de entrenar un modelo supervisado. Esto puede:
+
+\begin{itemize}
+    \item Reducir el tiempo de entrenamiento
+    \item Mitigar overfitting (menos features = menos complejidad)
+    \item Eliminar multicolinealidad
+\end{itemize}
+
+\subsection{Ejemplo de Pipeline}
+
+\begin{lstlisting}[language=Python]
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+# Dividir datos
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Crear pipeline: Scaler -> PCA -> Modelo
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('pca', PCA(n_components=10)),
+    ('classifier', LogisticRegression(max_iter=1000))
+])
+
+# Entrenar
+pipeline.fit(X_train, y_train)
+
+# Evaluar
+score = pipeline.score(X_test, y_test)
+print(f"Accuracy con PCA: {score:.3f}")
+\end{lstlisting}
+
+Podés comparar el performance con y sin PCA para ver si vale la pena.
+
+\section{Ventajas y Limitaciones de PCA}
+
+\subsection{Ventajas}
+
+\begin{itemize}
+    \item \textbf{Reduce dimensionalidad} sin necesidad de seleccionar manualmente features
+    \item \textbf{Elimina multicolinealidad}: los componentes principales son ortogonales (no correlacionados)
+    \item \textbf{Visualización}: permite graficar datos de alta dimensión en 2D o 3D
+    \item \textbf{Eficiencia computacional}: reduce el costo de entrenar modelos
+    \item \textbf{Elimina ruido}: componentes con poca varianza suelen ser ruido
+\end{itemize}
+
+\subsection{Limitaciones}
+
+\begin{itemize}
+    \item \textbf{Pérdida de interpretabilidad}: los componentes principales son combinaciones de features, difíciles de interpretar
+    \item \textbf{Asume linealidad}: PCA solo encuentra relaciones lineales. Si las features están relacionadas de forma no lineal, PCA no va a funcionar bien (para eso existe kernel PCA o t-SNE)
+    \item \textbf{Sensible a outliers}: los componentes pueden estar distorsionados por valores extremos
+    \item \textbf{Requiere estandarización}: sin estandarizar, las features con mayor rango dominan
+    \item \textbf{No supervisa}: PCA no considera la variable objetivo ($y$). Podría eliminar features importantes para la predicción
+\end{itemize}
+
+\section{¿Cuándo Usar PCA?}
+
+\subsection{Casos de Uso Ideales}
+
+Usá PCA cuando:
+
+\begin{itemize}
+    \item Tenés muchas features correlacionadas
+    \item Querés visualizar datos de alta dimensión
+    \item El entrenamiento de modelos es muy lento por la cantidad de features
+    \item Tenés problemas de multicolinealidad (ej: antes de regresión lineal)
+    \item Querés hacer compresión de datos (ej: imágenes, audio)
+\end{itemize}
+
+\subsection{Casos Donde NO Usar PCA}
+
+No uses PCA si:
+
+\begin{itemize}
+    \item Tus features no están correlacionadas (PCA no va a reducir mucho)
+    \item La interpretabilidad es crítica (los componentes son difíciles de interpretar)
+    \item Las relaciones entre features son no lineales (considerá kernel PCA o autoencoders)
+    \item Tenés muy pocas features (no tiene sentido reducir si ya tenés 3-4 variables)
+\end{itemize}
+
+\section{PCA vs Otras Técnicas de Reducción de Dimensionalidad}
+
+Existen otras técnicas además de PCA:
+
+\begin{itemize}
+    \item \textbf{t-SNE}: mejor para visualización, pero no para reducción computacional (es lento)
+    \item \textbf{UMAP}: similar a t-SNE pero más rápido y escalable
+    \item \textbf{Feature Selection}: seleccionar features importantes en lugar de crear combinaciones (más interpretable)
+    \item \textbf{Autoencoders}: redes neuronales que aprenden representaciones comprimidas (no lineales)
+\end{itemize}
+
+PCA es generalmente la primera opción por su simplicidad y velocidad.
+
+\section{Ejemplo Aplicado: PCA en Imágenes}
+
+Un caso de uso clásico de PCA es compresión de imágenes. Cada píxel es una feature, y PCA encuentra patrones en cómo varían los píxeles.
+
+\subsection{Dataset de Dígitos}
+
+El dataset \texttt{digits} de sklearn tiene imágenes de 8x8 píxeles (64 features). Con PCA, podés reducir a 10-20 componentes sin perder mucha información.
+
+\begin{lstlisting}[language=Python]
+from sklearn.datasets import load_digits
+
+# Cargar datos
+digits = load_digits()
+X = digits.data  # 1797 imagenes x 64 pixels
+y = digits.target  # Digitos 0-9
+
+# Aplicar PCA
+pca = PCA(n_components=20)
+X_pca = pca.fit_transform(X)
+
+print(f"Forma original: {X.shape}")
+print(f"Forma reducida: {X_pca.shape}")
+print(f"Varianza explicada: {pca.explained_variance_ratio_.sum():.2%}")
+\end{lstlisting}
+
+Con solo 20 componentes (de 64 originales), podés capturar más del 90\% de la varianza, lo que significa que las imágenes reconstruidas van a ser muy parecidas a las originales.
+
+\section{Recursos Extra}
+
+Si querés profundizar más en PCA, te recomiendo:
+
+\begin{itemize}
+    \item \textbf{StatQuest: PCA clearly explained}: \url{https://www.youtube.com/watch?v=FgakZw6K1QQ}
+    \item \textbf{3Blue1Brown: Eigenvectors and eigenvalues}: \url{https://www.youtube.com/watch?v=PFDu9oVAE-g}
+    \item \textbf{Documentación sklearn}: \url{https://scikit-learn.org/stable/modules/decomposition.html#pca}
+\end{itemize}
+
+\end{document}
