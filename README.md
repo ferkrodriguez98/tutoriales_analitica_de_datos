@@ -18,24 +18,26 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 13 - Clustering](): K-means.
 - [Clase 14 - PCA](): Reducción de dimensionalidad.
 
+Ambas tutoriales (Rodríguez del Castillo y Telechea) son los Jueves.
 
 ## Cronograma
 
-| # Clase | Rodríguez del Castillo (Lun 9hs) | Rodríguez del Castillo (Mar 12.20hs) | Rodríguez del Castillo (Mié 12.20hs) | Telechea (Jue 17.20hs) |
-|:------:|:-----------------:|:------------------------------------:|:------------------------:|:----------------------:|
-|   X    |**SIN**| **TUTORIALES** | **LA PRIMERA** | **SEMANA** |
-|   1    | 11/08 | 12/08 | 13/08 | 14/08 |
-|   2    | 18/08 | 19/08 | 20/08 | 21/08 |
-|   3    | 25/08 | 26/08 | 27/08 | 28/08 |
-|   4    | 01/09 | 02/09 | 03/09 | 04/09 |
-|   5    | 08/09 | 09/09 | 10/09 | 11/09 |
-|   6    | 15/09 | 16/09 | 17/09 | 18/09 |
-|   7    | 22/09 | 23/09 | 24/09 | 25/09 |
-|   -    |       | **PARCIALES** |       |
-|   8    | 13/10 | 14/10 | 15/10 | 16/10 |
-|   9    | 20/10 | 21/10 | 22/10 | 23/10 |
-|   10   | 27/10 | 28/10 | 29/10 | 30/10 |
-|   11   | 03/11 | 04/11 | 05/11 | 06/11 |
-|   12   | 10/11 | 11/11 | 12/11 | 13/11 |
-|   13   | 17/11 | 18/11 | 19/11 | 20/11 |
-|   14   | Feriado | 25/11 | 26/11 | 27/11 |
+| # Clase | Fecha |
+|:------:|:-----:|
+|   X    | **SIN TUTORIAL 05/03** |
+|   1    | 12/03 |
+|   2    | 19/03 |
+|   3    | 26/03 |
+|   -    | 02/04 (Feriado) |
+|   4    | 09/04 |
+|   5    | 16/04 |
+|   6    | 23/04 |
+|   7    | 30/04 |
+|   -    | **PARCIALES** |
+|   8    | 14/05 |
+|   9    | 21/05 |
+|   10   | 28/05 |
+|   11   | 04/06 |
+|   12   | 11/06 |
+|   13   | 18/06 |
+|   14   | 25/06 |
