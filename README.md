@@ -14,8 +14,8 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 8 - Resolución del Parcial](): Resolución del parcial por parte de los tutores.
 - [Clase 9 - Random Forest y Boosting](): Random Forest, comparación con CART, análisis y visualizaciones. Algoritmos de Boosting: AdaBoost, Gradient Boosting, XGBoost.
 - [Clase 10 - Naive Bayes](): Clasificador Naive Bayes
-- [Clase 12 - Series Temporales](): Visualización de tendencias y patrones, descomposición.
-- [Clase 13 - Clustering](): K-means.
+- [Clase 12 - Clustering](): K-means.
+- [Clase 13 - Series Temporales](): Visualización de tendencias y patrones, descomposición.
 - [Clase 14 - PCA](): Reducción de dimensionalidad.
 
 Ambas tutoriales (Rodríguez del Castillo y Telechea) son los Jueves.
