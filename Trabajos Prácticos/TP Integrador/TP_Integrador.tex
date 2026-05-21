@@ -1,0 +1,291 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Trabajo Práctico Integrador}}\\[0.5em]
+  {Analítica de Datos, Universidad de San Andrés}
+\end{center}
+
+\section{Generalidades}
+
+El trabajo es grupal e integra los contenidos de la materia: desde EDA y preparación de datos hasta entrenamiento y evaluación de modelos de Machine Learning supervisado.
+
+\begin{itemize}
+    \item Grupos de \textbf{3 o 4 personas}.
+    \item Un mismo dataset no puede ser elegido por más de dos grupos.
+    \item Inscripción del grupo y del dataset elegido en la planilla compartida.
+    \item \textbf{Fecha límite de inscripción: jueves 21/05 (clase 9).}
+\end{itemize}
+
+El trabajo se entrega y se defiende en \textbf{dos tandas}. Después de la primera defensa los grupos reciben una devolución que deben incorporar antes de la segunda entrega.
+
+\section{Datasets}
+
+Pueden elegir uno de la lista o proponer uno propio (sujeto a aprobación antes de la fecha límite). Para cada uno se indica el tema y el tipo de problema sugerido.
+
+Datasets pesados (Yellow Cab, HVFHS, Yelp completo) requieren acotar el alcance y justificarlo. Datasets sensibles (policiales, judiciales, salud) requieren una sección de sesgos y consideraciones éticas.
+
+\subsection{AirBnB Buenos Aires}
+\begin{itemize}
+    \item \textbf{Tema:} alojamiento.
+    \item \textbf{Tipo sugerido:} regresión / clasificación.
+    \item \textbf{Link:} \url{https://insideairbnb.com/buenos-aires/}
+\end{itemize}
+
+\subsection{Encuesta Mundial de Salud Escolar (EMSE 2018)}
+\begin{itemize}
+    \item \textbf{Tema:} educación / salud.
+    \item \textbf{Tipo sugerido:} clasificación.
+    \item \textbf{Link:} \url{http://datos.salud.gob.ar/dataset/base-de-datos-de-la-3-encuesta-mundial-de-salud-escolar-emse-con-resultados-nacionales-argentina/archivo/9888b372-8094-45e2-8b62-40630838c5dc}
+\end{itemize}
+
+\subsection{Estadísticas sobre Ejecución de la Pena (SNEEP)}
+\begin{itemize}
+    \item \textbf{Tema:} judicial.
+    \item \textbf{Tipo sugerido:} clasificación. Elegir un año.
+    \item \textbf{Link:} \url{https://datos.jus.gob.ar/dataset/sneep/archivo/5fd7ce53-c741-4837-9850-d2879fec8a6b}
+\end{itemize}
+
+\subsection{Recorridos en Ecobicis}
+\begin{itemize}
+    \item \textbf{Tema:} tránsito.
+    \item \textbf{Tipo sugerido:} regresión / clasificación. Elegir un año.
+    \item \textbf{Link:} \url{https://data.buenosaires.gob.ar/dataset/bicicletas-publicas}
+\end{itemize}
+
+\subsection{Crímenes reportados en Chicago}
+\begin{itemize}
+    \item \textbf{Tema:} policial.
+    \item \textbf{Tipo sugerido:} clasificación. Elegir un año.
+    \item \textbf{Link:} \url{https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2/related_content}
+\end{itemize}
+
+\subsection{Denuncias a la policía de NY}
+\begin{itemize}
+    \item \textbf{Tema:} policial.
+    \item \textbf{Tipo sugerido:} clasificación. Datos 2024--2025.
+    \item \textbf{Link:} \url{https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Current-Year-To-Date-/5uac-w243/about_data}
+\end{itemize}
+
+\subsection{Yellow Cab NYC}
+\begin{itemize}
+    \item \textbf{Tema:} tránsito.
+    \item \textbf{Tipo sugerido:} regresión. Acotar mes/año por el tamaño.
+    \item \textbf{Link:} \url{https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page}
+\end{itemize}
+
+\subsection{Eventos de violencia organizada (UCDP GED)}
+\begin{itemize}
+    \item \textbf{Tema:} conflictos bélicos.
+    \item \textbf{Tipo sugerido:} clasificación.
+    \item \textbf{Link:} \url{https://ucdp.uu.se/downloads/index.html#ged_global}
+\end{itemize}
+
+\subsection{TMDB Movies Dataset 2024}
+\begin{itemize}
+    \item \textbf{Tema:} ocio.
+    \item \textbf{Tipo sugerido:} regresión.
+    \item \textbf{Link:} \url{https://www.kaggle.com/datasets/asaniczka/tmdb-movies-dataset-2023-930k-movies}
+\end{itemize}
+
+\subsection{Pacientes con diabetes en 130 hospitales (US)}
+\begin{itemize}
+    \item \textbf{Tema:} salud.
+    \item \textbf{Tipo sugerido:} clasificación (readmisión).
+    \item \textbf{Link:} \url{https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008}
+\end{itemize}
+
+\subsection{Precios Claros --- Base SEPA}
+\begin{itemize}
+    \item \textbf{Tema:} comercio.
+    \item \textbf{Tipo sugerido:} regresión / clasificación. Elegir una cadena.
+    \item \textbf{Link:} \url{https://datos.gob.ar/dataset/produccion-precios-claros---base-sepa}
+\end{itemize}
+
+\subsection{High-Volume For-Hire Services (HVFHS)}
+\begin{itemize}
+    \item \textbf{Tema:} tránsito.
+    \item \textbf{Tipo sugerido:} regresión / clasificación. Elegir un año.
+    \item \textbf{Link:} \url{https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page}
+\end{itemize}
+
+\subsection{Reviews de Yelp}
+\begin{itemize}
+    \item \textbf{Tema:} comercio.
+    \item \textbf{Tipo sugerido:} clasificación.
+    \item \textbf{Link:} \url{https://business.yelp.com/data/resources/open-dataset/}
+\end{itemize}
+
+\subsection{Dataset propio}
+\begin{itemize}
+    \item \textbf{Tema:} a definir por el grupo.
+    \item \textbf{Tipo sugerido:} a justificar.
+    \item \textbf{Link:} sujeto a aprobación previa.
+\end{itemize}
+
+\section{Consignas}
+
+\subsection{Entrega 1 --- EDA y preparación de datos}
+
+\subsubsection{EDA}
+
+\begin{itemize}
+    \item Cargar el dataset y describir origen, contexto y forma de recolección.
+    \item Número de observaciones, número de variables, tipos de datos.
+    \item Distribuciones marginales y relaciones bivariadas.
+    \item Errores, outliers y valores faltantes. Clasificar los faltantes (MCAR, MAR, MNAR).
+\end{itemize}
+
+\subsubsection{Visualización}
+
+\begin{itemize}
+    \item Elegir el gráfico adecuado según el tipo de variable y el análisis.
+    \item Justificar la elección de cada gráfico.
+    \item Interpretar lo que se ve.
+\end{itemize}
+
+\subsubsection{Definición del problema de ML supervisado}
+
+\begin{itemize}
+    \item Plantear un problema de clasificación o regresión.
+    \item Definir la variable target.
+    \item Definir las métricas de evaluación y justificar su elección.
+\end{itemize}
+
+\subsubsection{Preprocesamiento}
+
+\begin{itemize}
+    \item Limpieza general del dataset.
+    \item Split (train/test o train/validation/test). Justificar la estrategia.
+    \item Tratamiento de valores faltantes.
+    \item Detección y manejo de outliers.
+    \item Escalado/normalización cuando corresponda.
+\end{itemize}
+
+El preprocesamiento que use estadísticas del dataset debe ajustarse solo con train.
+
+\subsubsection{Feature engineering}
+
+\begin{itemize}
+    \item Creación de nuevos features justificada.
+    \item Codificación de variables categóricas.
+    \item Discretización cuando corresponda.
+    \item En clasificación: análisis de balance de clases y, si corresponde, técnica de balanceo justificada.
+\end{itemize}
+
+\subsubsection{Reducción de dimensionalidad}
+
+\begin{itemize}
+    \item Selección de features con al menos un método (filtros, correlación, importancia desde un modelo base, etc.).
+    \item PCA: implementación, varianza explicada y discusión.
+\end{itemize}
+
+\subsection{Entrega 2 --- Modelado y conclusiones}
+
+\subsubsection{Modelado}
+
+\begin{itemize}
+    \item Un baseline simple (regresión lineal/logística, árbol o dummy).
+    \item Al menos dos modelos más vistos en clase (KNN, Random Forest, Boosting, Naive Bayes, etc.).
+    \item Validación cruzada sobre train.
+    \item Tuning de hiperparámetros del mejor modelo.
+    \item Tabla comparativa de resultados.
+    \item Performance final sobre test, reportada una sola vez.
+\end{itemize}
+
+\subsubsection{Interpretación y conclusiones}
+
+\begin{itemize}
+    \item Interpretabilidad: feature importance, coeficientes o herramientas similares (SHAP, permutation importance).
+    \item Conclusiones sobre el uso del modelo y sus limitaciones.
+    \item Sesgos del dataset y consideraciones éticas (obligatorio en datasets sensibles).
+    \item Incorporación de la devolución recibida en la Entrega 1.
+\end{itemize}
+
+\section{Entregas}
+
+Cada entrega incluye:
+
+\begin{enumerate}
+    \item \textbf{Repositorio de GitHub} actualizado con el código de la etapa correspondiente. \texttt{README.md} y \texttt{requirements.txt} incluidos. No subir el dataset crudo si es pesado.
+    \item \textbf{Informe parcial}: notebook ejecutado de punta a punta, con celdas de markdown explicando cada paso.
+    \item \textbf{Presentación}: hasta 6 diapositivas + carátula por entrega, con link al repositorio.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{l l l}
+\toprule
+\textbf{Entrega} & \textbf{Contenido} & \textbf{Fecha límite} \\
+\midrule
+Entrega 1 & EDA y preparación de datos & martes 09/06 \\
+Entrega 2 & Modelado y conclusiones & martes 23/06 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Defensas orales}
+
+Cada entrega se defiende oralmente en clase. La devolución de la primera defensa debe incorporarse en la segunda entrega.
+
+\begin{center}
+\begin{tabular}{l l l}
+\toprule
+\textbf{Defensa} & \textbf{Clase} & \textbf{Fecha} \\
+\midrule
+Defensa 1 --- EDA y preparación & Clase 13 & 18/06 \\
+Defensa 2 --- Modelado y conclusiones & Clase 14 & 25/06 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item 15 minutos por grupo: 10' de exposición + 5' de preguntas.
+    \item Todos los integrantes exponen una parte aproximadamente igual.
+    \item Cualquier integrante puede recibir preguntas sobre cualquier parte del trabajo.
+\end{itemize}
+
+\section{Evaluación}
+
+La nota final se compone de las dos entregas, con peso aproximadamente igual.
+
+\begin{center}
+\begin{tabular}{l c c}
+\toprule
+\textbf{Dimensión} & \textbf{Peso} & \textbf{Entrega} \\
+\midrule
+Entendimiento del dataset y del problema & 5\% & 1 \\
+EDA y visualizaciones & 8\% & 1 \\
+Preprocesamiento y feature engineering & 8\% & 1 \\
+Reducción de dimensionalidad & 5\% & 1 \\
+Modelado: elección, validación, comparación, tuning & 10\% & 2 \\
+Interpretación y conclusiones & 5\% & 2 \\
+Incorporación de la devolución de la Entrega 1 & 3\% & 2 \\
+Repositorio y reproducibilidad & 6\% & 1 y 2 \\
+Presentación y defensa oral & 50\% & 1 y 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+No se aceptan trabajos sin componente de modelado.
+
+\section{Uso de inteligencia artificial}
+
+Se incentiva el uso de herramientas de inteligencia artificial (ChatGPT, Claude, Copilot, etc.) durante todo el trabajo práctico: para explorar el dataset, generar código, debuggear, redactar el informe o lo que necesiten. La única condición es que entiendan perfecto qué carajo están haciendo. Si en la defensa oral no saben contestar algo porque lo hizo la IA y no ustedes, se penalizará fuerte.
+
+\end{document}
