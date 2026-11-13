@@ -14,16 +14,19 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 
-# Paleta categórica fija (siempre en este orden)
-PAL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
-GRIS = "#52514e"
+# Paleta de las slides de la materia (verde salvia / naranja / verde oscuro), siempre en este orden
+PAL = ["#6e8f6a", "#b85c2e", "#1d3b2a", "#c49a2c", "#6f8fae", "#a8728f", "#8a8a80", "#d08c60"]
+GRIS = "#6b7064"
+TINTA = "#20241e"
 plt.rcParams.update({
     "figure.dpi": 150, "savefig.dpi": 200, "savefig.bbox": "tight",
-    "font.size": 12, "axes.titlesize": 13, "axes.labelsize": 12,
+    "font.family": ["Lato", "DejaVu Sans"],
+    "font.size": 12, "axes.titlesize": 12, "axes.labelsize": 11,
+    "axes.titlecolor": TINTA, "text.color": TINTA,
     "axes.spines.top": False, "axes.spines.right": False,
-    "axes.edgecolor": "#9a9893", "axes.labelcolor": "#0b0b0b",
-    "xtick.color": GRIS, "ytick.color": GRIS,
-    "axes.grid": True, "grid.color": "#e6e5e0", "grid.linewidth": 0.8,
+    "axes.edgecolor": "#20241e", "axes.linewidth": 0.8, "axes.labelcolor": TINTA,
+    "xtick.color": TINTA, "ytick.color": TINTA, "xtick.labelsize": 10, "ytick.labelsize": 10,
+    "axes.grid": False,
     "legend.frameon": False,
 })
 
@@ -69,7 +72,7 @@ fig, axes = plt.subplots(1, 4, figsize=(15, 3.8), sharex=True, sharey=True)
 for i, (ax, (idx, tit)) in enumerate(zip(axes, mostrar)):
     c, l = estados[idx]
     if i == 0:
-        ax.scatter(Xs[:, 0], Xs[:, 1], s=14, color="#c3c2b7")
+        ax.scatter(Xs[:, 0], Xs[:, 1], s=14, color="#cfc8b6")
     else:
         ax.scatter(Xs[:, 0], Xs[:, 1], s=14, c=[PAL[k] for k in l], alpha=0.8)
     ax.scatter(c[:, 0], c[:, 1], marker="X", s=190, color="black", edgecolor="white", linewidth=1.5)
@@ -282,7 +285,7 @@ As = StandardScaler().fit_transform(A)
 # Correlaciones
 fig, ax = plt.subplots(figsize=(7.2, 6))
 corr = A.corr()
-im = ax.imshow(corr, cmap="RdBu_r", vmin=-1, vmax=1)
+im = ax.imshow(corr, cmap=matplotlib.colors.LinearSegmentedColormap.from_list("vn", ["#b85c2e", "#ffffff", "#1d3b2a"]), vmin=-1, vmax=1)
 ax.set_xticks(range(len(corr)), corr.columns, rotation=60, ha="right")
 ax.set_yticks(range(len(corr)), corr.columns)
 for i in range(len(corr)):
@@ -356,8 +359,8 @@ for nombre in destacados:
     i = autos.index[autos.Make == nombre]
     if len(i):
         i = i[0]
-        ax.annotate(nombre.replace("_", " "), Z2[i], xytext=(5, 4), textcoords="offset points", fontsize=8.5, color="#0b0b0b")
-ax.axhline(0, color="#c3c2b7", lw=1); ax.axvline(0, color="#c3c2b7", lw=1)
+        ax.annotate(nombre.replace("_", " "), Z2[i], xytext=(5, 4), textcoords="offset points", fontsize=8.5, color=TINTA)
+ax.axhline(0, color="#cfc8b6", lw=1); ax.axvline(0, color="#cfc8b6", lw=1)
 ax.set_xlabel(f"PC1: tamaño  ({ev[0]:.0%})   chico/económico  ←→  grande/gastador")
 ax.set_ylabel(f"PC2 ({ev[1]:.0%})   familiar  ←→  deportivo/premium")
 ax.legend(title="Tipo", loc="upper left", bbox_to_anchor=(1.0, 1.0))

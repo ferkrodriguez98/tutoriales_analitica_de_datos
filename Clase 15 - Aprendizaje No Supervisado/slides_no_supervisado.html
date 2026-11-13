@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Aprendizaje no supervisado</title>
+<!-- Para exportar a PDF: abrir en Chrome → Imprimir → Guardar como PDF (márgenes: ninguno, con gráficos de fondo).
+     O correr: python exportar_pdf.py -->
+<style>
+  :root {
+    --verde-oscuro: #1d3b2a;
+    --verde: #6e8f6a;
+    --naranja: #b85c2e;
+    --tinta: #20241e;
+    --gris: #6b7064;
+    --linea: #cfc8b6;
+    --fondo-suave: #f6f4ef;
+    --sans: "Avenir Next", "Avenir", "Lato", "Helvetica Neue", Arial, sans-serif;
+    --serif: "Iowan Old Style", "Charter", "Bitstream Charter", Georgia, serif;
+  }
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #e9e7e1; }
+  body { counter-reset: slide; }
+  .slide {
+    width: 1280px; height: 720px; background: #fff; position: relative; overflow: hidden;
+    margin: 24px auto; padding: 46px 62px 0 62px; counter-increment: slide;
+    font-family: var(--serif); color: var(--tinta); font-size: 17px; line-height: 1.6;
+    page-break-after: always; break-after: page;
+  }
+  @media print { html, body { background: #fff; } .slide { margin: 0; } }
+  .slide h2 {
+    font-family: var(--sans); font-weight: 700; color: var(--verde-oscuro); font-size: 26px;
+    margin: 0 0 22px 0; padding-bottom: 14px; border-bottom: 1.5px solid var(--verde); letter-spacing: 0.2px;
+  }
+  .slide::after {
+    content: counter(slide); position: absolute; right: 62px; bottom: 18px;
+    font-family: var(--sans); font-size: 11px; color: var(--gris);
+  }
+  .slide::before {
+    content: "Aprendizaje no supervisado"; position: absolute; left: 62px; bottom: 18px;
+    font-family: var(--sans); font-size: 11px; color: var(--gris);
+  }
+  .pie { position: absolute; left: 62px; right: 62px; bottom: 44px; border-top: 1px solid var(--linea); }
+  p { margin: 0 0 14px 0; }
+  b, strong { font-weight: 700; color: var(--verde-oscuro); }
+  .alerta { color: var(--naranja); }
+  ul { margin: 0 0 14px 0; padding-left: 22px; }
+  li { margin-bottom: 9px; }
+  li::marker { color: var(--verde-oscuro); }
+  .sans { font-family: var(--sans); }
+  .chico { font-size: 15px; }
+  .centro { text-align: center; }
+  .grande { font-size: 24px; line-height: 1.45; }
+  .cols { display: flex; gap: 40px; align-items: flex-start; }
+  .cols > div { flex: 1; min-width: 0; }
+  .cols.centrado { align-items: center; }
+  .w40 { flex: 0 0 40% !important; } .w45 { flex: 0 0 45% !important; } .w55 { flex: 0 0 55% !important; } .w60 { flex: 0 0 60% !important; }
+  img { max-width: 100%; display: block; }
+  .fig { display: block; margin: 0 auto; }
+  .nota { font-size: 14px; color: var(--gris); }
+  /* tarjetas como las de MAE / MSE */
+  .tarjetas { display: flex; gap: 22px; }
+  .tarjeta { flex: 1; border: 1px solid var(--linea); border-top: 3px solid var(--verde-oscuro); padding: 16px 18px; font-size: 15px; line-height: 1.55; }
+  .tarjeta.naranja { border-top-color: var(--naranja); }
+  .tarjeta h3 { font-family: var(--sans); font-size: 15px; margin: 0 0 10px 0; color: var(--verde-oscuro); }
+  .tarjeta.naranja h3 { color: var(--naranja); }
+  .tarjeta .demo { font-size: 13px; color: var(--gris); margin-top: 8px; }
+  /* tablas */
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--verde-oscuro); text-align: left; padding: 9px 10px; border-bottom: 1.5px solid var(--verde-oscuro); }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  td.num, th.num { text-align: right; }
+  .formula { font-size: 19px; text-align: center; margin: 18px 0 22px 0; }
+  /* portada */
+  .portada { padding-top: 110px; }
+  .portada::before, .portada::after { content: none; }
+  .portada .materia { font-family: var(--sans); font-size: 14px; letter-spacing: 4px; color: var(--verde); text-transform: uppercase; margin-bottom: 26px; }
+  .portada h1 { font-family: var(--sans); font-weight: 700; font-size: 64px; color: var(--verde-oscuro); margin: 0 0 22px 0; line-height: 1.1; }
+  .portada .sub { font-size: 20px; color: var(--gris); margin-bottom: 34px; }
+  .portada .raya { width: 230px; border-top: 1.5px solid var(--verde-oscuro); margin-bottom: 26px; }
+  .portada .clase { font-family: var(--sans); font-size: 13px; color: var(--gris); }
+  .portada .logo { position: absolute; right: 62px; bottom: 60px; height: 50px; }
+  /* separador de sección */
+  .seccion { display: flex; flex-direction: column; justify-content: center; }
+  .seccion .num { font-family: var(--sans); font-size: 14px; letter-spacing: 4px; color: var(--verde); text-transform: uppercase; margin-bottom: 14px; }
+  .seccion h1 { font-family: var(--sans); font-size: 46px; color: var(--verde-oscuro); margin: 0 0 14px 0; }
+  .seccion .sub { font-size: 20px; color: var(--gris); }
+  /* demo */
+  .demo-slide { background: var(--verde-oscuro); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .demo-slide::before, .demo-slide::after { color: #b8c4bb; }
+  .demo-slide .etq { font-family: var(--sans); letter-spacing: 4px; font-size: 14px; text-transform: uppercase; color: #b8c9b4; margin-bottom: 16px; }
+  .demo-slide h1 { font-family: var(--sans); font-size: 42px; margin: 0 0 18px 0; color: #fff; }
+  .demo-slide code { font-size: 18px; color: #e3e8e2; }
+</style>
+</head>
+<body>
+
+<!-- ============================== PORTADA ============================== -->
+<section class="slide portada">
+  <div class="materia">Analítica de datos</div>
+  <h1>Aprendizaje no supervisado</h1>
+  <div class="sub">K-means · clustering jerárquico · PCA</div>
+  <div class="raya"></div>
+  <div class="clase">Clase práctica · 2do cuatrimestre 2026</div>
+  <img class="logo" src="../misc/UdeSA.png" alt="Universidad de San Andrés">
+</section>
+
+<section class="slide">
+  <h2>Dónde estás parado hoy</h2>
+  <p>Hasta ahora todos los modelos fueron <b>supervisados</b> (KNN, CART, Random Forest, Naive Bayes): había una columna <b>respuesta</b> (¿pagó?, ¿compró?, ¿cuánto gastó?) y el modelo aprendía a predecirla. Y podíamos medir si acertaba.</p>
+  <p>Hoy no hay respuesta. Solo tenemos las características de cada caso y buscamos <b>estructura</b>: grupos, patrones, resúmenes. No hay "acierto": si sirve o no lo decide el negocio.</p>
+  <div class="tarjetas" style="margin-top: 26px;">
+    <div class="tarjeta"><h3>Supervisado</h3>"Sé quién se fue: quiero predecir quién se va a ir."</div>
+    <div class="tarjeta naranja"><h3>No supervisado</h3>"No sé qué tipos de clientes tengo: quiero descubrirlos."</div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>Tres preguntas de negocio, tres técnicas</h2>
+  <div class="tarjetas">
+    <div class="tarjeta"><h3>K-means</h3>¿Qué tipos de clientes tengo? ¿A quién le mando qué campaña?<div class="demo">Demo 1 · 200 clientes de un shopping</div></div>
+    <div class="tarjeta"><h3>Clustering jerárquico</h3>¿Qué países se parecen entre sí, para decidir dónde expandirme?<div class="demo">Demo 2 · 193 países (ONU)</div></div>
+    <div class="tarjeta naranja"><h3>PCA</h3>Tengo 12 métricas que dicen casi lo mismo: ¿cómo las resumo en un mapa?<div class="demo">Demo 3 · 93 modelos de autos</div></div>
+  </div>
+  <p style="margin-top: 34px;">Las dos primeras <b>agrupan filas</b> (clientes, países). PCA <b>resume columnas</b> (variables).</p>
+  <div class="pie"></div>
+</section>
+
+<!-- ============================== K-MEANS ============================== -->
+<section class="slide seccion">
+  <div class="num">Parte 1</div>
+  <h1>K-means</h1>
+  <div class="sub">Segmentar clientes</div>
+</section>
+
+<section class="slide">
+  <h2>El problema</h2>
+  <div class="cols centrado">
+    <div class="w55"><img src="img/km_datos.png"></div>
+    <div>
+      <p>Somos marketing de un shopping. Por cada cliente de la tarjeta de fidelidad tenemos su <b>ingreso anual</b> y un <b>score de gasto</b> (1 a 100).</p>
+      <p>Queremos armar campañas para <b>distintos tipos de clientes</b>, pero nadie nos dijo cuáles son.</p>
+      <p><b>¿Cuántos grupos ves?</b></p>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>La idea: K "clientes representantes"</h2>
+  <img class="fig" src="img/km_pasos.png" style="width: 100%;">
+  <p style="margin-top: 18px;">Elegimos <b>K</b> y tiramos K centroides al azar. Cada cliente se asigna al centroide <b>más cercano</b>, cada centroide se mueve al <b>promedio</b> de sus clientes, y repetimos hasta que nada cambia.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>La matemática, muy por arriba</h2>
+  <p>K-means busca los grupos que minimizan la <b>inercia</b>:</p>
+  <div class="formula">Inercia = Σ<sub>grupos</sub> Σ<sub>clientes del grupo</sub> distancia(cliente, centroide)²</div>
+  <ul>
+    <li>Traducción: <b>grupos lo más "apretados" posible</b> alrededor de su representante.</li>
+    <li>"Distancia" = la línea recta (euclídea) entre los valores de las variables, como en KNN.</li>
+    <li>Por eso hay que <b>estandarizar</b>: si el ingreso está en pesos y el score en 1–100, el ingreso domina la distancia.</li>
+    <li>El resultado depende del arranque al azar: se corre varias veces y se queda con el mejor (<code>n_init=10</code>).</li>
+  </ul>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>¿Cuántos grupos? K lo elegimos nosotros</h2>
+  <img class="fig" src="img/km_elegir_k.png" style="width: 86%;">
+  <ul class="chico" style="margin-top: 14px;">
+    <li><b>Codo:</b> la inercia siempre baja al agregar grupos; buscamos dónde <i>deja de bajar mucho</i>.</li>
+    <li><b>Silhouette:</b> ¿cada cliente está más cerca de su grupo que del grupo vecino? (de −1 a 1).</li>
+    <li>Y una pregunta de negocio: <span class="alerta">¿cuántas campañas distintas puede manejar el equipo?</span></li>
+  </ul>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>El algoritmo da números; el nombre lo ponemos nosotros</h2>
+  <div class="cols centrado">
+    <div class="w60"><img src="img/km_segmentos.png"></div>
+    <div>
+      <p>K-means devuelve "cluster 0, 1, 2...". Mirando el <b>centroide</b> de cada grupo le ponemos un nombre que el equipo de marketing entienda.</p>
+      <p>La <b>edad</b> no se usó para agrupar, y aun así distingue a los grupos: los "impulsivos" son los más jóvenes. Eso es un hallazgo.</p>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>¿Y qué hacemos con cada segmento?</h2>
+  <table>
+    <tr><th>Segmento</th><th>Perfil</th><th>Acción</th></tr>
+    <tr><td><b>VIP</b></td><td>Ingreso alto, gasta mucho</td><td>Fidelizar, eventos exclusivos. No perderlos.</td></tr>
+    <tr><td><b>Ahorradores con plata</b></td><td>Ingreso alto, gasta poco</td><td><span class="alerta">Mayor potencial</span>: ¿por qué no compran acá?</td></tr>
+    <tr><td><b>Gastadores impulsivos</b></td><td>Ingreso bajo, gasta mucho, jóvenes</td><td>Promos y cuotas. Ojo con el riesgo crediticio.</td></tr>
+    <tr><td><b>Cuidadosos</b></td><td>Ingreso bajo, gasta poco</td><td>Descuentos puntuales, baja prioridad.</td></tr>
+    <tr><td><b>Promedio</b></td><td>El grupo más grande</td><td>Comunicación masiva estándar.</td></tr>
+  </table>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>K-means en perspectiva</h2>
+  <div class="tarjetas">
+    <div class="tarjeta"><h3>Lo bueno</h3>Simple de entender y de explicar ("estos son los 5 perfiles"). Escala muy bien: funciona con millones de clientes.</div>
+    <div class="tarjeta naranja"><h3>Los límites</h3><b>Siempre</b> devuelve K grupos, aunque los datos no tengan grupos. Le gustan los grupos redondos y de tamaño parecido. Los outliers tiran de los centroides. Solo variables numéricas, y hay que estandarizar.</div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide demo-slide">
+  <div class="etq">Demo 1</div>
+  <h1>Segmentación de clientes</h1>
+  <code>01_kmeans_clientes.ipynb</code>
+</section>
+
+<!-- ============================== JERÁRQUICO ============================== -->
+<section class="slide seccion">
+  <div class="num">Parte 2</div>
+  <h1>Clustering jerárquico</h1>
+  <div class="sub">¿Qué países se parecen?</div>
+</section>
+
+<section class="slide">
+  <h2>El problema</h2>
+  <p>Una <b>fintech argentina</b> quiere expandirse. Antes de estudiar mercado por mercado, quiere saber:</p>
+  <p class="grande centro" style="margin: 26px 0;"><i>¿Qué países se parecen entre sí?</i></p>
+  <ul>
+    <li>193 países, 5 indicadores de la ONU: fertilidad, PBI per cápita, esperanza de vida, % urbano, mortalidad infantil.</li>
+    <li><span class="alerta">No sabemos cuántos grupos hay</span> y queremos algo fácil de mostrarle al directorio.</li>
+    <li>Si una estrategia funciona en un país, probablemente funcione en sus "vecinos".</li>
+  </ul>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>La idea en una frase</h2>
+  <p class="grande centro" style="margin: 10px 0 30px 0;">Arranco con cada país solo y <span class="alerta">voy juntando de a dos</span><br>a los más parecidos, hasta que queda un solo grupo.</p>
+  <ul>
+    <li>Es como armar un <b>árbol genealógico</b> de parecidos: primero se juntan los "hermanos", después los "primos", y así.</li>
+    <li>El <b>dendrograma</b> es el dibujo de ese árbol: anota <b>quién</b> se juntó con quién y <b>qué tan distintos</b> eran cuando se juntaron.</li>
+    <li>No hace falta elegir K antes: la cantidad de grupos se decide <b>al final</b>, mirando el árbol.</li>
+  </ul>
+  <p>Veámoslo con 7 puntos, paso por paso.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>Paso a paso · 1</h2>
+  <img class="fig" src="img/jer_paso1.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Los dos puntos <b>más cercanos</b> (C y E) se juntan primero. En el árbol aparece una "U" <b>bajita</b>: eran muy parecidos.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>Paso a paso · 2</h2>
+  <img class="fig" src="img/jer_paso2.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Siguiente par más cercano: A y B. Otra "U" bajita.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>Paso a paso · 3</h2>
+  <img class="fig" src="img/jer_paso3.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">F y G. Ya tenemos tres grupitos bien apretados.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>Paso a paso · 4</h2>
+  <img class="fig" src="img/jer_paso4.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">D se suma al grupo de C y E. Quedan 3 grupos: {A, B}, {C, D, E} y {F, G}.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>Paso a paso · 5</h2>
+  <img class="fig" src="img/jer_paso5.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Ahora sí hay que juntar grupos <span class="alerta">lejanos</span>: la "U" sube mucho. Ese <b>salto</b> es la señal de que estamos mezclando cosas distintas.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>Paso a paso · 6</h2>
+  <img class="fig" src="img/jer_paso6.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Última unión: todo queda en un solo grupo. El árbol está completo.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>¿Cuántos grupos? Corto el árbol</h2>
+  <img class="fig" src="img/jer_corte3.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Trazo una <b>línea horizontal</b>: la cantidad de ramas que cruza es la cantidad de grupos. Cortando por <b>debajo del gran salto</b> quedan 3 grupos que tienen sentido.</p>
+  <div class="pie"></div>
+</section>
+<section class="slide">
+  <h2>¿Cuántos grupos? Corto el árbol</h2>
+  <img class="fig" src="img/jer_corte2.png" style="width: 84%;">
+  <p class="centro" style="margin-top: 14px;">Si corto más arriba quedan 2 grupos más "gruesos". ¿Cuál conviene? Depende de la pregunta de negocio.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>Ahora con datos reales: países de América</h2>
+  <img class="fig" src="img/jer_america.png" style="height: 400px;">
+  <ul class="chico" style="margin-top: 14px;">
+    <li>Argentina y Uruguay se juntan <b>muy abajo</b>: son muy parecidos en estos indicadores.</li>
+    <li>El <span class="alerta">salto grande</span> está alrededor de 3: si corto ahí (línea punteada) quedan 4 grupos de países.</li>
+  </ul>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>¿Cómo se mide la distancia entre grupos?</h2>
+  <p>Entre dos países es fácil: la misma distancia en línea recta que en K-means. Pero cuando ya tengo <b>grupos</b>, hay que decidir cómo compararlos. A eso se le dice <b>linkage</b>:</p>
+  <table style="margin-top: 10px;">
+    <tr><th>Linkage</th><th>Mide la distancia entre grupos como...</th></tr>
+    <tr><td><b>single</b></td><td>los dos miembros <b>más cercanos</b>. Arma "cadenas": no sirve para segmentar.</td></tr>
+    <tr><td><b>complete</b></td><td>los dos miembros <b>más lejanos</b>.</td></tr>
+    <tr><td><b>average</b></td><td>el <b>promedio</b> de todas las distancias.</td></tr>
+    <tr><td><b>ward</b></td><td>junta los grupos que quedan <b>más apretados</b> (la misma idea que K-means).</td></tr>
+  </table>
+  <p style="margin-top: 18px;">En la práctica usamos <b>Ward</b>. En la demo se ve qué pasa con los otros.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>Con todos los países</h2>
+  <div class="cols centrado">
+    <div class="w55"><img src="img/jer_todos.png"></div>
+    <div>
+      <table class="chico">
+        <tr><th>Grupo (medianas)</th><th class="num">Países</th><th class="num">PBI p/c</th><th class="num">Esp. vida</th></tr>
+        <tr><td>Alto desarrollo</td><td class="num">66</td><td class="num">20.556</td><td class="num">80,7</td></tr>
+        <tr><td>Medio-alto</td><td class="num">55</td><td class="num">4.496</td><td class="num">77,3</td></tr>
+        <tr><td>Medio-bajo</td><td class="num">53</td><td class="num">1.240</td><td class="num">64,4</td></tr>
+        <tr><td>Bajo desarrollo</td><td class="num">19</td><td class="num">451</td><td class="num">53,1</td></tr>
+      </table>
+      <p class="chico" style="margin-top: 14px;">Argentina queda en <b>alto desarrollo</b>, junto con Uruguay, Chile y buena parte de Europa.</p>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>K-means vs. jerárquico</h2>
+  <table>
+    <tr><th></th><th>K-means</th><th>Jerárquico</th></tr>
+    <tr><td><b>¿Elijo K antes?</b></td><td>Sí</td><td>No: corto el árbol después</td></tr>
+    <tr><td><b>Resultado</b></td><td>Grupos + centroides</td><td>Árbol completo (dendrograma)</td></tr>
+    <tr><td><b>Cantidad de datos</b></td><td>Millones, sin problema</td><td>Hasta miles (es lento)</td></tr>
+    <tr><td><b>Cómo se explica</b></td><td>"Estos son los 5 perfiles"</td><td>"Mirá quién se parece a quién"</td></tr>
+    <tr><td><b>¿Mismo resultado si lo corro de nuevo?</b></td><td>Depende del arranque</td><td>Sí, siempre</td></tr>
+  </table>
+  <div class="pie"></div>
+</section>
+
+<section class="slide demo-slide">
+  <div class="etq">Demo 2</div>
+  <h1>¿Qué países se parecen?</h1>
+  <code>02_jerarquico_paises.ipynb</code>
+</section>
+
+<!-- ============================== PCA ============================== -->
+<section class="slide seccion">
+  <div class="num">Parte 3</div>
+  <h1>PCA</h1>
+  <div class="sub">Resumir muchas variables en un mapa</div>
+</section>
+
+<section class="slide">
+  <h2>El problema</h2>
+  <div class="cols centrado">
+    <div class="w45"><img src="img/pca_correlaciones.png" style="max-height: 520px;"></div>
+    <div>
+      <p>Trabajamos en una automotriz. Queremos ver <b>cómo están posicionados</b> los 93 modelos del mercado: ¿dónde hay competencia?, ¿hay huecos?</p>
+      <p>Tenemos 12 características por modelo, pero:</p>
+      <ul>
+        <li>No se pueden graficar 12 dimensiones.</li>
+        <li>Muchas <span class="alerta">dicen lo mismo</span>: peso, largo, ancho, motor... todas miden "qué tan grande es".</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>La idea: buscar la dirección donde los datos más varían</h2>
+  <img class="fig" src="img/pca_idea.png" style="width: 86%;">
+  <p style="margin-top: 16px;">Largo y peso van juntos. Si giro los ejes y miro solo <b>PC1</b>, con <b>un número</b> conservo casi toda la información. Ese número es, en la práctica, el "tamaño" del auto.</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>La matemática, muy por arriba</h2>
+  <p>Cada componente principal es una <b>receta</b>: una suma ponderada de las variables originales (estandarizadas).</p>
+  <div class="formula">PC1 = w<sub>1</sub>·precio + w<sub>2</sub>·rendimiento + … + w<sub>12</sub>·peso</div>
+  <ul>
+    <li>PCA elige los pesos <i>w</i> (<b>loadings</b>) para que PC1 tenga la <b>mayor varianza posible</b>.</li>
+    <li>PC2 hace lo mismo con lo que sobra, <b>sin repetir</b> información de PC1. Y así sucesivamente.</li>
+    <li>Hay tantas componentes como variables, pero las primeras concentran casi todo.</li>
+    <li>Igual que en clustering: <b>estandarizar antes</b>, si no gana la variable con números más grandes.</li>
+  </ul>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>¿Cuántas componentes me quedo?</h2>
+  <div class="cols centrado">
+    <div class="w60"><img src="img/pca_varianza.png"></div>
+    <div>
+      <p>Mirar el <b>acumulado</b>: ¿con cuántas llego a 80–90%?</p>
+      <p>Para <b>visualizar</b>: 2 (o 3). Para <b>modelar</b>: las que hagan falta.</p>
+      <p>Acá, con 2 componentes ya resumimos ~80% de 12 variables.</p>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>PCA no le pone nombre: lo hacemos nosotros</h2>
+  <img class="fig" src="img/pca_loadings.png" style="width: 92%;">
+  <p style="margin-top: 14px;">Mirando los loadings: <b>PC1 = tamaño</b> (todo lo "grande" suma, el rendimiento resta). <b>PC2 = deportivo/premium vs. familiar</b> (potencia y precio suman, pasajeros resta).</p>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>El resultado: un mapa de posicionamiento</h2>
+  <div class="cols centrado">
+    <div class="w60"><img src="img/pca_mapa.png"></div>
+    <div>
+      <ul>
+        <li>El <b>tipo de auto no se usó</b>, y aun así queda ordenado: las componentes capturan algo real.</li>
+        <li>Vecinos en el mapa = <b>competidores directos</b>.</li>
+        <li><span class="alerta">¿Huecos?</span> Grande <i>y</i> deportivo: casi vacío.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide">
+  <h2>PCA en perspectiva</h2>
+  <div class="tarjetas">
+    <div class="tarjeta"><h3>Lo bueno</h3>Muy útil para <b>visualizar</b>, armar <b>índices</b> (por ejemplo, un "índice de desarrollo") y como paso previo a clustering.</div>
+    <div class="tarjeta naranja"><h3>Los límites</h3>Las componentes son <b>difíciles de explicar</b>: "subió PC3" no le dice nada a nadie, y en un modelo predictivo perdés explicabilidad. Solo captura relaciones lineales. Solo variables numéricas, y hay que estandarizar.</div>
+  </div>
+  <div class="pie"></div>
+</section>
+
+<section class="slide demo-slide">
+  <div class="etq">Demo 3</div>
+  <h1>Mapa de posicionamiento</h1>
+  <code>03_pca_autos.ipynb</code>
+</section>
+
+<!-- ============================== CIERRE ============================== -->
+<section class="slide">
+  <h2>Resumen</h2>
+  <table>
+    <tr><th></th><th>K-means</th><th>Jerárquico</th><th>PCA</th></tr>
+    <tr><td><b>Hace</b></td><td>Agrupa filas en K grupos</td><td>Arma un árbol de parecidos</td><td>Resume columnas</td></tr>
+    <tr><td><b>Usalo para</b></td><td>Segmentar muchos clientes</td><td>Pocos casos, sin K claro</td><td>Mapas, índices, quitar redundancia</td></tr>
+    <tr><td><b>Decidís vos</b></td><td>K</td><td>Dónde cortar, linkage</td><td>Cuántas componentes</td></tr>
+    <tr><td><b>Siempre</b></td><td colspan="3">Estandarizar · interpretar y ponerle nombre · validar con el negocio</td></tr>
+  </table>
+  <p style="margin-top: 22px;"><b>Se combinan:</b> PCA para resumir → clustering sobre las componentes (bonus en la demo 3).</p>
+  <div class="pie"></div>
+</section>
+
+</body>
+</html>
