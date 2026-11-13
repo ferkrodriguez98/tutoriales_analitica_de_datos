@@ -138,12 +138,13 @@ guardar(fig, "km_segmentos")
 # ---------------------------------------------------------------------------
 # Ejemplo de juguete: 7 puntos con nombre
 toy = pd.DataFrame({"x": [1, 1.4, 4, 4.5, 4.2, 8, 8.6], "y": [1, 1.6, 4, 3.6, 4.6, 1.2, 1.8]},
-                   index=list("ABCDEFG"))
+                   index=list("CDFEGAB"))
+OFF = {"C": (-20, -8), "D": (9, 4), "F": (-20, -2), "E": (10, -10), "G": (9, 4), "A": (-20, -8), "B": (9, 4)}  # letras elegidas para que el dendrograma se lea A→G
 Z = linkage(toy.values, "ward")
 fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.2))
 axes[0].scatter(toy.x, toy.y, s=120, color=PAL[0], zorder=3)
 for n, r in toy.iterrows():
-    axes[0].annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
+    axes[0].annotate(n, (r.x, r.y), xytext=OFF[n], textcoords="offset points", fontsize=13, weight="bold")
 axes[0].set_title("7 puntos"); axes[0].set_xlim(0, 9.8); axes[0].set_ylim(0, 5.5)
 dendrogram(Z, labels=list(toy.index), ax=axes[1], color_threshold=0, above_threshold_color=GRIS)
 axes[1].axhline(4, color=PAL[1], ls="--", lw=1.8)
@@ -180,7 +181,7 @@ for paso in range(1, len(Z) + 1):
     ax = axes[0]
     ax.scatter(toy.x, toy.y, s=120, color=PAL[0], zorder=3)
     for n, r in toy.iterrows():
-        ax.annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
+        ax.annotate(n, (r.x, r.y), xytext=OFF[n], textcoords="offset points", fontsize=13, weight="bold")
     vivos = set(range(len(toy)))
     for i in range(paso):
         a, b = int(Z[i, 0]), int(Z[i, 1])
@@ -193,6 +194,7 @@ for paso in range(1, len(Z) + 1):
     if len(nuevo) < len(toy):
         dibujar_grupo(ax, nuevo, PAL[1], 2.5)
     ax.set_xlim(-0.5, 10.5); ax.set_ylim(-0.8, 6.3)
+    ax.set_xlabel("Variable 1 (ej.: ingreso)"); ax.set_ylabel("Variable 2 (ej.: gasto)")
     a, b = int(Z[paso - 1, 0]), int(Z[paso - 1, 1])
     txt_a, txt_b = "+".join(miembros[a]), "+".join(miembros[b])
     ax = axes[1]
@@ -201,7 +203,8 @@ for paso in range(1, len(Z) + 1):
         ax.plot(ic, dc, color=PAL[1] if i == paso - 1 else GRIS, lw=2.5 if i == paso - 1 else 1.5)
     ax.set_xticks([xpos[n] for n in orden_hojas], orden_hojas, fontsize=12)
     ax.set_xlim(0, 10 * len(toy)); ax.set_ylim(0, Z[-1, 2] * 1.1)
-    ax.set_ylabel("Distancia al unirse"); ax.grid(False)
+    ax.set_ylabel("Distancia al unirse\n(qué tan distintos eran)"); ax.grid(False)
+    ax.set_xlabel("Puntos (cada hoja del árbol)")
     ax.set_title("Dendrograma")
     ax.annotate(f"altura = {Z[paso-1, 2]:.1f}", (np.mean(segmentos[paso-1][0][1:3]), Z[paso-1, 2]),
                 xytext=(0, 8), textcoords="offset points", ha="center", color=PAL[1], fontsize=11)
@@ -214,8 +217,9 @@ for k, corte_y in [(2, (Z[-1, 2] + Z[-2, 2]) / 2), (3, (Z[-2, 2] + Z[-3, 2]) / 2
     ax = axes[0]
     ax.scatter(toy.x, toy.y, s=140, c=[PAL[l - 1] for l in lab], zorder=3)
     for n, r in toy.iterrows():
-        ax.annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
+        ax.annotate(n, (r.x, r.y), xytext=OFF[n], textcoords="offset points", fontsize=13, weight="bold")
     ax.set_xlim(-0.5, 10.5); ax.set_ylim(-0.8, 6.3)
+    ax.set_xlabel("Variable 1 (ej.: ingreso)"); ax.set_ylabel("Variable 2 (ej.: gasto)")
     ax.set_title(f"Resultado: {k} grupos")
     ax = axes[1]
     for i in range(len(Z)):
@@ -225,7 +229,8 @@ for k, corte_y in [(2, (Z[-1, 2] + Z[-2, 2]) / 2), (3, (Z[-2, 2] + Z[-3, 2]) / 2
     ax.text(10 * len(toy) - 1, corte_y + 0.25, f"corte → la línea cruza {k} ramas", ha="right")
     ax.set_xticks([xpos[n] for n in orden_hojas], orden_hojas, fontsize=12)
     ax.set_xlim(0, 10 * len(toy)); ax.set_ylim(0, Z[-1, 2] * 1.1)
-    ax.set_ylabel("Distancia al unirse"); ax.grid(False)
+    ax.set_ylabel("Distancia al unirse\n(qué tan distintos eran)"); ax.grid(False)
+    ax.set_xlabel("Puntos (cada hoja del árbol)")
     ax.set_title(f"Corto el árbol a altura {corte_y:.1f}")
     guardar(fig, f"jer_corte{k}")
 
@@ -243,7 +248,7 @@ dendrogram(Zall, truncate_mode="lastp", p=30, ax=ax, color_threshold=0, above_th
 corte = (Zall[-4, 2] + Zall[-3, 2]) / 2
 ax.axhline(corte, color=PAL[1], ls="--", lw=1.8)
 ax.text(ax.get_xlim()[1], corte + 0.4, "corte → 4 grupos", ha="right", color=PAL[1])
-ax.set_ylabel("Distancia (Ward)"); ax.grid(False)
+ax.set_ylabel("Distancia al unirse"); ax.grid(False)
 ax.set_title("193 países (se muestran las últimas 30 uniones)")
 guardar(fig, "jer_todos")
 
@@ -267,7 +272,7 @@ hierarchy.set_link_color_palette(PAL[:4])
 dendrogram(Zam, labels=[ES[p] for p in paises.pais[am]], ax=ax, color_threshold=corte_am,
            above_threshold_color=GRIS, leaf_rotation=90, leaf_font_size=13)
 ax.axhline(corte_am, color="black", ls="--", lw=1.2)
-ax.set_ylabel("Distancia (Ward)"); ax.grid(False)
+ax.set_ylabel("Distancia al unirse"); ax.grid(False)
 guardar(fig, "jer_america")
 
 # ---------------------------------------------------------------------------
