@@ -46,11 +46,10 @@ scaler = StandardScaler().fit(X)
 Xs = scaler.transform(X)
 
 # Datos crudos
-fig, ax = plt.subplots(figsize=(6.4, 4.4))
+fig, ax = plt.subplots(figsize=(5.12, 3.52))
 ax.scatter(mall.ingreso, mall.score_gasto, s=28, color=GRIS, alpha=0.75, edgecolor="white", linewidth=0.6)
 ax.set_xlabel("Ingreso anual (miles de USD)")
 ax.set_ylabel("Score de gasto (1-100)")
-ax.set_title("200 clientes de un shopping: ¿ves grupos?")
 guardar(fig, "km_datos")
 
 # Paso a paso (implementación manual para mostrar las iteraciones)
@@ -66,9 +65,9 @@ for it in range(10):
     if np.allclose(nuevo, cent):
         break
     cent = nuevo
-mostrar = [(0, "1. Centroides al azar"), (0, "2. Cada cliente al más cercano"),
-           (1, "3. Muevo centroides al promedio"), (len(estados) - 1, f"4. Repito hasta que no cambia ({len(estados)} iter.)")]
-fig, axes = plt.subplots(1, 4, figsize=(15, 3.8), sharex=True, sharey=True)
+mostrar = [(0, "1. Al azar"), (0, "2. Asigno"),
+           (1, "3. Muevo"), (len(estados) - 1, f"4. Repito ({len(estados)} iter.)")]
+fig, axes = plt.subplots(1, 4, figsize=(12.0, 3.04), sharex=True, sharey=True)
 for i, (ax, (idx, tit)) in enumerate(zip(axes, mostrar)):
     c, l = estados[idx]
     if i == 0:
@@ -76,7 +75,7 @@ for i, (ax, (idx, tit)) in enumerate(zip(axes, mostrar)):
     else:
         ax.scatter(Xs[:, 0], Xs[:, 1], s=14, c=[PAL[k] for k in l], alpha=0.8)
     ax.scatter(c[:, 0], c[:, 1], marker="X", s=190, color="black", edgecolor="white", linewidth=1.5)
-    ax.set_title(tit, fontsize=12)
+    ax.set_title(tit, fontsize=16)
     ax.set_xticks([]); ax.set_yticks([])
 axes[0].set_ylabel("Score de gasto")
 for ax in axes:
@@ -90,7 +89,7 @@ for k in ks:
     km = KMeans(n_clusters=k, n_init=10, random_state=42).fit(Xs)
     inercias.append(km.inertia_)
     sils.append(silhouette_score(Xs, km.labels_) if k > 1 else np.nan)
-fig, axes = plt.subplots(1, 2, figsize=(11, 3.8))
+fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.04))
 axes[0].plot(ks, inercias, marker="o", color=PAL[0], lw=2)
 axes[0].annotate("codo", (5, inercias[4]), xytext=(6.5, inercias[4] + 90),
                  arrowprops=dict(arrowstyle="->", color=GRIS), color=GRIS)
@@ -120,7 +119,7 @@ def nombre_segmento(ing, gas):
 
 orden = ["Clientes promedio", "VIP", "Ahorradores con plata", "Gastadores impulsivos", "Cuidadosos"]
 nombres = {k: nombre_segmento(*cent[k]) for k in range(5)}
-fig, ax = plt.subplots(figsize=(7.4, 4.8))
+fig, ax = plt.subplots(figsize=(5.92, 3.84))
 for k in sorted(range(5), key=lambda k: orden.index(nombres[k])):
     m = mall.cluster == k
     ax.scatter(mall.ingreso[m], mall.score_gasto[m], s=30, color=PAL[orden.index(nombres[k])],
@@ -128,8 +127,10 @@ for k in sorted(range(5), key=lambda k: orden.index(nombres[k])):
     ax.scatter(*cent[k], marker="X", s=200, color="black", edgecolor="white", linewidth=1.5)
 ax.set_xlabel("Ingreso anual (miles de USD)")
 ax.set_ylabel("Score de gasto (1-100)")
-ax.legend(loc="upper left", bbox_to_anchor=(1.0, 1.0), title="Segmento (n)")
-ax.set_title("K = 5 segmentos")
+for k in range(5):
+    ax.annotate(f"{nombres[k]}", cent[k], xytext=(0, -24), textcoords="offset points", ha="center",
+                fontsize=13, weight="bold", color=TINTA,
+                bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="none", alpha=0.85))
 guardar(fig, "km_segmentos")
 
 # ---------------------------------------------------------------------------
@@ -139,7 +140,7 @@ guardar(fig, "km_segmentos")
 toy = pd.DataFrame({"x": [1, 1.4, 4, 4.5, 4.2, 8, 8.6], "y": [1, 1.6, 4, 3.6, 4.6, 1.2, 1.8]},
                    index=list("ABCDEFG"))
 Z = linkage(toy.values, "ward")
-fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.2))
 axes[0].scatter(toy.x, toy.y, s=120, color=PAL[0], zorder=3)
 for n, r in toy.iterrows():
     axes[0].annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
@@ -175,7 +176,7 @@ def dibujar_grupo(ax, nombres, color, lw):
 
 
 for paso in range(1, len(Z) + 1):
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.2))
     ax = axes[0]
     ax.scatter(toy.x, toy.y, s=120, color=PAL[0], zorder=3)
     for n, r in toy.iterrows():
@@ -194,7 +195,6 @@ for paso in range(1, len(Z) + 1):
     ax.set_xlim(-0.5, 10.5); ax.set_ylim(-0.8, 6.3)
     a, b = int(Z[paso - 1, 0]), int(Z[paso - 1, 1])
     txt_a, txt_b = "+".join(miembros[a]), "+".join(miembros[b])
-    ax.set_title(f"Paso {paso}: junto {{{txt_a}}} con {{{txt_b}}}", color=PAL[1] if True else None)
     ax = axes[1]
     for i in range(paso):
         ic, dc = segmentos[i]
@@ -202,7 +202,7 @@ for paso in range(1, len(Z) + 1):
     ax.set_xticks([xpos[n] for n in orden_hojas], orden_hojas, fontsize=12)
     ax.set_xlim(0, 10 * len(toy)); ax.set_ylim(0, Z[-1, 2] * 1.1)
     ax.set_ylabel("Distancia al unirse"); ax.grid(False)
-    ax.set_title("Dendrograma (se arma de abajo hacia arriba)")
+    ax.set_title("Dendrograma")
     ax.annotate(f"altura = {Z[paso-1, 2]:.1f}", (np.mean(segmentos[paso-1][0][1:3]), Z[paso-1, 2]),
                 xytext=(0, 8), textcoords="offset points", ha="center", color=PAL[1], fontsize=11)
     guardar(fig, f"jer_paso{paso}")
@@ -210,7 +210,7 @@ for paso in range(1, len(Z) + 1):
 # Cortar el árbol: 2 alturas distintas -> 2 o 3 grupos
 for k, corte_y in [(2, (Z[-1, 2] + Z[-2, 2]) / 2), (3, (Z[-2, 2] + Z[-3, 2]) / 2)]:
     lab = fcluster(Z, t=k, criterion="maxclust")
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.2))
     ax = axes[0]
     ax.scatter(toy.x, toy.y, s=140, c=[PAL[l - 1] for l in lab], zorder=3)
     for n, r in toy.iterrows():
@@ -237,7 +237,7 @@ Ps = StandardScaler().fit_transform(P)
 
 # Todos los países: dendrograma truncado
 Zall = linkage(Ps, "ward")
-fig, ax = plt.subplots(figsize=(10, 3.8))
+fig, ax = plt.subplots(figsize=(8.0, 3.04))
 dendrogram(Zall, truncate_mode="lastp", p=30, ax=ax, color_threshold=0, above_threshold_color=GRIS,
            show_leaf_counts=True, leaf_font_size=9)
 corte = (Zall[-4, 2] + Zall[-3, 2]) / 2
@@ -261,14 +261,13 @@ ES = {"Argentina": "Argentina", "Aruba": "Aruba", "Bahamas": "Bahamas", "Barbado
 am = paises.region.isin(["Latin Amer", "Caribbean", "North America"]).values
 Zam = linkage(Ps[am], "ward")
 corte_am = (Zam[-4, 2] + Zam[-3, 2]) / 2
-fig, ax = plt.subplots(figsize=(12, 4.6))
+fig, ax = plt.subplots(figsize=(9.6, 3.68))
 from scipy.cluster import hierarchy
 hierarchy.set_link_color_palette(PAL[:4])
 dendrogram(Zam, labels=[ES[p] for p in paises.pais[am]], ax=ax, color_threshold=corte_am,
            above_threshold_color=GRIS, leaf_rotation=90, leaf_font_size=13)
 ax.axhline(corte_am, color="black", ls="--", lw=1.2)
 ax.set_ylabel("Distancia (Ward)"); ax.grid(False)
-ax.set_title("Países de América según desarrollo (fertilidad, PBI per cápita, esperanza de vida, urbanización, mortalidad infantil)")
 guardar(fig, "jer_america")
 
 # ---------------------------------------------------------------------------
@@ -283,7 +282,7 @@ A = autos[list(NOMBRES)].rename(columns=NOMBRES)
 As = StandardScaler().fit_transform(A)
 
 # Correlaciones
-fig, ax = plt.subplots(figsize=(7.2, 6))
+fig, ax = plt.subplots(figsize=(5.76, 4.8))
 corr = A.corr()
 im = ax.imshow(corr, cmap=matplotlib.colors.LinearSegmentedColormap.from_list("vn", ["#b85c2e", "#ffffff", "#1d3b2a"]), vmin=-1, vmax=1)
 ax.set_xticks(range(len(corr)), corr.columns, rotation=60, ha="right")
@@ -291,16 +290,15 @@ ax.set_yticks(range(len(corr)), corr.columns)
 for i in range(len(corr)):
     for j in range(len(corr)):
         v = corr.iloc[i, j]
-        ax.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=10, color="white" if abs(v) > 0.6 else "black")
+        pass
 ax.grid(False)
 fig.colorbar(im, ax=ax, shrink=0.8, label="Correlación")
-ax.set_title("12 variables que dicen casi lo mismo")
 guardar(fig, "pca_correlaciones")
 
 # Intuición 2D: largo vs peso
 xy = StandardScaler().fit_transform(autos[["Length", "Weight"]])
 p2 = PCA(2).fit(xy)
-fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
+fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.36))
 ax = axes[0]
 ax.scatter(xy[:, 0], xy[:, 1], s=26, color=GRIS, alpha=0.7, edgecolor="white", linewidth=0.5)
 for v, var, col, n in zip(p2.components_, p2.explained_variance_, [PAL[1], PAL[0]], ["PC1", "PC2"]):
@@ -308,21 +306,21 @@ for v, var, col, n in zip(p2.components_, p2.explained_variance_, [PAL[1], PAL[0
     ax.annotate("", xy=vec, xytext=(0, 0), arrowprops=dict(arrowstyle="-|>", lw=2.5, color=col))
     ax.text(*(vec * 1.12), n, color=col, weight="bold", fontsize=13)
 ax.set_aspect("equal"); ax.set_ylim(-2.8, 2.6); ax.set_xlabel("Largo (estandarizado)"); ax.set_ylabel("Peso (estandarizado)")
-ax.set_title("PC1 = la dirección donde más se estiran los datos", pad=14)
+ax.set_title("PC1: donde más se estiran", pad=14)
 proj = p2.transform(xy)
 ax = axes[1]
 ax.scatter(proj[:, 0], np.zeros(len(proj)), s=26, color=PAL[1], alpha=0.6)
 ax.set_yticks([]); ax.set_ylim(-1, 1); ax.grid(False)
 ax.spines["left"].set_visible(False)
 ax.set_xlabel("PC1 ≈ \"tamaño\" del auto")
-ax.set_title(f"Un solo número conserva el {p2.explained_variance_ratio_[0]:.0%} de la info")
+ax.set_title(f"Un número: {p2.explained_variance_ratio_[0]:.0%} de la info")
 ax.annotate("chicos", (proj[:, 0].min(), 0.15), color=GRIS)
 ax.annotate("grandes", (proj[:, 0].max(), 0.15), ha="right", color=GRIS)
 guardar(fig, "pca_idea")
 
 pca = PCA().fit(As)
 ev = pca.explained_variance_ratio_
-fig, ax = plt.subplots(figsize=(7.5, 3.8))
+fig, ax = plt.subplots(figsize=(6.0, 3.04))
 comp = np.arange(1, len(ev) + 1)
 ax.bar(comp, ev * 100, color=PAL[0], width=0.7, label="Cada componente")
 ax.plot(comp, ev.cumsum() * 100, marker="o", color=PAL[1], lw=2, label="Acumulado")
@@ -331,30 +329,28 @@ for i in range(3):
 ax.set_xticks(comp, [f"PC{i}" for i in comp], fontsize=9)
 ax.set_ylabel("% de la variabilidad"); ax.set_ylim(0, 110)
 ax.legend(loc="center right")
-ax.set_title("Con 2 componentes ya resumimos ~78% de 12 variables")
 guardar(fig, "pca_varianza")
 
 load = pd.DataFrame(pca.components_[:2].T, index=A.columns, columns=["PC1", "PC2"])
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), sharey=False, gridspec_kw={"wspace": 0.55})
-for ax, pc, tit in zip(axes, ["PC1", "PC2"], ["PC1 = TAMAÑO (grande y gastador ↔ chico y económico)",
-                                               "PC2 = DEPORTIVO/PREMIUM ↔ FAMILIAR"]):
+fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.36), sharey=False, gridspec_kw={"wspace": 0.55})
+for ax, pc, tit in zip(axes, ["PC1", "PC2"], ["PC1 = tamaño", "PC2 = deportivo vs. familiar"]):
     s = load[pc].sort_values()
     ax.barh(s.index, s.values, color=[PAL[1] if v < 0 else PAL[0] for v in s.values], height=0.7)
     ax.axvline(0, color=GRIS, lw=1)
-    ax.set_title(tit, fontsize=11)
+    ax.set_title(tit, fontsize=15)
     ax.set_xlabel("Peso de la variable (loading)")
 guardar(fig, "pca_loadings")
 
 Z2 = pca.transform(As)[:, :2]
 tipos = {"Small": "Chico", "Compact": "Compacto", "Midsize": "Mediano", "Large": "Grande",
          "Sporty": "Deportivo", "Van": "Utilitario"}
-fig, ax = plt.subplots(figsize=(9, 5.6))
+fig, ax = plt.subplots(figsize=(6.6, 4.0))
 for i, (t, ts) in enumerate(tipos.items()):
     m = autos.Type == t
     ax.scatter(Z2[m, 0], Z2[m, 1], s=40, color=PAL[i], edgecolor="white", linewidth=0.6, label=ts)
-destacados = ["Chevrolet Corvette", "Mazda RX-7", "Geo Metro", "Ford Festiva", "Chevrolet Astro",
-              "Lincoln Town_Car", "Mercedes-Benz 300E", "Honda Civic", "Ford Aerostar", "Dodge Stealth",
-              "Cadillac DeVille", "Hyundai Excel"]
+destacados = ["Chevrolet Corvette", "Mazda RX-7", "Geo Metro", "Chevrolet Astro",
+              "Lincoln Town_Car", "Mercedes-Benz 300E", "Ford Aerostar", "Dodge Stealth",
+              "Cadillac DeVille"]
 for nombre in destacados:
     i = autos.index[autos.Make == nombre]
     if len(i):
@@ -363,8 +359,7 @@ for nombre in destacados:
 ax.axhline(0, color="#cfc8b6", lw=1); ax.axvline(0, color="#cfc8b6", lw=1)
 ax.set_xlabel(f"PC1: tamaño  ({ev[0]:.0%})   chico/económico  ←→  grande/gastador")
 ax.set_ylabel(f"PC2 ({ev[1]:.0%})   familiar  ←→  deportivo/premium")
-ax.legend(title="Tipo", loc="upper left", bbox_to_anchor=(1.0, 1.0))
-ax.set_title("Mapa de posicionamiento de 93 modelos de autos")
+ax.legend(title="Tipo", loc="upper left", ncol=2, fontsize=12, title_fontsize=12, handletextpad=0.2, columnspacing=0.8)
 guardar(fig, "pca_mapa")
 
 print("Figuras generadas en img/")

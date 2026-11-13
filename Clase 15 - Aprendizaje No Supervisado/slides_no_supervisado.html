@@ -21,92 +21,115 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #e9e7e1; }
   body { counter-reset: slide; }
+
+  /* ---------- estructura de cada slide ---------- */
   .slide {
     width: 1280px; height: 720px; background: #fff; position: relative; overflow: hidden;
-    margin: 24px auto; padding: 40px 64px 0 64px; counter-increment: slide;
-    font-family: var(--serif); color: var(--tinta); font-size: 27px; line-height: 1.45;
+    margin: 24px auto; counter-increment: slide;
+    font-family: var(--serif); color: var(--tinta); font-size: 31px; line-height: 1.4;
     page-break-after: always; break-after: page;
   }
   @media print { html, body { background: #fff; } .slide { margin: 0; } }
   .slide h2 {
-    font-family: var(--sans); font-weight: 700; color: var(--verde-oscuro); font-size: 38px; line-height: 1.2;
-    margin: 0 0 26px 0; padding-bottom: 14px; border-bottom: 2px solid var(--verde);
+    position: absolute; top: 34px; left: 64px; right: 64px; margin: 0;
+    font-family: var(--sans); font-weight: 700; color: var(--verde-oscuro); font-size: 42px; line-height: 1.15;
+    padding-bottom: 14px; border-bottom: 2px solid var(--verde);
   }
-  .slide::after {
-    content: counter(slide); position: absolute; right: 64px; bottom: 16px;
-    font-family: var(--sans); font-size: 14px; color: var(--gris);
+  /* zona de contenido: ocupa todo lo que queda entre el título y el pie, centrada en vertical */
+  .cuerpo {
+    position: absolute; top: 118px; bottom: 58px; left: 64px; right: 64px;
+    display: flex; flex-direction: column; justify-content: center; gap: 22px;
   }
   .slide::before {
-    content: "Aprendizaje no supervisado"; position: absolute; left: 64px; bottom: 16px;
-    font-family: var(--sans); font-size: 14px; color: var(--gris);
+    content: "Aprendizaje no supervisado"; position: absolute; left: 64px; bottom: 18px;
+    font-family: var(--sans); font-size: 15px; color: var(--gris);
   }
-  .pie { position: absolute; left: 64px; right: 64px; bottom: 42px; border-top: 1px solid var(--linea); }
-  p { margin: 0 0 16px 0; }
+  .slide::after {
+    content: counter(slide); position: absolute; right: 64px; bottom: 18px;
+    font-family: var(--sans); font-size: 15px; color: var(--gris);
+  }
+  .slide .pie { position: absolute; left: 64px; right: 64px; bottom: 46px; border-top: 1px solid var(--linea); }
+
+  /* ---------- texto ---------- */
+  p { margin: 0; }
   b { font-weight: 700; color: var(--verde-oscuro); }
   .alerta { color: var(--naranja); }
-  ul, ol { margin: 0 0 14px 0; padding-left: 30px; }
-  li { margin-bottom: 12px; }
+  ul { margin: 0; padding-left: 34px; display: flex; flex-direction: column; gap: 18px; }
+  .cuerpo > ul:only-child { font-size: 36px; gap: 26px; }
   li::marker { color: var(--verde); }
-  .chico { font-size: 22px; }
   .centro { text-align: center; }
-  .grande { font-size: 34px; line-height: 1.35; }
-  .cols { display: flex; gap: 40px; align-items: center; }
-  .cols > div { flex: 1; min-width: 0; }
-  .w50 { flex: 0 0 50% !important; } .w55 { flex: 0 0 55% !important; } .w60 { flex: 0 0 60% !important; } .w65 { flex: 0 0 65% !important; }
-  img { max-width: 100%; display: block; }
-  .fig { display: block; margin: 0 auto; }
-  .tarjetas { display: flex; gap: 26px; }
-  .tarjeta { flex: 1; border: 1px solid var(--linea); border-top: 4px solid var(--verde-oscuro); padding: 20px 22px; font-size: 23px; line-height: 1.4; }
+  .pregunta { font-size: 46px; line-height: 1.3; text-align: center; color: var(--verde-oscuro); font-family: var(--sans); font-weight: 600; }
+  .frase { font-size: 40px; line-height: 1.35; text-align: center; }
+  .formula { font-size: 38px; text-align: center; padding: 18px 0; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); }
+  .caption { font-size: 30px; text-align: center; flex: 0 0 auto; }
+  code { font-size: 0.85em; }
+
+  /* ---------- figuras: llenan el alto disponible ---------- */
+  .fig { flex: 1 1 auto; min-height: 0; width: 100%; object-fit: contain; }
+  .cols { display: flex; gap: 48px; align-items: center; height: 100%; }
+  .cols > .izq { flex: 0 0 56%; height: 100%; display: flex; }
+  .cols > .izq img { width: 100%; height: 100%; object-fit: contain; }
+  .cols > .der { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+  .cols.ancho > .izq { flex-basis: 64%; }
+
+  /* ---------- tarjetas y tablas ---------- */
+  .tarjetas { display: flex; gap: 30px; }
+  .tarjeta { flex: 1; border: 1px solid var(--linea); border-top: 5px solid var(--verde-oscuro); padding: 26px 28px; font-size: 30px; line-height: 1.35; }
   .tarjeta.naranja { border-top-color: var(--naranja); }
-  .tarjeta h3 { font-family: var(--sans); font-size: 26px; margin: 0 0 12px 0; color: var(--verde-oscuro); }
+  .tarjeta h3 { font-family: var(--sans); font-size: 34px; margin: 0 0 14px 0; color: var(--verde-oscuro); }
   .tarjeta.naranja h3 { color: var(--naranja); }
-  .tarjeta .demo { font-size: 19px; color: var(--gris); margin-top: 12px; font-style: italic; }
-  table { border-collapse: collapse; width: 100%; font-size: 23px; }
-  th { font-family: var(--sans); font-size: 20px; font-weight: 700; color: var(--verde-oscuro); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--verde-oscuro); }
-  td { padding: 10px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  .tarjeta .sub { font-size: 25px; color: var(--gris); margin-bottom: 16px; font-style: italic; }
+  .tarjeta ul { padding-left: 26px; gap: 10px; font-size: 28px; }
+  table { border-collapse: collapse; width: 100%; font-size: 29px; }
+  th { font-family: var(--sans); font-size: 26px; font-weight: 700; color: var(--verde-oscuro); text-align: left; padding: 12px 14px; border-bottom: 2px solid var(--verde-oscuro); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--linea); vertical-align: top; }
   td.num, th.num { text-align: right; }
-  .formula { font-size: 30px; text-align: center; margin: 20px 0 26px 0; }
-  .portada { padding-top: 120px; }
-  .portada::before, .portada::after { content: none; }
-  .portada .materia { font-family: var(--sans); font-size: 18px; letter-spacing: 5px; color: var(--verde); text-transform: uppercase; margin-bottom: 28px; }
-  .portada h1 { font-family: var(--sans); font-weight: 700; font-size: 76px; color: var(--verde-oscuro); margin: 0 0 22px 0; line-height: 1.05; }
-  .portada .sub { font-size: 28px; color: var(--gris); margin-bottom: 34px; }
-  .portada .raya { width: 260px; border-top: 2px solid var(--verde-oscuro); margin-bottom: 26px; }
-  .portada .clase { font-family: var(--sans); font-size: 18px; color: var(--gris); }
-  .portada .logo { position: absolute; right: 64px; bottom: 60px; height: 64px; }
-  .seccion { display: flex; flex-direction: column; justify-content: center; }
-  .seccion .num { font-family: var(--sans); font-size: 18px; letter-spacing: 5px; color: var(--verde); text-transform: uppercase; margin-bottom: 16px; }
-  .seccion h1 { font-family: var(--sans); font-size: 64px; color: var(--verde-oscuro); margin: 0; }
-  .demo-slide { background: var(--verde-oscuro); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-  .demo-slide::before, .demo-slide::after { color: #b8c4bb; }
-  .demo-slide .etq { font-family: var(--sans); letter-spacing: 5px; font-size: 20px; text-transform: uppercase; color: #b8c9b4; margin-bottom: 18px; }
-  .demo-slide h1 { font-family: var(--sans); font-size: 56px; margin: 0 0 22px 0; color: #fff; }
-  .demo-slide code { font-size: 24px; color: #e3e8e2; }
+
+  /* ---------- portada, secciones, cierre ---------- */
+  .portada::before, .portada::after, .seccion::before, .seccion::after { content: none; }
+  .portada .contenido { position: absolute; left: 64px; top: 140px; }
+  .portada .materia { font-family: var(--sans); font-size: 20px; letter-spacing: 6px; color: var(--verde); text-transform: uppercase; margin-bottom: 30px; }
+  .portada h1 { font-family: var(--sans); font-weight: 700; font-size: 84px; color: var(--verde-oscuro); margin: 0 0 24px 0; line-height: 1.05; }
+  .portada .sub { font-size: 34px; color: var(--gris); margin-bottom: 38px; }
+  .portada .raya { width: 280px; border-top: 2px solid var(--verde-oscuro); margin-bottom: 28px; }
+  .portada .clase { font-family: var(--sans); font-size: 20px; color: var(--gris); }
+  .portada .logo { position: absolute; right: 64px; bottom: 56px; height: 72px; }
+  .seccion { display: flex; flex-direction: column; justify-content: center; padding: 0 64px; border-left: 14px solid var(--verde-oscuro); }
+  .seccion .num { font-family: var(--sans); font-size: 22px; letter-spacing: 6px; color: var(--verde); text-transform: uppercase; margin-bottom: 18px; }
+  .seccion h1 { font-family: var(--sans); font-size: 76px; line-height: 1.1; color: var(--verde-oscuro); margin: 0 0 18px 0; }
+  .seccion .sub { font-size: 36px; color: var(--gris); }
+  .cierre { background: var(--verde-oscuro); display: flex; align-items: center; justify-content: center; }
+  .cierre::before, .cierre::after { content: none; }
+  .cierre h1 { font-family: var(--sans); font-size: 72px; color: #fff; margin: 0; }
 </style>
 </head>
 <body>
 
 <section class="slide portada">
-  <div class="materia">Analítica de datos</div>
-  <h1>Aprendizaje no supervisado</h1>
-  <div class="sub">K-means, clustering jerárquico y PCA</div>
-  <div class="raya"></div>
-  <div class="clase">Clase práctica · 2do cuatrimestre 2026</div>
+  <div class="contenido">
+    <div class="materia">Analítica de datos</div>
+    <h1>Aprendizaje<br>no supervisado</h1>
+    <div class="sub">K-means, clustering jerárquico y PCA</div>
+    <div class="raya"></div>
+    <div class="clase">Clase práctica · 2do cuatrimestre 2026</div>
+  </div>
   <img class="logo" src="../misc/UdeSA.png" alt="Universidad de San Andrés">
 </section>
 
 <section class="slide">
   <h2>Hasta ahora: aprendizaje supervisado</h2>
-  <div class="tarjetas">
-    <div class="tarjeta">
-      <h3>Supervisado</h3>
-      <div class="chico" style="color: var(--gris); margin-bottom: 8px;">CART, KNN, RF, Naive Bayes</div>
-      <ul><li>Hay una columna <span class="alerta">respuesta</span>: ¿pagó?, ¿compró?</li><li>El modelo aprende a <b>predecirla</b></li><li>Podemos medir si acierta</li></ul>
-    </div>
-    <div class="tarjeta naranja">
-      <h3>No supervisado (hoy)</h3>
-      <div class="chico" style="color: var(--gris); margin-bottom: 8px;">K-means, jerárquico, PCA</div>
-      <ul><li><span class="alerta">No hay respuesta</span>: solo características</li><li>Buscamos <b>estructura</b>: grupos, patrones</li><li>La utilidad la decide el negocio</li></ul>
+  <div class="cuerpo">
+    <div class="tarjetas">
+      <div class="tarjeta">
+        <h3>Supervisado</h3>
+        <div class="sub">CART, KNN, RF, Naive Bayes</div>
+        <ul><li>Hay una columna <span class="alerta">respuesta</span>: ¿pagó?, ¿compró?</li><li>El modelo aprende a <b>predecirla</b></li><li>Podemos medir si acierta</li></ul>
+      </div>
+      <div class="tarjeta naranja">
+        <h3>No supervisado (hoy)</h3>
+        <div class="sub">K-means, jerárquico, PCA</div>
+        <ul><li><span class="alerta">No hay respuesta</span>: solo características</li><li>Buscamos <b>estructura</b>: grupos, patrones</li><li>La utilidad la decide el negocio</li></ul>
+      </div>
     </div>
   </div>
   <div class="pie"></div>
@@ -114,29 +137,34 @@
 
 <section class="slide">
   <h2>Tres preguntas de negocio, tres técnicas</h2>
-  <div class="tarjetas">
-    <div class="tarjeta"><h3>K-means</h3>¿Qué tipos de clientes tengo?<div class="demo">200 clientes de un shopping</div></div>
-    <div class="tarjeta"><h3>Jerárquico</h3>¿Qué países se parecen entre sí?<div class="demo">193 países (ONU)</div></div>
-    <div class="tarjeta naranja"><h3>PCA</h3>¿Cómo resumo 12 métricas en un mapa?<div class="demo">93 modelos de autos</div></div>
+  <div class="cuerpo">
+    <div class="tarjetas">
+      <div class="tarjeta"><h3>K-means</h3>¿Qué tipos de clientes tengo?<div class="sub" style="margin: 18px 0 0 0;">200 clientes de un shopping</div></div>
+      <div class="tarjeta"><h3>Jerárquico</h3>¿Qué países se parecen entre sí?<div class="sub" style="margin: 18px 0 0 0;">193 países (ONU)</div></div>
+      <div class="tarjeta naranja"><h3>PCA</h3>¿Cómo resumo 12 métricas en un mapa?<div class="sub" style="margin: 18px 0 0 0;">93 modelos de autos</div></div>
+    </div>
+    <p class="centro" style="margin-top: 24px;">Las dos primeras <b>agrupan filas</b>. PCA <b>resume columnas</b>.</p>
   </div>
-  <p class="centro" style="margin-top: 40px;">Las dos primeras <b>agrupan filas</b>. PCA <b>resume columnas</b>.</p>
   <div class="pie"></div>
 </section>
 
 <!-- ============================== K-MEANS ============================== -->
 <section class="slide seccion">
   <div class="num">Parte 1</div>
-  <h1>K-means: segmentar clientes</h1>
+  <h1>K-means</h1>
+  <div class="sub">Segmentar clientes</div>
 </section>
 
 <section class="slide">
   <h2>El problema</h2>
-  <div class="cols">
-    <div class="w55"><img src="img/km_datos.png" style="max-height: 540px;"></div>
-    <div>
-      <p>Marketing de un shopping: <b>ingreso</b> y <b>score de gasto</b> de cada cliente.</p>
-      <p>Queremos campañas para <span class="alerta">distintos tipos de clientes</span>, pero nadie nos dijo cuáles son.</p>
-      <p><b>¿Cuántos grupos ves?</b></p>
+  <div class="cuerpo">
+    <div class="cols">
+      <div class="izq"><img src="img/km_datos.png"></div>
+      <div class="der">
+        <p>Marketing de un shopping: <b>ingreso</b> y <b>score de gasto</b> de cada cliente.</p>
+        <p>Queremos campañas para <span class="alerta">distintos tipos de clientes</span>, pero nadie nos dijo cuáles son.</p>
+        <p><b>¿Cuántos grupos ves?</b></p>
+      </div>
     </div>
   </div>
   <div class="pie"></div>
@@ -144,47 +172,54 @@
 
 <section class="slide">
   <h2>La idea: K "clientes representantes"</h2>
-  <img class="fig" src="img/km_pasos.png" style="width: 100%;">
-  <p class="centro" style="margin-top: 22px;">K centroides al azar → cada cliente al <b>más cercano</b> → cada centroide al <b>promedio</b> → repetir.</p>
+  <div class="cuerpo">
+    <img class="fig" src="img/km_pasos.png">
+    <p class="caption">K centroides al azar → cada cliente al <b>más cercano</b> → cada centroide al <b>promedio</b> → repetir.</p>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>La matemática, muy por arriba</h2>
-  <p>K-means minimiza la <span class="alerta">inercia</span>:</p>
-  <div class="formula">Σ distancia(cliente, su centroide)²</div>
-  <ul>
-    <li>Traducción: <b>grupos lo más "apretados" posible</b>.</li>
-    <li>Por eso hay que <b>estandarizar</b>: si no, la variable con números grandes domina.</li>
-    <li>Depende del arranque al azar: se corre varias veces (<code>n_init=10</code>).</li>
-  </ul>
+  <div class="cuerpo">
+    <p>K-means minimiza la <span class="alerta">inercia</span>:</p>
+    <div class="formula">Σ distancia(cliente, su centroide)²</div>
+    <ul>
+      <li>Traducción: <b>grupos lo más "apretados" posible</b>.</li>
+      <li>Por eso hay que <b>estandarizar</b>: si no, la variable con números grandes domina.</li>
+      <li>Depende del arranque al azar: se corre varias veces.</li>
+    </ul>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>¿Cuántos grupos? K lo elegimos nosotros</h2>
-  <img class="fig" src="img/km_elegir_k.png" style="height: 330px;">
-  <ul class="chico" style="margin-top: 18px;">
-    <li><b>Codo:</b> dónde la inercia deja de bajar mucho.</li>
-    <li><b>Silhouette:</b> ¿cada cliente está más cerca de su grupo que del vecino?</li>
-    <li>Y una pregunta de negocio: <span class="alerta">¿cuántas campañas podemos manejar?</span></li>
-  </ul>
+  <div class="cuerpo">
+    <img class="fig" src="img/km_elegir_k.png">
+    <ul style="font-size: 28px; gap: 10px;">
+      <li><b>Codo:</b> dónde la inercia deja de bajar mucho. <b>Silhouette:</b> más alto = grupos más separados.</li>
+      <li>Y una pregunta de negocio: <span class="alerta">¿cuántas campañas podemos manejar?</span></li>
+    </ul>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>El nombre lo ponemos nosotros</h2>
-  <div class="cols">
-    <div class="w60"><img src="img/km_segmentos.png"></div>
-    <div>
-      <table class="chico">
-        <tr><th>Segmento</th><th>Acción</th></tr>
-        <tr><td>VIP</td><td>Fidelizar</td></tr>
-        <tr><td>Ahorradores con plata</td><td><span class="alerta">Mayor potencial</span></td></tr>
-        <tr><td>Impulsivos</td><td>Promos, cuotas</td></tr>
-        <tr><td>Cuidadosos</td><td>Descuentos</td></tr>
-        <tr><td>Promedio</td><td>Masiva</td></tr>
-      </table>
+  <div class="cuerpo">
+    <div class="cols ancho">
+      <div class="izq"><img src="img/km_segmentos.png"></div>
+      <div class="der">
+        <table style="font-size: 27px;">
+          <tr><th>Segmento</th><th>Acción</th></tr>
+          <tr><td>VIP</td><td>Fidelizar</td></tr>
+          <tr><td>Ahorradores con plata</td><td><span class="alerta">Mayor potencial</span></td></tr>
+          <tr><td>Impulsivos</td><td>Promos, cuotas</td></tr>
+          <tr><td>Cuidadosos</td><td>Descuentos</td></tr>
+          <tr><td>Promedio</td><td>Masiva</td></tr>
+        </table>
+      </div>
     </div>
   </div>
   <div class="pie"></div>
@@ -192,169 +227,164 @@
 
 <section class="slide">
   <h2>Cuidado con K-means</h2>
-  <ul>
-    <li><b>Siempre devuelve K grupos</b>, aunque los datos no tengan grupos.</li>
-    <li><b>Estandarizar</b> las variables antes.</li>
-    <li>Le gustan los grupos <b>redondos y de tamaño parecido</b>.</li>
-    <li>Los <b>outliers</b> tiran de los centroides.</li>
-    <li>Escala muy bien: funciona con millones de clientes.</li>
-  </ul>
+  <div class="cuerpo">
+    <ul>
+      <li><b>Siempre devuelve K grupos</b>, aunque los datos no tengan grupos.</li>
+      <li><b>Estandarizar</b> las variables antes.</li>
+      <li>Le gustan los grupos <b>redondos y de tamaño parecido</b>.</li>
+      <li>Los <b>outliers</b> tiran de los centroides.</li>
+      <li>Escala muy bien: funciona con millones de clientes.</li>
+    </ul>
+  </div>
   <div class="pie"></div>
-</section>
-
-<section class="slide demo-slide">
-  <div class="etq">Demo 1</div>
-  <h1>Segmentación de clientes</h1>
-  <code>01_kmeans_clientes.ipynb</code>
 </section>
 
 <!-- ============================== JERÁRQUICO ============================== -->
 <section class="slide seccion">
   <div class="num">Parte 2</div>
   <h1>Clustering jerárquico</h1>
+  <div class="sub">¿Qué países se parecen?</div>
 </section>
 
 <section class="slide">
   <h2>El problema</h2>
-  <p>Una <b>fintech argentina</b> quiere expandirse:</p>
-  <p class="grande centro" style="margin: 30px 0;"><i>¿Qué países se parecen entre sí?</i></p>
-  <ul>
-    <li>193 países, 5 indicadores de la ONU.</li>
-    <li><span class="alerta">No sabemos cuántos grupos hay.</span></li>
-    <li>Si algo funciona en un país, probablemente funcione en sus "vecinos".</li>
-  </ul>
+  <div class="cuerpo">
+    <p>Una <b>fintech argentina</b> quiere expandirse:</p>
+    <p class="pregunta">¿Qué países se parecen entre sí?</p>
+    <ul>
+      <li>193 países, 5 indicadores de la ONU.</li>
+      <li><span class="alerta">No sabemos cuántos grupos hay.</span></li>
+      <li>Si algo funciona en un país, probablemente funcione en sus "vecinos".</li>
+    </ul>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>La idea en una frase</h2>
-  <p class="grande centro" style="margin: 20px 0 40px 0;">Arranco con cada país solo y <span class="alerta">voy juntando de a dos</span> a los más parecidos, hasta que queda un solo grupo.</p>
-  <ul>
-    <li>Como un <b>árbol genealógico</b> de parecidos.</li>
-    <li>El <b>dendrograma</b> dibuja ese árbol.</li>
-    <li>No hace falta elegir K antes.</li>
-  </ul>
+  <div class="cuerpo">
+    <p class="frase">Arranco con cada país solo y <span class="alerta">voy juntando de a dos</span> a los más parecidos, hasta que queda un solo grupo.</p>
+    <ul style="margin-top: 18px;">
+      <li>Como un <b>árbol genealógico</b> de parecidos.</li>
+      <li>El <b>dendrograma</b> dibuja ese árbol.</li>
+      <li>No hace falta elegir K antes.</li>
+    </ul>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>Paso a paso · 1</h2>
-  <img class="fig" src="img/jer_paso1.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">C y E son los más cercanos: se juntan primero. "U" <b>bajita</b>.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso1.png"><p class="caption">C y E son los más cercanos: se juntan primero. "U" <b>bajita</b>.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>Paso a paso · 2</h2>
-  <img class="fig" src="img/jer_paso2.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">Siguiente par más cercano: A y B.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso2.png"><p class="caption">Siguiente par más cercano: A y B.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>Paso a paso · 3</h2>
-  <img class="fig" src="img/jer_paso3.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">F y G. Tres grupitos bien apretados.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso3.png"><p class="caption">F y G. Tres grupitos bien apretados.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>Paso a paso · 4</h2>
-  <img class="fig" src="img/jer_paso4.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">D se suma a C y E.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso4.png"><p class="caption">D se suma a C y E.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>Paso a paso · 5</h2>
-  <img class="fig" src="img/jer_paso5.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">Grupos <span class="alerta">lejanos</span>: la "U" pega un <b>salto</b>.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso5.png"><p class="caption">Grupos <span class="alerta">lejanos</span>: la "U" pega un <b>salto</b>.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>Paso a paso · 6</h2>
-  <img class="fig" src="img/jer_paso6.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">Todo en un solo grupo: el árbol está completo.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_paso6.png"><p class="caption">Todo en un solo grupo: el árbol está completo.</p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>¿Cuántos grupos? Corto el árbol</h2>
-  <img class="fig" src="img/jer_corte3.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">Ramas que cruza la línea = cantidad de grupos. Corto <b>debajo del salto</b>: 3 grupos.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_corte3.png"><p class="caption">Ramas que cruza la línea = grupos. Corto <b>debajo del salto</b>: 3 grupos.</p></div>
   <div class="pie"></div>
 </section>
 <section class="slide">
   <h2>¿Cuántos grupos? Corto el árbol</h2>
-  <img class="fig" src="img/jer_corte2.png" style="height: 440px;">
-  <p class="centro" style="margin-top: 16px;">Más arriba: 2 grupos. ¿Cuál conviene? Depende del negocio.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_corte2.png"><p class="caption">Más arriba: 2 grupos. ¿Cuál conviene? Depende del negocio.</p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>Con datos reales: países de América</h2>
-  <img class="fig" src="img/jer_america.png" style="height: 420px;">
-  <p class="chico centro" style="margin-top: 14px;">Argentina y Uruguay se juntan <b>muy abajo</b>. Cortando en el <span class="alerta">salto grande</span> quedan 4 grupos.</p>
+  <div class="cuerpo"><img class="fig" src="img/jer_america.png"><p class="caption">Argentina y Uruguay se juntan <b>muy abajo</b>. Cortando en el <span class="alerta">salto</span>: 4 grupos.</p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>¿Distancia entre grupos? (linkage)</h2>
-  <table>
-    <tr><th>Linkage</th><th>Compara los grupos por...</th></tr>
-    <tr><td><b>single</b></td><td>los dos <b>más cercanos</b> → arma "cadenas"</td></tr>
-    <tr><td><b>complete</b></td><td>los dos <b>más lejanos</b></td></tr>
-    <tr><td><b>average</b></td><td>el <b>promedio</b> de las distancias</td></tr>
-    <tr><td><b>ward</b></td><td>que queden <b>más apretados</b> (como K-means)</td></tr>
-  </table>
-  <p style="margin-top: 26px;">En la práctica: <b>Ward</b>.</p>
+  <div class="cuerpo">
+    <table>
+      <tr><th>Linkage</th><th>Compara los grupos por...</th></tr>
+      <tr><td><b>single</b></td><td>los dos <b>más cercanos</b> → arma "cadenas"</td></tr>
+      <tr><td><b>complete</b></td><td>los dos <b>más lejanos</b></td></tr>
+      <tr><td><b>average</b></td><td>el <b>promedio</b> de las distancias</td></tr>
+      <tr><td><b>ward</b></td><td>que queden <b>más apretados</b> (como K-means)</td></tr>
+    </table>
+    <p class="centro" style="margin-top: 10px;">En la práctica: <b>Ward</b>.</p>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>Con todos los países</h2>
-  <img class="fig" src="img/jer_todos.png" style="height: 250px;">
-  <table class="chico" style="margin-top: 14px;">
-    <tr><th>Grupo (mediana)</th><th class="num">Países</th><th class="num">PBI p/c (USD)</th><th class="num">Esp. vida</th><th class="num">Hijos/mujer</th></tr>
-    <tr><td>Alto desarrollo (con Argentina)</td><td class="num">66</td><td class="num">20.556</td><td class="num">80,7</td><td class="num">1,9</td></tr>
-    <tr><td>Medio-alto</td><td class="num">55</td><td class="num">4.496</td><td class="num">77,3</td><td class="num">2,0</td></tr>
-    <tr><td>Medio-bajo</td><td class="num">53</td><td class="num">1.240</td><td class="num">64,4</td><td class="num">3,8</td></tr>
-    <tr><td>Bajo desarrollo</td><td class="num">19</td><td class="num">451</td><td class="num">53,1</td><td class="num">5,5</td></tr>
-  </table>
+  <div class="cuerpo">
+    <table>
+      <tr><th>Grupo (mediana)</th><th class="num">Países</th><th class="num">PBI p/c</th><th class="num">Esp. vida</th><th class="num">Hijos</th></tr>
+      <tr><td><b>Alto desarrollo</b> (Argentina)</td><td class="num">66</td><td class="num">20.556</td><td class="num">80,7</td><td class="num">1,9</td></tr>
+      <tr><td><b>Medio-alto</b></td><td class="num">55</td><td class="num">4.496</td><td class="num">77,3</td><td class="num">2,0</td></tr>
+      <tr><td><b>Medio-bajo</b></td><td class="num">53</td><td class="num">1.240</td><td class="num">64,4</td><td class="num">3,8</td></tr>
+      <tr><td><b>Bajo desarrollo</b></td><td class="num">19</td><td class="num">451</td><td class="num">53,1</td><td class="num">5,5</td></tr>
+    </table>
+    <p class="centro" style="margin-top: 10px;">Cortando el árbol de los 193 países en 4 grupos.</p>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>K-means vs. jerárquico</h2>
-  <table>
-    <tr><th></th><th>K-means</th><th>Jerárquico</th></tr>
-    <tr><td><b>¿Elijo K antes?</b></td><td>Sí</td><td>No: corto después</td></tr>
-    <tr><td><b>Resultado</b></td><td>Grupos + centroides</td><td>Árbol (dendrograma)</td></tr>
-    <tr><td><b>Datos</b></td><td>Millones</td><td>Hasta miles</td></tr>
-    <tr><td><b>Se explica</b></td><td>"Estos son los perfiles"</td><td>"Quién se parece a quién"</td></tr>
-    <tr><td><b>¿Siempre igual?</b></td><td>Depende del arranque</td><td>Sí</td></tr>
-  </table>
+  <div class="cuerpo">
+    <table>
+      <tr><th></th><th>K-means</th><th>Jerárquico</th></tr>
+      <tr><td><b>¿Elijo K antes?</b></td><td>Sí</td><td>No: corto después</td></tr>
+      <tr><td><b>Resultado</b></td><td>Grupos + centroides</td><td>Árbol (dendrograma)</td></tr>
+      <tr><td><b>Datos</b></td><td>Millones</td><td>Hasta miles</td></tr>
+      <tr><td><b>Se explica</b></td><td>"Estos son los perfiles"</td><td>"Quién se parece a quién"</td></tr>
+      <tr><td><b>¿Siempre igual?</b></td><td>Depende del arranque</td><td>Sí</td></tr>
+    </table>
+  </div>
   <div class="pie"></div>
-</section>
-
-<section class="slide demo-slide">
-  <div class="etq">Demo 2</div>
-  <h1>¿Qué países se parecen?</h1>
-  <code>02_jerarquico_paises.ipynb</code>
 </section>
 
 <!-- ============================== PCA ============================== -->
 <section class="slide seccion">
   <div class="num">Parte 3</div>
-  <h1>PCA: resumir muchas variables</h1>
+  <h1>PCA</h1>
+  <div class="sub">Resumir muchas variables en un mapa</div>
 </section>
 
 <section class="slide">
   <h2>El problema</h2>
-  <div class="cols">
-    <div class="w50"><img src="img/pca_correlaciones.png" style="max-height: 560px;"></div>
-    <div>
-      <p>Automotriz: ¿cómo están <b>posicionados</b> los 93 modelos del mercado?</p>
-      <ul>
-        <li>12 características: no se pueden graficar.</li>
-        <li>Muchas <span class="alerta">dicen lo mismo</span>: todas miden "qué tan grande es".</li>
-      </ul>
+  <div class="cuerpo">
+    <div class="cols">
+      <div class="izq" style="flex-basis: 52%;"><img src="img/pca_correlaciones.png"></div>
+      <div class="der">
+        <p>Automotriz: ¿cómo están <b>posicionados</b> los 93 modelos del mercado?</p>
+        <ul>
+          <li>12 características: no se pueden graficar.</li>
+          <li>Muchas <span class="alerta">dicen lo mismo</span>: todas miden "qué tan grande es".</li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="pie"></div>
@@ -362,33 +392,34 @@
 
 <section class="slide">
   <h2>La idea: la dirección donde más varían</h2>
-  <img class="fig" src="img/pca_idea.png" style="height: 420px;">
-  <p class="centro" style="margin-top: 16px;">Giro los ejes: con <b>un número</b> (PC1 = "tamaño") conservo casi todo.</p>
+  <div class="cuerpo"><img class="fig" src="img/pca_idea.png"><p class="caption">Giro los ejes: con <b>un número</b> (PC1 = "tamaño") conservo casi todo.</p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>La matemática, muy por arriba</h2>
-  <p>Cada componente es una <span class="alerta">receta</span>: una suma ponderada de las variables.</p>
-  <div class="formula">PC1 = w<sub>1</sub>·precio + w<sub>2</sub>·rendimiento + … + w<sub>12</sub>·peso</div>
-  <ul>
-    <li>Los pesos <i>w</i> (<b>loadings</b>) maximizan la varianza de PC1.</li>
-    <li>PC2 hace lo mismo con lo que sobra, <b>sin repetir</b>.</li>
-    <li>Igual que en clustering: <b>estandarizar antes</b>.</li>
-  </ul>
+  <div class="cuerpo">
+    <p>Cada componente es una <span class="alerta">receta</span>: una suma ponderada de las variables.</p>
+    <div class="formula">PC1 = w<sub>1</sub>·precio + w<sub>2</sub>·rendimiento + … + w<sub>12</sub>·peso</div>
+    <ul>
+      <li>Los pesos <i>w</i> (<b>loadings</b>) maximizan la varianza de PC1.</li>
+      <li>PC2 hace lo mismo con lo que sobra, <b>sin repetir</b>.</li>
+      <li>Igual que en clustering: <b>estandarizar antes</b>.</li>
+    </ul>
+  </div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>¿Cuántas componentes me quedo?</h2>
-  <div class="cols">
-    <div class="w60"><img src="img/pca_varianza.png"></div>
-    <div>
-      <ul>
-        <li>Mirar el <b>acumulado</b>: ¿80–90%?</li>
-        <li>Para <b>visualizar</b>: 2.</li>
-        <li>Para <b>modelar</b>: las que hagan falta.</li>
-      </ul>
+  <div class="cuerpo">
+    <div class="cols ancho">
+      <div class="izq"><img src="img/pca_varianza.png"></div>
+      <div class="der">
+        <p>Mirar el <b>acumulado</b>: ¿80–90%?</p>
+        <p>Para <b>visualizar</b>: 2.</p>
+        <p>Para <b>modelar</b>: las que hagan falta.</p>
+      </div>
     </div>
   </div>
   <div class="pie"></div>
@@ -396,56 +427,44 @@
 
 <section class="slide">
   <h2>PCA no le pone nombre: lo hacemos nosotros</h2>
-  <img class="fig" src="img/pca_loadings.png" style="height: 400px;">
-  <p class="centro" style="margin-top: 16px;"><b>PC1 = tamaño</b> · <b>PC2 = deportivo/premium vs. familiar</b></p>
+  <div class="cuerpo"><img class="fig" src="img/pca_loadings.png"><p class="caption"><b>PC1 = tamaño</b> · <b>PC2 = deportivo/premium vs. familiar</b></p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>Un mapa de posicionamiento</h2>
-  <div class="cols">
-    <div class="w65"><img src="img/pca_mapa.png"></div>
-    <div>
-      <ul class="chico">
-        <li>El <b>tipo de auto no se usó</b>, y aun así queda ordenado.</li>
-        <li>Vecinos = <b>competidores directos</b>.</li>
-        <li><span class="alerta">¿Huecos?</span> Grande <i>y</i> deportivo.</li>
-      </ul>
-    </div>
-  </div>
+  <div class="cuerpo"><img class="fig" src="img/pca_mapa.png"><p class="caption">Vecinos = <b>competidores</b> · <span class="alerta">¿Hueco?</span> Grande <i>y</i> deportivo</p></div>
   <div class="pie"></div>
 </section>
 
 <section class="slide">
   <h2>Cuidado con PCA</h2>
-  <ul>
-    <li><b>Estandarizar</b> antes.</li>
-    <li>Las componentes son <b>difíciles de explicar</b>: "subió PC3" no le dice nada a nadie.</li>
-    <li>Solo relaciones <b>lineales</b>.</li>
-    <li>Muy útil para <b>visualizar</b>, armar <b>índices</b> y antes de clustering.</li>
-  </ul>
+  <div class="cuerpo">
+    <ul>
+      <li><b>Estandarizar</b> antes.</li>
+      <li>Las componentes son <b>difíciles de explicar</b>: "subió PC3" no le dice nada a nadie.</li>
+      <li>Solo relaciones <b>lineales</b>.</li>
+      <li>Muy útil para <b>visualizar</b>, armar <b>índices</b> y antes de clustering.</li>
+    </ul>
+  </div>
   <div class="pie"></div>
-</section>
-
-<section class="slide demo-slide">
-  <div class="etq">Demo 3</div>
-  <h1>Mapa de posicionamiento</h1>
-  <code>03_pca_autos.ipynb</code>
 </section>
 
 <section class="slide">
   <h2>Resumen</h2>
-  <table>
-    <tr><th></th><th>K-means</th><th>Jerárquico</th><th>PCA</th></tr>
-    <tr><td><b>Hace</b></td><td>Agrupa filas</td><td>Árbol de parecidos</td><td>Resume columnas</td></tr>
-    <tr><td><b>Usalo para</b></td><td>Muchos clientes</td><td>Pocos casos, sin K</td><td>Mapas, índices</td></tr>
-    <tr><td><b>Decidís vos</b></td><td>K</td><td>Dónde cortar</td><td>Cuántas componentes</td></tr>
-  </table>
-  <p class="centro" style="margin-top: 30px;">Siempre: <b>estandarizar</b> · <b>ponerle nombre</b> · <b>validar con el negocio</b></p>
+  <div class="cuerpo">
+    <table>
+      <tr><th></th><th>K-means</th><th>Jerárquico</th><th>PCA</th></tr>
+      <tr><td><b>Hace</b></td><td>Agrupa filas</td><td>Árbol de parecidos</td><td>Resume columnas</td></tr>
+      <tr><td><b>Usalo para</b></td><td>Muchos clientes</td><td>Pocos casos, sin K</td><td>Mapas, índices</td></tr>
+      <tr><td><b>Decidís vos</b></td><td>K</td><td>Dónde cortar</td><td>Cuántas componentes</td></tr>
+    </table>
+    <p class="centro" style="margin-top: 16px;">Siempre: <b>estandarizar</b> · <b>ponerle nombre</b> · <b>validar con el negocio</b></p>
+  </div>
   <div class="pie"></div>
 </section>
 
-<section class="slide demo-slide">
+<section class="slide cierre">
   <h1>¿Dudas? ¿Consultas?</h1>
 </section>
 
