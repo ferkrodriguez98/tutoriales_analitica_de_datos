@@ -148,6 +148,84 @@ axes[1].set_title("Dendrograma: quién se unió con quién, y a qué distancia")
 axes[1].set_ylabel("Distancia al unirse"); axes[1].grid(False)
 guardar(fig, "jer_toy")
 
+# Paso a paso: cómo se arma el dendrograma, unión por unión
+from matplotlib.patches import Ellipse
+dn = dendrogram(Z, labels=list(toy.index), no_plot=True)
+orden_hojas = dn["ivl"]
+xpos = {n: 5 + 10 * i for i, n in enumerate(orden_hojas)}
+alturas = list(Z[:, 2])
+segmentos = {}
+for ic, dc in zip(dn["icoord"], dn["dcoord"]):
+    fila = int(np.argmin([abs(h - dc[1]) for h in alturas]))
+    segmentos[fila] = (ic, dc)
+miembros = {i: [n] for i, n in enumerate(toy.index)}
+for i, fila in enumerate(Z):
+    miembros[len(toy) + i] = miembros[int(fila[0])] + miembros[int(fila[1])]
+
+
+def dibujar_grupo(ax, nombres, color, lw):
+    pts = toy.loc[nombres][["x", "y"]].values
+    c = pts.mean(0)
+    w = max(np.ptp(pts[:, 0]), 0) + 0.9
+    h = max(np.ptp(pts[:, 1]), 0) + 0.9
+    ax.add_patch(Ellipse(c, w * 1.25, h * 1.25, fill=False, color=color, lw=lw))
+
+
+for paso in range(1, len(Z) + 1):
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    ax = axes[0]
+    ax.scatter(toy.x, toy.y, s=120, color=PAL[0], zorder=3)
+    for n, r in toy.iterrows():
+        ax.annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
+    vivos = set(range(len(toy)))
+    for i in range(paso):
+        a, b = int(Z[i, 0]), int(Z[i, 1])
+        vivos -= {a, b}
+        vivos.add(len(toy) + i)
+    for g in vivos:
+        if len(miembros[g]) > 1 and g != len(toy) + paso - 1:
+            dibujar_grupo(ax, miembros[g], GRIS, 1.2)
+    nuevo = miembros[len(toy) + paso - 1]
+    if len(nuevo) < len(toy):
+        dibujar_grupo(ax, nuevo, PAL[1], 2.5)
+    ax.set_xlim(-0.5, 10.5); ax.set_ylim(-0.8, 6.3)
+    a, b = int(Z[paso - 1, 0]), int(Z[paso - 1, 1])
+    txt_a, txt_b = "+".join(miembros[a]), "+".join(miembros[b])
+    ax.set_title(f"Paso {paso}: junto {{{txt_a}}} con {{{txt_b}}}", color=PAL[1] if True else None)
+    ax = axes[1]
+    for i in range(paso):
+        ic, dc = segmentos[i]
+        ax.plot(ic, dc, color=PAL[1] if i == paso - 1 else GRIS, lw=2.5 if i == paso - 1 else 1.5)
+    ax.set_xticks([xpos[n] for n in orden_hojas], orden_hojas, fontsize=12)
+    ax.set_xlim(0, 10 * len(toy)); ax.set_ylim(0, Z[-1, 2] * 1.1)
+    ax.set_ylabel("Distancia al unirse"); ax.grid(False)
+    ax.set_title("Dendrograma (se arma de abajo hacia arriba)")
+    ax.annotate(f"altura = {Z[paso-1, 2]:.1f}", (np.mean(segmentos[paso-1][0][1:3]), Z[paso-1, 2]),
+                xytext=(0, 8), textcoords="offset points", ha="center", color=PAL[1], fontsize=11)
+    guardar(fig, f"jer_paso{paso}")
+
+# Cortar el árbol: 2 alturas distintas -> 2 o 3 grupos
+for k, corte_y in [(2, (Z[-1, 2] + Z[-2, 2]) / 2), (3, (Z[-2, 2] + Z[-3, 2]) / 2)]:
+    lab = fcluster(Z, t=k, criterion="maxclust")
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    ax = axes[0]
+    ax.scatter(toy.x, toy.y, s=140, c=[PAL[l - 1] for l in lab], zorder=3)
+    for n, r in toy.iterrows():
+        ax.annotate(n, (r.x, r.y), xytext=(7, 5), textcoords="offset points", fontsize=13, weight="bold")
+    ax.set_xlim(-0.5, 10.5); ax.set_ylim(-0.8, 6.3)
+    ax.set_title(f"Resultado: {k} grupos")
+    ax = axes[1]
+    for i in range(len(Z)):
+        ic, dc = segmentos[i]
+        ax.plot(ic, dc, color=GRIS, lw=1.5)
+    ax.axhline(corte_y, color="black", ls="--", lw=1.8)
+    ax.text(10 * len(toy) - 1, corte_y + 0.25, f"corte → la línea cruza {k} ramas", ha="right")
+    ax.set_xticks([xpos[n] for n in orden_hojas], orden_hojas, fontsize=12)
+    ax.set_xlim(0, 10 * len(toy)); ax.set_ylim(0, Z[-1, 2] * 1.1)
+    ax.set_ylabel("Distancia al unirse"); ax.grid(False)
+    ax.set_title(f"Corto el árbol a altura {corte_y:.1f}")
+    guardar(fig, f"jer_corte{k}")
+
 paises = pd.read_csv("data/paises_onu.csv").rename(columns={"rownames": "pais"}).dropna()
 vars_p = ["fertility", "ppgdp", "lifeExpF", "pctUrban", "infantMortality"]
 P = paises[vars_p].copy()
