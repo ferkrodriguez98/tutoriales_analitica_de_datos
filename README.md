@@ -17,6 +17,7 @@ Este repositorio contiene los materiales, notebooks, apuntes y recursos de las c
 - [Clase 12 - Clustering](): K-means.
 - [Clase 13 - Series Temporales](): Visualización de tendencias y patrones, descomposición.
 - [Clase 14 - PCA](): Reducción de dimensionalidad.
+- [Clase 15 - Aprendizaje No Supervisado](./Clase%2015%20-%20Aprendizaje%20No%20Supervisado/): K-means, clustering jerárquico y PCA con foco en negocios. Slides + 3 notebooks con datasets reales (clientes de un shopping, países de la ONU, modelos de autos).
 
 Ambas tutoriales (Rodríguez del Castillo y Telechea) son los Jueves.
 
