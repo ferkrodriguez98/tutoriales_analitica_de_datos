@@ -21,11 +21,11 @@ TINTA = "#20241e"
 plt.rcParams.update({
     "figure.dpi": 150, "savefig.dpi": 200, "savefig.bbox": "tight",
     "font.family": ["Lato", "DejaVu Sans"],
-    "font.size": 12, "axes.titlesize": 12, "axes.labelsize": 11,
+    "font.size": 15, "axes.titlesize": 15, "axes.labelsize": 14,
     "axes.titlecolor": TINTA, "text.color": TINTA,
     "axes.spines.top": False, "axes.spines.right": False,
     "axes.edgecolor": "#20241e", "axes.linewidth": 0.8, "axes.labelcolor": TINTA,
-    "xtick.color": TINTA, "ytick.color": TINTA, "xtick.labelsize": 10, "ytick.labelsize": 10,
+    "xtick.color": TINTA, "ytick.color": TINTA, "xtick.labelsize": 13, "ytick.labelsize": 13,
     "axes.grid": False,
     "legend.frameon": False,
 })
@@ -265,7 +265,7 @@ fig, ax = plt.subplots(figsize=(12, 4.6))
 from scipy.cluster import hierarchy
 hierarchy.set_link_color_palette(PAL[:4])
 dendrogram(Zam, labels=[ES[p] for p in paises.pais[am]], ax=ax, color_threshold=corte_am,
-           above_threshold_color=GRIS, leaf_rotation=90, leaf_font_size=10)
+           above_threshold_color=GRIS, leaf_rotation=90, leaf_font_size=13)
 ax.axhline(corte_am, color="black", ls="--", lw=1.2)
 ax.set_ylabel("Distancia (Ward)"); ax.grid(False)
 ax.set_title("Países de América según desarrollo (fertilidad, PBI per cápita, esperanza de vida, urbanización, mortalidad infantil)")
@@ -291,7 +291,7 @@ ax.set_yticks(range(len(corr)), corr.columns)
 for i in range(len(corr)):
     for j in range(len(corr)):
         v = corr.iloc[i, j]
-        ax.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=8, color="white" if abs(v) > 0.6 else "black")
+        ax.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=10, color="white" if abs(v) > 0.6 else "black")
 ax.grid(False)
 fig.colorbar(im, ax=ax, shrink=0.8, label="Correlación")
 ax.set_title("12 variables que dicen casi lo mismo")
@@ -359,7 +359,7 @@ for nombre in destacados:
     i = autos.index[autos.Make == nombre]
     if len(i):
         i = i[0]
-        ax.annotate(nombre.replace("_", " "), Z2[i], xytext=(5, 4), textcoords="offset points", fontsize=8.5, color=TINTA)
+        ax.annotate(nombre.replace("_", " "), Z2[i], xytext=(5, 4), textcoords="offset points", fontsize=11, color=TINTA)
 ax.axhline(0, color="#cfc8b6", lw=1); ax.axvline(0, color="#cfc8b6", lw=1)
 ax.set_xlabel(f"PC1: tamaño  ({ev[0]:.0%})   chico/económico  ←→  grande/gastador")
 ax.set_ylabel(f"PC2 ({ev[1]:.0%})   familiar  ←→  deportivo/premium")
