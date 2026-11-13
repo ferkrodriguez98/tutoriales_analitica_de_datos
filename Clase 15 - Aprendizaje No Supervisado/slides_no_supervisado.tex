@@ -1,4 +1,4 @@
-\documentclass[aspectratio=169]{beamer}
+\documentclass{beamer}
 \usetheme{metropolis}
 
 \usepackage[spanish]{babel}
@@ -8,6 +8,7 @@
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{fontawesome}
 
 \definecolor{primary}{RGB}{46, 204, 113}
 \definecolor{accent}{RGB}{231, 76, 60}
@@ -23,7 +24,7 @@
 
 \title{\Huge\textbf{Aprendizaje No Supervisado}}
 \subtitle{K-means, clustering jerárquico y PCA}
-\author{Analítica de Datos, Universidad de San Andrés}
+\author{Analítica de Datos}
 \date{}
 
 \begin{document}
@@ -38,14 +39,14 @@
     \begin{columns}[T]
         \column{0.48\textwidth}
         \textbf{Supervisado} (CART, KNN, RF, Naive Bayes)
-        \begin{itemize}
+        \begin{itemize}[<+->]
             \item Tenemos una columna \alert{respuesta}: ¿pagó?, ¿compró?, ¿precio?
             \item El modelo aprende a \textbf{predecirla}
             \item Podemos medir si acierta (accuracy, ROC, ...)
         \end{itemize}
         \column{0.48\textwidth}
         \textbf{No supervisado} (hoy)
-        \begin{itemize}
+        \begin{itemize}[<+->]
             \item \alert{No hay respuesta}: solo tenemos las características
             \item Buscamos \textbf{estructura}: grupos, patrones, resúmenes
             \item No hay ``acierto'': la utilidad la decide el negocio
@@ -58,20 +59,29 @@
 \end{frame}
 
 \begin{frame}{Tres preguntas de negocio, tres técnicas}
+    \begin{columns}[T]
+        \column{0.32\textwidth}
+        \centering
+        {\Huge \faUsers}\\[0.3cm]
+        \textbf{K-means}\\[0.2cm]
+        \small ¿Qué tipos de clientes tengo? ¿A quién le mando qué campaña?\\[0.2cm]
+        \footnotesize\textit{Demo: 200 clientes de un shopping}
+        \column{0.32\textwidth}
+        \centering
+        {\Huge \faGlobe}\\[0.3cm]
+        \textbf{Jerárquico}\\[0.2cm]
+        \small ¿Qué países se parecen entre sí para expandirme?\\[0.2cm]
+        \footnotesize\textit{Demo: 193 países (ONU)}
+        \column{0.32\textwidth}
+        \centering
+        {\Huge \faCar}\\[0.3cm]
+        \textbf{PCA}\\[0.2cm]
+        \small Tengo 12 métricas que dicen lo mismo: ¿cómo las resumo en un mapa?\\[0.2cm]
+        \footnotesize\textit{Demo: 93 modelos de autos}
+    \end{columns}
+    \vspace{1cm}
     \centering
-    \renewcommand{\arraystretch}{1.5}
-    \begin{tabular}{p{5.4cm}p{3.3cm}p{4.6cm}}
-        \toprule
-        \textbf{Pregunta} & \textbf{Técnica} & \textbf{Demo de hoy} \\
-        \midrule
-        ¿Qué tipos de clientes tengo? ¿A quién le mando qué campaña? & \textbf{K-means} & 200 clientes de un shopping \\
-        ¿Qué países se parecen entre sí para expandirme? & \textbf{Clustering jerárquico} & 193 países (ONU) \\
-        Tengo 12 métricas que dicen lo mismo: ¿cómo las resumo en un mapa? & \textbf{PCA} & 93 modelos de autos \\
-        \bottomrule
-    \end{tabular}
-    \vspace{0.8em}
-
-    Las dos primeras \textbf{agrupan filas} (clientes, países). PCA \textbf{resume columnas} (variables).
+    Las dos primeras \textbf{agrupan filas} (clientes, países).\\ PCA \textbf{resume columnas} (variables).
 \end{frame}
 
 % =====================================================================
@@ -108,7 +118,7 @@
     \[
         \text{Inercia} = \sum_{\text{grupos}} \; \sum_{\text{clientes del grupo}} \text{distancia}(\text{cliente}, \text{centroide})^2
     \]
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item Traducción: \textbf{grupos lo más ``apretados'' posible} alrededor de su representante.
         \item ``Distancia'' = distancia en línea recta (euclídea) entre los valores de las variables.
         \item Por eso hay que \alert{estandarizar}: si el ingreso está en pesos y el score en 1--100, el ingreso domina la distancia.
@@ -127,27 +137,32 @@
 \end{frame}
 
 \begin{frame}{El algoritmo da números; el nombre lo ponemos nosotros}
-    \begin{columns}[c]
-        \column{0.58\textwidth}
-        \includegraphics[width=\textwidth]{img/km_segmentos.png}
-        \column{0.40\textwidth}
-        \footnotesize
-        \begin{tabular}{@{}p{2.3cm}p{3.3cm}@{}}
-            \toprule
-            \textbf{Segmento} & \textbf{Acción} \\
-            \midrule
-            VIP & Fidelizar, eventos exclusivos \\
-            Ahorradores con plata & \alert{Mayor potencial}: ¿por qué no compran acá? \\
-            Gastadores impulsivos & Promos, cuotas; son los más jóvenes \\
-            Cuidadosos & Descuentos puntuales \\
-            Promedio & Comunicación masiva \\
-            \bottomrule
-        \end{tabular}
-    \end{columns}
+    \centering
+    \includegraphics[width=\textwidth]{img/km_segmentos.png}\par
+    \small Mirando el centroide de cada grupo le ponemos un \textbf{nombre} que el equipo de marketing entienda.
+\end{frame}
+
+\begin{frame}{¿Y qué hacemos con cada segmento?}
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{@{}p{3.6cm}p{6.2cm}@{}}
+        \toprule
+        \textbf{Segmento} & \textbf{Acción} \\
+        \midrule
+        VIP & Fidelizar, eventos exclusivos. No perderlos. \\
+        Ahorradores con plata & \alert{Mayor potencial}: ¿por qué no compran acá? \\
+        Gastadores impulsivos & Promos y cuotas. Son los más jóvenes. \\
+        Cuidadosos & Descuentos puntuales, baja prioridad. \\
+        Promedio & Comunicación masiva estándar. \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.8em}
+
+    \small La \textbf{edad} no se usó para agrupar, y aun así distingue a los grupos: eso es un hallazgo.
 \end{frame}
 
 \begin{frame}{Cuidado con K-means}
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item \textbf{Siempre devuelve K grupos}, aunque los datos no tengan grupos.
         \item \textbf{Estandarizar} las variables antes (trabaja con distancias).
         \item Le gustan los grupos \textbf{redondos y de tamaño parecido}; con formas raras falla.
@@ -172,7 +187,7 @@
     \begin{center}
         \Large \textit{¿Qué países se parecen entre sí?}
     \end{center}
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item 193 países, 5 indicadores de la ONU: fertilidad, PBI per cápita, esperanza de vida, \% urbano, mortalidad infantil.
         \item \alert{No sabemos cuántos grupos hay} y queremos algo fácil de mostrarle al directorio.
         \item Si una estrategia funciona en un país, probablemente funcione en sus ``vecinos''.
@@ -184,7 +199,7 @@
         \Large Arranco con cada país solo y \alert{voy juntando de a dos} \\ a los más parecidos, hasta que queda un solo grupo.
     \end{center}
     \vspace{1em}
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item Es como armar un \textbf{árbol genealógico} de parecidos: primero se juntan los ``hermanos'', después los ``primos'', y así.
         \item El \textbf{dendrograma} es el dibujo de ese árbol: anota \textbf{quién} se juntó con quién y \textbf{qué tan distintos} eran cuando se juntaron.
         \item No hace falta elegir K antes: la cantidad de grupos se decide \textbf{al final}, mirando el árbol.
@@ -232,12 +247,13 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{La matemática, muy por arriba: ¿cómo mido la distancia entre grupos?}
+\begin{frame}{¿Cómo mido la distancia entre grupos?}
     Entre dos países es fácil: la misma distancia en línea recta que en K-means. Pero cuando ya tengo \textbf{grupos}, hay que decidir cómo compararlos. A eso se le dice \alert{linkage}:
     \vspace{0.5em}
 
     \renewcommand{\arraystretch}{1.3}
-    \begin{tabular}{@{}ll@{}}
+    \small
+    \begin{tabular}{@{}lp{8cm}@{}}
         \textbf{single} & los dos miembros \textbf{más cercanos} $\rightarrow$ arma ``cadenas'', no sirve para segmentar \\
         \textbf{complete} & los dos miembros \textbf{más lejanos} \\
         \textbf{average} & el \textbf{promedio} de todas las distancias \\
@@ -254,7 +270,7 @@
     \vspace{0.3em}
 
     \small
-    \begin{tabular}{@{}lrrrr@{}}
+    \resizebox{\textwidth}{!}{\begin{tabular}{@{}lrrrr@{}}
         \toprule
         \textbf{Grupo} (mediana) & \textbf{Países} & \textbf{PBI p/c (USD)} & \textbf{Esp. vida} & \textbf{Hijos/mujer} \\
         \midrule
@@ -263,13 +279,14 @@
         Desarrollo medio-bajo & 53 & 1.240 & 64,4 & 3,8 \\
         Bajo desarrollo & 19 & 451 & 53,1 & 5,5 \\
         \bottomrule
-    \end{tabular}
+    \end{tabular}}
 \end{frame}
 
 \begin{frame}{K-means vs. jerárquico}
     \centering
     \renewcommand{\arraystretch}{1.4}
-    \begin{tabular}{@{}p{3.6cm}p{4.6cm}p{4.6cm}@{}}
+    \footnotesize
+    \begin{tabular}{@{}p{2.8cm}p{3.6cm}p{3.6cm}@{}}
         \toprule
         & \textbf{K-means} & \textbf{Jerárquico} \\
         \midrule
@@ -320,7 +337,7 @@
     \[
         \text{PC1} = w_1 \cdot \text{precio} + w_2 \cdot \text{rendimiento} + \dots + w_{12} \cdot \text{peso}
     \]
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item PCA elige los pesos $w$ (\textbf{loadings}) para que PC1 tenga la \textbf{mayor varianza posible}.
         \item PC2 hace lo mismo con lo que sobra, \textbf{sin repetir} información de PC1 (son perpendiculares). Y así sucesivamente.
         \item Hay tantas componentes como variables, pero las primeras concentran casi todo.
@@ -346,21 +363,17 @@
 \end{frame}
 
 \begin{frame}{El resultado: un mapa de posicionamiento}
-    \begin{columns}[c]
-        \column{0.62\textwidth}
-        \includegraphics[width=\textwidth]{img/pca_mapa.png}
-        \column{0.36\textwidth}
-        \small
-        \begin{itemize}
-            \item El \textbf{tipo de auto no se usó}, y aun así queda ordenado: las componentes capturan algo real.
-            \item Vecinos en el mapa = \textbf{competidores directos}.
-            \item \alert{¿Huecos?} Grande \textit{y} deportivo: casi vacío.
-        \end{itemize}
-    \end{columns}
+    \centering
+    \includegraphics[height=0.6\textheight]{img/pca_mapa.png}\par
+    \small
+    \begin{itemize}
+        \item El \textbf{tipo de auto no se usó} y aun así queda ordenado: las componentes capturan algo real.
+        \item Vecinos en el mapa = \textbf{competidores directos}. \alert{¿Huecos?} Grande \textit{y} deportivo: casi vacío.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Cuidado con PCA}
-    \begin{itemize}
+    \begin{itemize}[<+->]
         \item \textbf{Estandarizar} antes.
         \item Las componentes son \textbf{difíciles de explicar}: ``subió PC3'' no le dice nada a nadie. En un modelo predictivo perdés explicabilidad.
         \item Solo captura relaciones \textbf{lineales}.
@@ -381,14 +394,14 @@
     \centering
     \renewcommand{\arraystretch}{1.4}
     \small
-    \begin{tabular}{@{}p{2.5cm}p{3.6cm}p{3.6cm}p{3.6cm}@{}}
+    \begin{tabular}{@{}p{1.7cm}p{2.8cm}p{2.8cm}p{2.8cm}@{}}
         \toprule
         & \textbf{K-means} & \textbf{Jerárquico} & \textbf{PCA} \\
         \midrule
         Hace & Agrupa filas en K grupos & Arma un árbol de parecidos & Resume columnas \\
         Usalo para & Segmentar muchos clientes & Pocos casos, sin K claro & Mapas, índices, quitar redundancia \\
         Decidís vos & K & Dónde cortar, linkage & Cuántas componentes \\
-        Siempre & \multicolumn{3}{l}{Estandarizar \;·\; interpretar y ponerle nombre \;·\; validar con el negocio} \\
+        Siempre & \multicolumn{3}{p{8.4cm}}{Estandarizar \;·\; interpretar y ponerle nombre \;·\; validar con el negocio} \\
         \bottomrule
     \end{tabular}
     \vspace{0.8em}
